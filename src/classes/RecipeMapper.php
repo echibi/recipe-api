@@ -38,8 +38,8 @@ class RecipeMapper {
 		// Log access
 		$this->logger->info( "getList started" );
 
-		$page  = $request->getQueryParam( 'page' );
-		$limit = $request->getQueryParam( 'limit', 10 );
+		$offset = $request->getQueryParam( 'offset' );
+		$limit  = $request->getQueryParam( 'limit', 10 );
 
 		$db = $this->ci->get( 'db' );
 
@@ -65,7 +65,45 @@ class RecipeMapper {
 	 * @param $args
 	 */
 	public function addRecipe( $request, $response, $args ) {
+
 		$this->logger->info( "add recipe" );
+
+		// Define if fields is required and what type we should check for.
+		$fieldDefinition = array(
+			'title'       => array(
+				'required' => true,
+				'type'     => 'text'
+			),
+			'description' => array(
+				'required' => false,
+				'type'     => 'text'
+			),
+			'ingredients' => array(
+				'required' => true,
+				'type'     => 'array'
+			),
+			'image1'      => array(
+				'required' => false,
+				'type'     => 'file'
+			)
+		);
+
+		$data        = $request->getParsedBody();
+		$recipe_data = array();
+		if ( isset( $data['title'] ) ) {
+			$recipe_data['title'] = filter_var( $data['title'], FILTER_SANITIZE_STRING );
+		}
+		if ( isset( $data['description'] ) ) {
+			$recipe_data['description'] = filter_var( $data['description'], FILTER_SANITIZE_STRING );
+		}
+
+		// echo '<xmp style="text-align:left;">' . print_r( $recipe_data, true ) . '</xmp>';
+		// $newResponse = $response->withStatus(403);
+
+		// $db = $this->ci->get( 'db' );
+
+		return $response->withJson( $recipe_data );
+
 	}
 
 	/**

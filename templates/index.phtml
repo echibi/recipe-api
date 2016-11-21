@@ -1,25 +1,37 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8"/>
-        <title>Recept-api</title>
-        <style>
-            body {
-                margin: 50px 0 0 0;
-                padding: 0;
-                width: 100%;
-                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-                text-align: center;
-                color: #aaa;
-                font-size: 18px;
-            }
-        </style>
-    </head>
-    <body>
-        <?php if (isset($name)) : ?>
-            <h2>Hello <?= htmlspecialchars($name); ?>!</h2>
-        <?php else: ?>
-            <p>Try <a href="http://www.slimframework.com">SlimFramework</a>
-        <?php endif; ?>
-    </body>
+<head>
+	<meta charset="utf-8"/>
+	<title>Recept-api</title>
+	<style>
+		body {
+			margin: 50px 0 0 0;
+			padding: 0;
+			width: 100%;
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+			font-size: 18px;
+		}
+		.wrap {
+			margin: 5em auto 0;
+			max-width: 40em;
+		}
+		input[type="text"] {
+			width: 100%;
+		}
+	</style>
+	<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+</head>
+<body>
+<div class="wrap">
+	<form class="pure-form pure-form-stacked" method="post" action="/recipe-api/public/recipes/new">
+		<input type="text" name="title" placeholder="Title"/>
+		<?php for ( $i = 0; $i < 5; $i ++ ) : ?>
+			<?php $inputName = 'ingrident_' . ( $i + 1 ); ?>
+			<!-- <label for="<?php echo $inputName ?>">Ingrediens <?php echo $i + 1; ?></label> -->
+			<input type="text" name="" placeholder="Ingrediens <?php echo $i + 1; ?>"/>
+		<?php endfor; ?>
+		<input type="submit" value="Send"/>
+	</form>
+</div>
+</body>
 </html>
