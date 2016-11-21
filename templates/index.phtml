@@ -25,11 +25,7 @@
 <div class="wrap">
 	<form class="pure-form pure-form-stacked" method="post" action="/recipe-api/public/recipes/new">
 		<input type="text" name="title" placeholder="Title"/>
-		<?php for ( $i = 0; $i < 5; $i ++ ) : ?>
-			<?php $inputName = 'ingrident_' . ( $i + 1 ); ?>
-			<!-- <label for="<?php echo $inputName ?>">Ingrediens <?php echo $i + 1; ?></label> -->
-			<input type="text" name="" placeholder="Ingrediens <?php echo $i + 1; ?>"/>
-		<?php endfor; ?>
+		<input type="text" name="description" placeholder="Description"/>
 		<input type="submit" value="Send"/>
 	</form>
 </div>
