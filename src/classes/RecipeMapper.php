@@ -41,6 +41,8 @@ class RecipeMapper {
 		$page  = $request->getQueryParam( 'page' );
 		$limit = $request->getQueryParam( 'limit', 10 );
 
+		$db = $this->ci->get( 'db' );
+
 		//echo '<xmp style="text-align:left;">'. print_r( $response, true ) .'</xmp>';
 	}
 
