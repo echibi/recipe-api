@@ -10,34 +10,70 @@ namespace App;
 use \Interop\Container\ContainerInterface as ContainerInterface;
 
 
-
 class RecipeMapper {
 
+	/**
+	 * @var ContainerInterface
+	 */
 	protected $ci;
 
-	//Constructor
+	/**
+	 * Constructor
+	 *
+	 * @param ContainerInterface $ci
+	 */
 	public function __construct( ContainerInterface $ci ) {
-		$this->ci = $ci;
-		$this->logger = $ci->get('logger');
+		$this->ci     = $ci;
+		$this->logger = $ci->get( 'logger' );
 	}
 
+	/**
+	 * Return a list with recipes
+	 *
+	 * @param $request
+	 * @param $response
+	 * @param $args
+	 */
 	public function getList( $request, $response, $args ) {
-		//your code
-		//to access items in the container... $this->ci->get('');
+		// Log access
+		$this->logger->info( "getList started" );
 
-		$this->logger->info("accessed '/recipes/' route");
+		$page  = $request->getQueryParam( 'page' );
+		$limit = $request->getQueryParam( 'limit', 10 );
 
-		echo 'loo';
-
+		//echo '<xmp style="text-align:left;">'. print_r( $response, true ) .'</xmp>';
 	}
 
-	public function method2( $request, $response, $args ) {
-		//your code
-		//to access items in the container... $this->ci->get('');
+	/**
+	 * Return a recipe if id is found.
+	 *
+	 * @param $request
+	 * @param $response
+	 * @param $args
+	 */
+	public function getRecipe( $request, $response, $args ) {
+		$this->logger->info( "getRecipe started" );
 	}
 
-	public function method3( $request, $response, $args ) {
-		//your code
-		//to access items in the container... $this->ci->get('');
+	/**
+	 * Add recipe
+	 *
+	 * @param $request
+	 * @param $response
+	 * @param $args
+	 */
+	public function addRecipe( $request, $response, $args ) {
+		$this->logger->info( "add recipe" );
+	}
+
+	/**
+	 * Update recipe
+	 *
+	 * @param $request
+	 * @param $response
+	 * @param $args
+	 */
+	public function updateRecipe( $request, $response, $args ) {
+		$this->logger->info( "update recipe" );
 	}
 }
