@@ -8,7 +8,7 @@
 namespace App;
 
 use \Interop\Container\ContainerInterface as ContainerInterface;
-
+use App\Validation\RecipeValidator;
 
 class RecipeMapper {
 
@@ -68,41 +68,22 @@ class RecipeMapper {
 
 		$this->logger->info( "add recipe" );
 
-		// Define if fields is required and what type we should check for.
-		$fieldDefinition = array(
-			'title'       => array(
-				'required' => true,
-				'type'     => 'text'
-			),
-			'description' => array(
-				'required' => false,
-				'type'     => 'text'
-			),
-			'ingredients' => array(
-				'required' => true,
-				'type'     => 'array'
-			),
-			'image1'      => array(
-				'required' => false,
-				'type'     => 'file'
-			)
-		);
+		$data = $request->getParsedBody();
 
-		$data        = $request->getParsedBody();
-		$recipe_data = array();
-		if ( isset( $data['title'] ) ) {
-			$recipe_data['title'] = filter_var( $data['title'], FILTER_SANITIZE_STRING );
-		}
-		if ( isset( $data['description'] ) ) {
-			$recipe_data['description'] = filter_var( $data['description'], FILTER_SANITIZE_STRING );
+		$validator = new RecipeValidator();
+
+		if ( true === $validator->assert( $data ) ) {
+			// Everything is fine.
+		}else {
+			$errors = $validator->errors();
+			echo '<xmp style="text-align:left;">'. print_r( $errors, true ) .'</xmp>';
 		}
 
-		// echo '<xmp style="text-align:left;">' . print_r( $recipe_data, true ) . '</xmp>';
 		// $newResponse = $response->withStatus(403);
 
 		// $db = $this->ci->get( 'db' );
 
-		return $response->withJson( $recipe_data );
+		return $response->withJson( $data );
 
 	}
 
