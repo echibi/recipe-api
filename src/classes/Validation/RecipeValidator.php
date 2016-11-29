@@ -48,7 +48,7 @@ class RecipeValidator {
 	 */
 	public function initRules() {
 
-		$this->rules['title']       = V::stringType()->length( 1, 20 )->setName( 'title' );
+		$this->rules['title']       = V::stringType()->notEmpty()->setName( 'title' );
 		$this->rules['description'] = V::stringType()->setName( 'description' );
 
 	}
@@ -84,9 +84,6 @@ class RecipeValidator {
 	public function assert( array $inputs ) {
 
 		foreach ( $this->rules as $rule => $validator ) {
-
-			echo '<xmp style="text-align:left;">'. print_r( $rule, true ) .'</xmp>';
-
 			try {
 				$validator->assert( Util::array_get( $inputs, $rule ) );
 			} catch ( NestedValidationException $ex ) {

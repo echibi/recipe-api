@@ -68,22 +68,26 @@ class RecipeMapper {
 
 		$this->logger->info( "add recipe" );
 
+		$returnData = array();
+
 		$data = $request->getParsedBody();
 
 		$validator = new RecipeValidator();
 
 		if ( true === $validator->assert( $data ) ) {
 			// Everything is fine.
-		}else {
-			$errors = $validator->errors();
-			echo '<xmp style="text-align:left;">'. print_r( $errors, true ) .'</xmp>';
-		}
+			$acceptedFields = array( 'title', 'description' );
 
-		// $newResponse = $response->withStatus(403);
+			// $returnData['status'] = 'ok';
+		} else {
+			// Errors found in validator
+			$errors     = $validator->errors();
+			$returnData = $errors;
+		}
 
 		// $db = $this->ci->get( 'db' );
 
-		return $response->withJson( $data );
+		return $response->withJson( $returnData );
 
 	}
 
