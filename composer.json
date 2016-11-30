@@ -16,7 +16,8 @@
         "slim/php-view": "^2.0",
         "monolog/monolog": "^1.17",
         "phpmailer/phpmailer": "~5.2",
-        "respect/validation": "^1.1"
+        "respect/validation": "^1.1",
+        "robmorgan/phinx": "^0.6.5"
     },
 	"scripts": {
         "start": "php -S 0.0.0.0:8080 -t public public/index.php"
