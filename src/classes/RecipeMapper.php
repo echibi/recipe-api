@@ -43,7 +43,7 @@ class RecipeMapper {
 
 		$db = $this->ci->get( 'db' );
 
-		//echo '<xmp style="text-align:left;">'. print_r( $response, true ) .'</xmp>';
+
 	}
 
 	/**
