@@ -49,10 +49,10 @@ class RecipeValidator {
 	public function initRules() {
 
 		$this->rules['title']       = V::stringType()->notEmpty()->setName( 'title' );
-		$this->rules['description'] = V::stringType()->setName( 'description' );
-		$this->rules['ingredients'] = V::json()->setName( 'ingredients' );
-		$this->rules['image1']      = V::image()->setName( 'image1' );
-		$this->rules['videoUrl']    = V::videoUrl()->setName( 'video' );
+		$this->rules['description'] = V::optional( V::stringType() )->setName( 'description' ) ;
+		$this->rules['ingredients'] = V::optional( V::json() )->setName( 'ingredients' );
+		$this->rules['image1']      = V::optional( V::image() )->setName( 'image1' );
+		$this->rules['videoUrl']    = V::optional( V::videoUrl() )->setName( 'video' );
 
 	}
 

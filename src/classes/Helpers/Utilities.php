@@ -7,6 +7,8 @@
 
 namespace App\Helpers;
 
+use \Closure;
+
 
 class Utilities {
 
@@ -28,11 +30,22 @@ class Utilities {
 		}
 		foreach ( explode( '.', $key ) as $segment ) {
 			if ( ! is_array( $array ) || ! array_key_exists( $segment, $array ) ) {
-				return value( $default );
+				return self::value( $default );
 			}
 			$array = $array[ $segment ];
 		}
 
 		return $array;
+	}
+
+	/**
+	 * Return the default value of the given value.
+	 *
+	 * @param  mixed  $value
+	 * @return mixed
+	 */
+	function value($value)
+	{
+		return $value instanceof Closure ? $value() : $value;
 	}
 }

@@ -66,8 +66,6 @@ class RecipeMapper {
 	 */
 	public function addRecipe( $request, $response, $args ) {
 
-		$this->logger->info( "add recipe" );
-
 		$returnData = array();
 
 		$data = $request->getParsedBody();
@@ -77,14 +75,16 @@ class RecipeMapper {
 		if ( true === $validator->assert( $data ) ) {
 			// Everything is fine.
 
+			$this->logger->info( "start add recipe" );
+
 			// Create our recipe entity
-			$recipe        = new RecipeEntity( $data );
+			$recipe = new RecipeEntity( $data );
 
 			// Connect to db and prepare inserts.
-			$db            = $this->ci->get( 'db' );
+			$db                  = $this->ci->get( 'db' );
 			$prepareRecipeInsert = $db->prepare(
-				'INSERT INTO recipes ( title, description, created, updated )
-				 VALUES (:title, :description, :created, :updated)'
+				'INSERT INTO recipes ( title, description, created, updated, image1 )
+				 VALUES (:title, :description, :created, :updated, :image1)'
 			);
 
 			$nowDatetime = date( 'Y-m-d H:i:s' );
@@ -93,13 +93,15 @@ class RecipeMapper {
 					'title'       => $recipe->getTitle(),
 					'description' => $recipe->getDescription(),
 					'created'     => $nowDatetime,
-					'updated'     => $nowDatetime
+					'updated'     => $nowDatetime,
+					'image1'      => '' // Placeholder
 				)
 			);
 
-			$recipeId = $db::lastInsertId();
+			$recipeId = $db->lastInsertId();
+			$returnData['itemid'] = $recipeId;
 
-			$prepareIngredientInsert = $db->prepare(
+			$prepareIngredientInsert    = $db->prepare(
 				'INSERT INTO ingredients ( name, slug )
 				 VALUES (:name, :slug)'
 			);
@@ -110,11 +112,11 @@ class RecipeMapper {
 
 			// TODO:: Fetch ingredients from RecipeEntity
 			$ingredients = array();
-			if( ! empty( $ingredients ) ) {
-				foreach( $ingredients as $ingredient ){
+			if ( !empty( $ingredients ) ) {
+				foreach ( $ingredients as $ingredient ) {
 					// Run query
 
-					$ingredientId = $db::lastInsertId();
+					$ingredientId = $db->lastInsertId();
 					// Run rel query
 				}
 			}
@@ -127,6 +129,7 @@ class RecipeMapper {
 		}
 
 		// $db = $this->ci->get( 'db' );
+		$this->logger->info( "add recipe ?" );
 
 		return $response->withJson( $returnData );
 
