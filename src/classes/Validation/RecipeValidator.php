@@ -42,7 +42,7 @@ class RecipeValidator {
 	}
 
 	/**
-	 * Set the user subscription constraints
+	 * Set the fields constraints
 	 *
 	 * @return void
 	 */
@@ -50,6 +50,9 @@ class RecipeValidator {
 
 		$this->rules['title']       = V::stringType()->notEmpty()->setName( 'title' );
 		$this->rules['description'] = V::stringType()->setName( 'description' );
+		$this->rules['ingredients'] = V::json()->setName( 'ingredients' );
+		$this->rules['image1']      = V::image()->setName( 'image1' );
+		$this->rules['videoUrl']    = V::videoUrl()->setName( 'video' );
 
 	}
 

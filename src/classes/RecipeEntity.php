@@ -10,9 +10,22 @@ namespace App;
 
 class RecipeEntity {
 
+	/**
+	 * @var int
+	 */
 	protected $id;
+	/**
+	 * @var string
+	 */
 	protected $title;
+	/**
+	 * @var string
+	 */
 	protected $description;
+	/**
+	 * @var array
+	 */
+	protected $ingredients;
 
 	/**
 	 * Accept an array of data matching properties of this class
@@ -26,8 +39,16 @@ class RecipeEntity {
 			$this->id = $data['id'];
 		}
 
-		$this->title       = $data['title'];
-		$this->description = $data['description'];
+		$this->title = $data['title'];
+
+		if ( isset( $data['description'] ) ) {
+			$this->description = $data['description'];
+		}
+
+		if ( isset( $data['ingredients'] ) ) {
+			$this->_setIngredients( $data['ingredients'] );
+		}
+
 	}
 
 	public function getId() {
@@ -44,5 +65,15 @@ class RecipeEntity {
 
 	public function getShortDescription() {
 		return substr( $this->description, 0, 20 );
+	}
+	public function getIngredients(){
+		return $this->ingredients;
+	}
+
+	/**
+	 * @param $ingredientData array
+	 */
+	private function _setIngredients( $ingredientData ){
+
 	}
 }

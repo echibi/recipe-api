@@ -76,9 +76,50 @@ class RecipeMapper {
 
 		if ( true === $validator->assert( $data ) ) {
 			// Everything is fine.
-			$acceptedFields = array( 'title', 'description' );
 
-			// $returnData['status'] = 'ok';
+			// Create our recipe entity
+			$recipe        = new RecipeEntity( $data );
+
+			// Connect to db and prepare inserts.
+			$db            = $this->ci->get( 'db' );
+			$prepareRecipeInsert = $db->prepare(
+				'INSERT INTO recipes ( title, description, created, updated )
+				 VALUES (:title, :description, :created, :updated)'
+			);
+
+			$nowDatetime = date( 'Y-m-d H:i:s' );
+			$prepareRecipeInsert->execute(
+				array(
+					'title'       => $recipe->getTitle(),
+					'description' => $recipe->getDescription(),
+					'created'     => $nowDatetime,
+					'updated'     => $nowDatetime
+				)
+			);
+
+			$recipeId = $db::lastInsertId();
+
+			$prepareIngredientInsert = $db->prepare(
+				'INSERT INTO ingredients ( name, slug )
+				 VALUES (:name, :slug)'
+			);
+			$prepareIngredientRelInsert = $db->prepare(
+				'INSERT INTO ingredients_rel ( recipe_id, ingredient_id, value, unit )
+				 VALUES (:recipe_id, :ingredient_id, :value, :unit)'
+			);
+
+			// TODO:: Fetch ingredients from RecipeEntity
+			$ingredients = array();
+			if( ! empty( $ingredients ) ) {
+				foreach( $ingredients as $ingredient ){
+					// Run query
+
+					$ingredientId = $db::lastInsertId();
+					// Run rel query
+				}
+			}
+
+			$returnData['status'] = 'ok';
 		} else {
 			// Errors found in validator
 			$errors     = $validator->errors();
