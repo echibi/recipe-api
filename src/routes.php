@@ -12,12 +12,14 @@ $app->get('/', function ($request, $response, $args) {
 
 // Get a list of recipes
 $app->get('/recipes', '\App\RecipeMapper:getList');
+// Insert recipe
+$app->post('/recipes', '\App\RecipeMapper:addRecipe');
 // Get a single recipe by id
 $app->get('/recipes/{id}', '\App\RecipeMapper:getRecipe');
-// Insert recipe
-$app->post('/recipes/new', '\App\RecipeMapper:addRecipe');
 // Update recipe
 $app->put('/recipes/{id}', '\App\RecipeMapper:updateRecipe');
+// Delete recipe
+$app->delete('/recipes/{id}', '\App\RecipeMapper:removeRecipe');
 // Get all ingredients
 $app->get('/ingredients', '\App\IngredientMapper:getIngredients');
 // Get single ingredient

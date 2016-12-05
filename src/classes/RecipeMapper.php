@@ -7,6 +7,7 @@
 
 namespace App;
 
+use App\Helpers\Utilities;
 use \Interop\Container\ContainerInterface as ContainerInterface;
 use App\Validation\RecipeValidator;
 
@@ -98,7 +99,7 @@ class RecipeMapper {
 				)
 			);
 
-			$recipeId = $db->lastInsertId();
+			$recipeId             = $db->lastInsertId();
 			$returnData['itemid'] = $recipeId;
 
 			$prepareIngredientInsert    = $db->prepare(
@@ -110,26 +111,45 @@ class RecipeMapper {
 				 VALUES (:recipe_id, :ingredient_id, :value, :unit)'
 			);
 
-			// TODO:: Fetch ingredients from RecipeEntity
-			$ingredients = array();
+			$ingredients = $recipe->getIngredients();
+
 			if ( !empty( $ingredients ) ) {
 				foreach ( $ingredients as $ingredient ) {
 					// Run query
-
+					$prepareIngredientInsert->execute(
+						array(
+							'name' => $ingredient['name'],
+							'slug' => Utilities::sanitize_title_with_dashes( $ingredient['name'] )
+						)
+					);
 					$ingredientId = $db->lastInsertId();
 					// Run rel query
+					$prepareIngredientRelInsert->execute(
+						array(
+							'recipe_id' => $recipeId,
+							'ingredient_id' => $ingredientId,
+							'value' => $ingredient['value'],
+							'unit' => $ingredient['unit']
+						)
+					);
 				}
 			}
 
+			$response->withStatus( 201 );
 			$returnData['status'] = 'ok';
+
+			$this->logger->info( "added recipe" );
+
 		} else {
 			// Errors found in validator
 			$errors     = $validator->errors();
 			$returnData = $errors;
+
+			$this->logger->info( "recipe-add failed" );
+
 		}
 
 		// $db = $this->ci->get( 'db' );
-		$this->logger->info( "add recipe ?" );
 
 		return $response->withJson( $returnData );
 
