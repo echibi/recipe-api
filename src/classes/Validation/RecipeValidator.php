@@ -49,8 +49,8 @@ class RecipeValidator {
 	public function initRules() {
 
 		$this->rules['title']       = V::stringType()->notEmpty()->setName( 'title' );
-		$this->rules['description'] = V::optional( V::stringType() )->setName( 'description' ) ;
-		$this->rules['ingredients'] = V::optional( V::json() )->setName( 'ingredients' );
+		$this->rules['description'] = V::optional( V::stringType() )->setName( 'description' );
+		$this->rules['ingredients'] = V::optional( V::arrayType() )->setName( 'ingredients' );
 		$this->rules['image1']      = V::optional( V::image() )->setName( 'image1' );
 		$this->rules['videoUrl']    = V::optional( V::videoUrl() )->setName( 'video' );
 
@@ -93,6 +93,18 @@ class RecipeValidator {
 				$this->errors = $ex->getMessages();
 
 				return false;
+			}
+
+			// $ingredientRule = V::notEmpty()->setName( 'ingredient' );
+			if ( 'ingredients' === $rule ) {
+				$ingredients = Util::array_get( $inputs, $rule );
+				foreach ( $ingredients as $ingredient ) {
+					if ( empty( $ingredient['name'] ) || empty( $ingredient['value'] ) || empty( $ingredient['unit'] ) ) {
+						$this->errors = 'Improper format for ingredient. Name, Value and Unit can\'t be empty';
+
+						return false;
+					}
+				}
 			}
 		}
 

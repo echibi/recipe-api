@@ -18,3 +18,9 @@ $app->get('/recipes/{id}', '\App\RecipeMapper:getRecipe');
 $app->post('/recipes/new', '\App\RecipeMapper:addRecipe');
 // Update recipe
 $app->put('/recipes/{id}', '\App\RecipeMapper:updateRecipe');
+// Get all ingredients
+$app->get('/ingredients', '\App\IngredientMapper:getIngredients');
+// Get single ingredient
+// $app->get('/ingredients/{id}', '\App\IngredientMapper:getIngredients');
+// Get all units
+$app->get('/units', '\App\IngredientMapper:getUnits');

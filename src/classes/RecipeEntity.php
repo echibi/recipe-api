@@ -66,14 +66,23 @@ class RecipeEntity {
 	public function getShortDescription() {
 		return substr( $this->description, 0, 20 );
 	}
-	public function getIngredients(){
+
+	public function getIngredients() {
 		return $this->ingredients;
 	}
 
 	/**
 	 * @param $ingredientData array
+	 *
+	 * @return void
 	 */
-	private function _setIngredients( $ingredientData ){
-
+	private function _setIngredients( $ingredientData ) {
+		if ( ! empty( $ingredientData ) ) {
+			foreach ( $ingredientData as $ingredient ) {
+				if ( ! empty( $ingredient['name'] ) && ! empty( $ingredient['value'] ) && ! empty( $ingredient['unit'] ) ) {
+					$this->ingredients[] = $ingredient;
+				}
+			}
+		}
 	}
 }
