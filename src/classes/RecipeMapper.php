@@ -7,7 +7,6 @@
 
 namespace App;
 
-use App\Helpers\Utilities;
 use \Interop\Container\ContainerInterface as ContainerInterface;
 use App\Validation\RecipeValidator;
 
@@ -76,80 +75,29 @@ class RecipeMapper {
 		if ( true === $validator->assert( $data ) ) {
 			// Everything is fine.
 
-			$this->logger->info( "start add recipe" );
-
 			// Create our recipe entity
-			$recipe = new RecipeEntity( $data );
+			$db = $this->ci->get( 'db' );
+			$model = new RecipeModel( $db );
+			$savedId = $model->create( new RecipeEntity( $data ) );
 
-			// Connect to db and prepare inserts.
-			$db                  = $this->ci->get( 'db' );
-			$prepareRecipeInsert = $db->prepare(
-				'INSERT INTO recipes ( title, description, created, updated, image1 )
-				 VALUES (:title, :description, :created, :updated, :image1)'
-			);
+			if( false !== $savedId ) {
+				$response->withStatus( 201 );
+				$returnData['itemId'] = $savedId;
+				$returnData['status'] = 'ok';
 
-			$nowDatetime = date( 'Y-m-d H:i:s' );
-			$prepareRecipeInsert->execute(
-				array(
-					'title'       => $recipe->getTitle(),
-					'description' => $recipe->getDescription(),
-					'created'     => $nowDatetime,
-					'updated'     => $nowDatetime,
-					'image1'      => '' // Placeholder
-				)
-			);
-
-			$recipeId             = $db->lastInsertId();
-			$returnData['itemid'] = $recipeId;
-
-			$prepareIngredientInsert    = $db->prepare(
-				'INSERT INTO ingredients ( name, slug )
-				 VALUES (:name, :slug)'
-			);
-			$prepareIngredientRelInsert = $db->prepare(
-				'INSERT INTO ingredients_rel ( recipe_id, ingredient_id, value, unit )
-				 VALUES (:recipe_id, :ingredient_id, :value, :unit)'
-			);
-
-			$ingredients = $recipe->getIngredients();
-
-			if ( !empty( $ingredients ) ) {
-				foreach ( $ingredients as $ingredient ) {
-					// Run query
-					$prepareIngredientInsert->execute(
-						array(
-							'name' => $ingredient['name'],
-							'slug' => Utilities::sanitize_title_with_dashes( $ingredient['name'] )
-						)
-					);
-					$ingredientId = $db->lastInsertId();
-					// Run rel query
-					$prepareIngredientRelInsert->execute(
-						array(
-							'recipe_id' => $recipeId,
-							'ingredient_id' => $ingredientId,
-							'value' => $ingredient['value'],
-							'unit' => $ingredient['unit']
-						)
-					);
-				}
+				$this->logger->info( "added recipe" );
+			}else {
+				$this->logger->warning( "recipe-add failed inside model." );
 			}
-
-			$response->withStatus( 201 );
-			$returnData['status'] = 'ok';
-
-			$this->logger->info( "added recipe" );
 
 		} else {
 			// Errors found in validator
 			$errors     = $validator->errors();
 			$returnData = $errors;
 
-			$this->logger->info( "recipe-add failed" );
+			$this->logger->info( "recipe-add validator failed" );
 
 		}
-
-		// $db = $this->ci->get( 'db' );
 
 		return $response->withJson( $returnData );
 
