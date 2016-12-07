@@ -69,9 +69,25 @@ class RecipeMapper {
 		$db    = $this->ci->get( 'db' );
 		$model = new RecipeModel( $db );
 
-		$model->getItem( $args['id'] );
+		$recipe = $model->getItem( $args['id'] );
 
-		echo '<xmp>' . print_r( $args, true ) . '</xmp>';
+		if ( false !== $recipe ) {
+			$returnData['data']   = array(
+				'id'          => $recipe->getId(),
+				'title'       => $recipe->getTitle(),
+				'description' => $recipe->getDescription(),
+				'ingredients' => $recipe->getIngredients()
+			);
+			$returnData['status'] = 'ok';
+
+			return $response->withJson( $returnData );
+
+		} else {
+			$returnData['error']  = 'ID did not match any recipes.';
+			$returnData['status'] = 'failed';
+
+			return $response->withJson( $returnData, 404 );
+		}
 
 	}
 

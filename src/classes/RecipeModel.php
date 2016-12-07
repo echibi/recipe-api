@@ -17,22 +17,29 @@ class RecipeModel {
 		$this->db = $db;
 	}
 
-	public function getItem( $id ){
-
-		// TODO:: Allow user to only get some fields
+	/**
+	 * @param $id
+	 *
+	 * @return \App\RecipeEntity on success false on failure.
+	 */
+	public function getItem( $id ) {
 
 		$prepareSelectItem = $this->db->prepare(
 			'SELECT *
 			 FROM recipes as r
-			 JOIN ingredients_rel as rel on ( r.id = rel.recipe_id )
-			 JOIN ingredients as i ON ( i.id = rel.ingredient_id )
 			 WHERE r.id = :id'
 		);
 
 		$prepareSelectItem->execute( array( 'id' => $id ) );
 
+		$recipeData = $prepareSelectItem->fetch();
+
+		if( empty( $recipeData ) ) {
+			return false;
+		}
+
 		$prepareSelectIngredients = $this->db->prepare(
-			'SELECT *
+			'SELECT i.id, i.name, i.slug, rel.value, rel.unit
 			 FROM ingredients_rel as rel
 			 JOIN ingredients as i ON ( i.id = rel.ingredient_id )
 			 WHERE rel.recipe_id = :id'
@@ -40,9 +47,16 @@ class RecipeModel {
 
 		$prepareSelectIngredients->execute( array( 'id' => $id ) );
 
-		echo '<xmp>' . print_r( $prepareSelectIngredients->fetchAll(), true ) . '</xmp>';
 
+		$ingredients = $prepareSelectIngredients->fetchAll();
+
+		if ( !empty( $ingredients ) ) {
+			$recipeData['ingredients'] = $ingredients;
+		}
+
+		return new RecipeEntity( $recipeData );
 	}
+
 	/**
 	 * @param \App\RecipeEntity $recipe
 	 *
@@ -85,7 +99,7 @@ class RecipeModel {
 
 			$ingredients = $recipe->getIngredients();
 
-			if ( ! empty( $ingredients ) ) {
+			if ( !empty( $ingredients ) ) {
 				foreach ( $ingredients as $ingredient ) {
 					// Run query
 					$prepareIngredientInsert->execute(
