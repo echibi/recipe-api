@@ -7,6 +7,7 @@
 
 namespace App;
 
+use App\Helpers\Utilities;
 use \Interop\Container\ContainerInterface as ContainerInterface;
 use App\Validation\RecipeValidator;
 
@@ -43,6 +44,15 @@ class RecipeMapper {
 
 		$db = $this->ci->get( 'db' );
 
+		echo 'loo';
+		$uri     = $request->getUri();
+		$baseUrl = $uri->getBaseUrl();
+		$path    = $uri->getPath();
+
+		var_export( $path );
+
+		var_export( $uri->getBaseUrl() );
+
 
 	}
 
@@ -55,6 +65,14 @@ class RecipeMapper {
 	 */
 	public function getRecipe( $request, $response, $args ) {
 		$this->logger->info( "getRecipe started" );
+
+		$db    = $this->ci->get( 'db' );
+		$model = new RecipeModel( $db );
+
+		$model->getItem( $args['id'] );
+
+		echo '<xmp>' . print_r( $args, true ) . '</xmp>';
+
 	}
 
 	/**
@@ -67,26 +85,33 @@ class RecipeMapper {
 	public function addRecipe( $request, $response, $args ) {
 
 		$returnData = array();
-
-		$data = $request->getParsedBody();
-
-		$validator = new RecipeValidator();
+		$data       = $request->getParsedBody();
+		$validator  = new RecipeValidator();
+		$status     = 200;
 
 		if ( true === $validator->assert( $data ) ) {
 			// Everything is fine.
 
 			// Create our recipe entity
-			$db = $this->ci->get( 'db' );
-			$model = new RecipeModel( $db );
+			$db      = $this->ci->get( 'db' );
+			$model   = new RecipeModel( $db );
 			$savedId = $model->create( new RecipeEntity( $data ) );
 
-			if( false !== $savedId ) {
-				$response->withStatus( 201 );
+			if ( false !== $savedId ) {
+
+				$uri        = $request->getUri();
+				$createdUrl = $uri->getBaseUrl() . $uri->getPath() . '/' . $savedId;
+
+				$response->withHeader( 'Location', $createdUrl );
+
+				$status = 201;
+
 				$returnData['itemId'] = $savedId;
 				$returnData['status'] = 'ok';
 
 				$this->logger->info( "added recipe" );
-			}else {
+			} else {
+				$returnData['status'] = 'failed';
 				$this->logger->warning( "recipe-add failed inside model." );
 			}
 
@@ -99,7 +124,7 @@ class RecipeMapper {
 
 		}
 
-		return $response->withJson( $returnData );
+		return $response->withJson( $returnData, $status );
 
 	}
 

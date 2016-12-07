@@ -17,6 +17,32 @@ class RecipeModel {
 		$this->db = $db;
 	}
 
+	public function getItem( $id ){
+
+		// TODO:: Allow user to only get some fields
+
+		$prepareSelectItem = $this->db->prepare(
+			'SELECT *
+			 FROM recipes as r
+			 JOIN ingredients_rel as rel on ( r.id = rel.recipe_id )
+			 JOIN ingredients as i ON ( i.id = rel.ingredient_id )
+			 WHERE r.id = :id'
+		);
+
+		$prepareSelectItem->execute( array( 'id' => $id ) );
+
+		$prepareSelectIngredients = $this->db->prepare(
+			'SELECT *
+			 FROM ingredients_rel as rel
+			 JOIN ingredients as i ON ( i.id = rel.ingredient_id )
+			 WHERE rel.recipe_id = :id'
+		);
+
+		$prepareSelectIngredients->execute( array( 'id' => $id ) );
+
+		echo '<xmp>' . print_r( $prepareSelectIngredients->fetchAll(), true ) . '</xmp>';
+
+	}
 	/**
 	 * @param \App\RecipeEntity $recipe
 	 *
