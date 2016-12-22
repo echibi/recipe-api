@@ -19,6 +19,11 @@ class RecipeMapper {
 	protected $ci;
 
 	/**
+	 * @var \PDO
+	 */
+	protected $db;
+
+	/**
 	 * Constructor
 	 *
 	 * @param ContainerInterface $ci
@@ -26,6 +31,7 @@ class RecipeMapper {
 	public function __construct( ContainerInterface $ci ) {
 		$this->ci     = $ci;
 		$this->logger = $ci->get( 'logger' );
+		$this->db     = $ci->get( 'db' );
 	}
 
 	/**
@@ -42,7 +48,6 @@ class RecipeMapper {
 		$offset = $request->getQueryParam( 'offset' );
 		$limit  = $request->getQueryParam( 'limit', 10 );
 
-		$db = $this->ci->get( 'db' );
 
 		echo 'loo';
 		$uri     = $request->getUri();
@@ -64,10 +69,10 @@ class RecipeMapper {
 	 * @param $args
 	 */
 	public function getRecipe( $request, $response, $args ) {
+
 		$this->logger->info( "getRecipe started" );
 
-		$db    = $this->ci->get( 'db' );
-		$model = new RecipeModel( $db );
+		$model = new RecipeModel( $this->db );
 
 		$recipe = $model->getItem( $args['id'] );
 

@@ -11,9 +11,12 @@ use App\Helpers\Utilities;
 
 class RecipeModel {
 
+	/**
+	 * @var \PDO
+	 */
 	protected $db;
 
-	public function __construct( $db ) {
+	public function __construct( \PDO $db ) {
 		$this->db = $db;
 	}
 
