@@ -35,7 +35,6 @@ class RecipeModel extends Database {
 	 * Gets a list of recipes
 	 *
 	 * @param      array               sort,fields,offset,limit and where clauses
-	 * @param bool $includeIngredients Not implemented
 	 *
 	 * @return array
 	 */
@@ -99,7 +98,7 @@ class RecipeModel extends Database {
 					}
 					$field = filter_var( $field, FILTER_SANITIZE_STRING );
 
-					return trim( $field );
+					return 'recipes.' . trim( $field );
 				},
 				$fields
 			);
@@ -110,7 +109,8 @@ class RecipeModel extends Database {
 			if ( is_array( $fields ) && !empty( $fields ) ) {
 				$mainQuery->select( $fields );
 			}
-
+		} else {
+			$mainQuery->select( 'recipes.*' );
 		}
 
 
@@ -168,6 +168,28 @@ class RecipeModel extends Database {
 			}
 		}
 
+		// Only fetch recipes with these ingredients.
+		if ( !empty( $opts['ingredients'] ) ) {
+			$excludedIngredientsRecipes = $this->findRecipeIngredients( $opts['ingredients'] );
+			if ( !empty( $excludedIngredientsRecipes ) ) {
+				$mainQuery->whereIn( 'recipes.id', $excludedIngredientsRecipes );
+			} else {
+				// If no recipe was found with the queried ingredients we shall return nothing.
+				return array();
+			}
+		}
+
+		// Only fetch recipes without these ingredients.
+		if ( !empty( $opts['excludeIngredients'] ) ) {
+			$excludedIngredientsRecipes = $this->findRecipeIngredients( $opts['excludeIngredients'] );
+			if ( !empty( $excludedIngredientsRecipes ) ) {
+				$mainQuery->whereNotIn( 'recipes.id', $excludedIngredientsRecipes );
+			}
+		}
+		// Debug
+		// $queryObj = $mainQuery->getQuery();
+		// echo $queryObj->getRawSql();
+
 		// Run recipes query
 		$recipes = $mainQuery->get();
 
@@ -187,13 +209,8 @@ class RecipeModel extends Database {
 			}
 
 			$ingredientQuery = \QB::table( 'ingredients_rel' );
-			$ingredientQuery->join( 'ingredients', 'ingredients.id', '=', 'ingredients_rel.id' );
+			$ingredientQuery->join( 'ingredients', 'ingredients.id', '=', 'ingredients_rel.ingredient_id' );
 			$ingredientQuery->whereIn( 'recipe_id', $recipesId );
-
-
-			$queryObj = $ingredientQuery->getQuery();
-			echo $queryObj->getRawSql();
-
 
 			$ingredients = $ingredientQuery->get();
 
@@ -208,12 +225,6 @@ class RecipeModel extends Database {
 
 		}
 
-
-		/* */
-		$queryObj = $mainQuery->getQuery();
-		echo $queryObj->getRawSql();
-
-		/**/
 
 		$result = Utilities::objectToArray( $result );
 
@@ -331,5 +342,41 @@ class RecipeModel extends Database {
 		} else {
 			return false;
 		}
+	}
+
+	private function findRecipeIngredients( $ingredients ) {
+		$ingredients = explode( ',', $ingredients );
+		$ingredients = array_map(
+			function ( $ingredient ) {
+				$ingredient = filter_var( $ingredient, FILTER_SANITIZE_STRING );
+
+				return trim( $ingredient );
+			},
+			$ingredients
+		);
+
+		$ingredientsQuery = \QB::table( 'ingredients_rel' );
+		$ingredientsQuery->select( array(
+			'ingredients.slug',
+			'ingredients_rel.ingredient_id',
+			'ingredients_rel.recipe_id',
+			'ingredients_rel.id'
+		) );
+		$ingredientsQuery->leftJoin( 'ingredients', 'ingredients.id', '=', 'ingredients_rel.ingredient_id' );
+		$ingredientsQuery->whereIn( 'slug', $ingredients );
+
+		$result = $ingredientsQuery->get();
+		if ( empty( $result ) ) {
+			return array();
+		} else {
+			$ingredientsRecipeID = array();
+			foreach ( $result as $ingr ) {
+				$ingredientsRecipeID[$ingr->recipe_id] = $ingr->recipe_id;
+			}
+
+			return $ingredientsRecipeID;
+		}
+
+
 	}
 }
