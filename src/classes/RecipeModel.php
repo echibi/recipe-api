@@ -16,8 +16,19 @@ class RecipeModel extends Database {
 	 */
 	protected $db;
 
-	public function __construct( \PDO $db ) {
-		$this->db = $db;
+	public function __construct() {
+		// TODO:: Move away from this. Use the builder if possible.
+		if ( class_exists( '\\QB' ) ) {
+			$this->db = \QB::pdo();
+		}
+
+		$this->fields = array(
+			'title',
+			'description',
+			'updated',
+			'image1',
+			'created'
+		);
 	}
 
 	/**
@@ -30,11 +41,7 @@ class RecipeModel extends Database {
 	 */
 	public function getItems( $opts = array(), $includeRecipes = false ) {
 
-		$selectPrepare = 'SELECT *';
-		$wherePrepare  = '';
-		$fromPrepare   = 'FROM recipes as r';
-		$orderPrepare  = 'ORDER BY created ASC';
-		$limitPrepare  = 'LIMIT 10';
+		$mainQuery = \QB::table( 'recipes' );
 
 		// Get and sanitize filters from the URL
 		if ( !empty( $opts ) ) {
@@ -53,51 +60,89 @@ class RecipeModel extends Database {
 
 		// Add filters to the query
 		if ( !empty( $filters ) ) {
-			$wherePrepare = 'WHERE ';
-			if ( isset( $filters['q'] ) ) {
-				$wherePrepare .= '`title` LIKE :q OR `description` LIKE :q)';
+			foreach ( $filters as $key => $value ) {
+				if ( 'q' == $key ) {
+					$mainQuery->where( 'title', 'LIKE', '%' . $value . '%' );
+					$mainQuery->orWhere( 'description', 'LIKE', '%' . $value . '%' );
+				} else {
+					// Make sure the field exists
+					if ( !in_array( $key, $this->fields ) ) {
+						continue;
+					}
+					$mainQuery->where( $key, $value );
+				}
 			}
-			$wherePrepare .= $this->whereArrayPrepare( $filters, 'AND', array( 'q' ) );
 		}
 
-		/*
+
 		// Get and sanitize field list from the URL
-		if ( $fields = $app->request->get( 'fields' ) ) {
+		if ( !empty( $opts['fields'] ) ) {
+			$fields = $opts['fields'];
 			$fields = explode( ',', $fields );
 			$fields = array_map(
 				function ( $field ) {
+					// Make sure the field exists
+					if ( !in_array( $field, $this->fields ) ) {
+						return false;
+					}
 					$field = filter_var( $field, FILTER_SANITIZE_STRING );
 
 					return trim( $field );
 				},
 				$fields
 			);
+			// Remove empty items.
+			$fields = array_filter( $fields );
+
 		}
 
 		// Add field list to the query
 		if ( is_array( $fields ) && !empty( $fields ) ) {
-			// $results->selectMany( $fields );
+			$mainQuery->select( $fields );
 		}
 
-		*/
-		// echo "<xmp style=\"text-align:left;\">" . print_r( $wherePrepare, true ) . "</xmp>";
+		// Manage sort options
+		// sort=firstname => ORDER BY firstname ASC
+		// sort=-firstname => ORDER BY firstname DESC
+		// sort=-firstname,email =>
+		// ORDER BY firstname DESC, email ASC
 
-		$prepareRecipes = $this->db->prepare(
-			$selectPrepare
-			. $fromPrepare
-			. $wherePrepare
-			. $orderPrepare
-			. $limitPrepare
-		);
+		if ( !empty( $opts['sort'] ) ) {
+			$sort = $opts['sort'];
+			$sort = explode( ',', $sort );
+			$sort = array_map(
+				function ( $s ) {
+					// Make sure the field exists
+					if ( !in_array( str_replace( '-', '', $s ), $this->fields ) ) {
+						return false;
+					}
+					$s = filter_var( $s, FILTER_SANITIZE_STRING );
 
-		if( '' !== $wherePrepare ) {
+					return trim( $s );
+				},
+				$sort
+			);
+			// Remove empty items.
+			$sort = array_filter( $sort );
 
+			if ( !empty( $sort ) ) {
+				foreach ( $sort as $expr ) {
+					if ( '-' == substr( $expr, 0, 1 ) ) {
+						$mainQuery->orderBy( substr( $expr, 1 ), 'desc' );
+					} else {
+						$mainQuery->orderBy( $expr, 'asc' );
+					}
+				}
+			}
 		}
-		// $prepareRecipes->bindParam( ':offset', intval( $offset ), \PDO::PARAM_INT );
-		// $prepareRecipes->bindParam( ':limit', intval( $limit ), \PDO::PARAM_INT );
-		$prepareRecipes->execute();
 
-		return $prepareRecipes->fetchAll();
+		/**/
+		$queryObj = $mainQuery->getQuery();
+		echo $queryObj->getRawSql();
+		/**/
+
+		return $mainQuery->get();
+
 	}
 
 	/**

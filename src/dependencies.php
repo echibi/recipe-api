@@ -23,18 +23,20 @@ $container['logger'] = function ( $c ) {
 $container['db'] = function ( $c ) {
 	$db = $c['settings']['db'];
 
-	$pdo = false;
 	try {
-		$pdo = new PDO( "mysql:host=" . $db['host'] . ";dbname=" . $db['dbname'],
-			$db['user'], $db['pass'] );
-		$pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
-		$pdo->setAttribute( PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC );
+		$config = array(
+			'driver'   => 'mysql', // Db driver
+			'host'     => $db['host'],
+			'database' => $db['dbname'],
+			'username' => $db['user'],
+			'password' => $db['pass']
+		);
+		// QB is the new alias for accessing the DB
+		new \Pixie\Connection( 'mysql', $config, 'QB' );
 
 	} catch ( PDOException $e ) {
-		// echo 'Connection failed: ' . $e->getMessage();
-		$c->get( 'logger' )->alert('Database connection failed: ' . $e->getMessage() );
+		$c->get( 'logger' )->alert( 'Database connection failed: ' . $e->getMessage() );
 	}
 
-	return $pdo;
-
+	return \QB::pdo();
 };

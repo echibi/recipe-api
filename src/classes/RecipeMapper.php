@@ -77,7 +77,7 @@ class RecipeMapper {
 
 		$this->logger->info( "getRecipe started" );
 
-		$model = new RecipeModel( $this->db );
+		$model = new RecipeModel();
 
 		$recipe = $model->getItem( $args['id'] );
 
@@ -119,8 +119,8 @@ class RecipeMapper {
 			// Everything is fine.
 
 			// Create our recipe entity
-			$db      = $this->ci->get( 'db' );
-			$model   = new RecipeModel( $db );
+			// $db      = $this->ci->get( 'db' );
+			$model   = new RecipeModel();
 			$savedId = $model->create( new RecipeEntity( $data ) );
 
 			if ( false !== $savedId ) {
