@@ -10,6 +10,8 @@
             "homepage": "http://rensfeldt.com/"
         }
     ],
+    "minimum-stability" : "dev",
+    "prefer-stable" : true,
     "require": {
         "php": ">=5.5.0",
         "slim/slim": "^3.1",
@@ -17,7 +19,8 @@
         "monolog/monolog": "^1.17",
         "phpmailer/phpmailer": "~5.2",
         "respect/validation": "^1.1",
-        "robmorgan/phinx": "^0.6.5"
+        "robmorgan/phinx": "^0.6.5",
+        "usmanhalalit/pixie": "^2.0"
     },
 	"scripts": {
         "start": "php -S 0.0.0.0:8080 -t public public/index.php"
