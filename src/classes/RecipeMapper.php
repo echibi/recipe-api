@@ -23,6 +23,8 @@ class RecipeMapper {
 	 */
 	protected $db;
 
+
+
 	/**
 	 * Constructor
 	 *
@@ -45,18 +47,21 @@ class RecipeMapper {
 		// Log access
 		$this->logger->info( "getList started" );
 
-		$offset = $request->getQueryParam( 'offset' );
-		$limit  = $request->getQueryParam( 'limit', 10 );
+		$queryParams = $request->getQueryParams();
 
+		$model = new RecipeModel( $this->db );
 
-		echo 'loo';
+		$recipes = $model->getItems( $queryParams );
+
+		echo "<xmp style=\"text-align:left;\">" . print_r( $recipes, true ) . "</xmp>";
+
 		$uri     = $request->getUri();
 		$baseUrl = $uri->getBaseUrl();
 		$path    = $uri->getPath();
 
-		var_export( $path );
+		// var_export( $path );
 
-		var_export( $uri->getBaseUrl() );
+		// var_export( $uri->getBaseUrl() );
 
 
 	}

@@ -9,7 +9,7 @@ namespace App;
 
 use App\Helpers\Utilities;
 
-class RecipeModel {
+class RecipeModel extends Database {
 
 	/**
 	 * @var \PDO
@@ -21,6 +21,88 @@ class RecipeModel {
 	}
 
 	/**
+	 * Gets a list of recipes
+	 *
+	 * @param      array           sort,fields,offset,limit and where clauses
+	 * @param bool $includeRecipes Not implemented
+	 *
+	 * @return array
+	 */
+	public function getItems( $opts = array(), $includeRecipes = false ) {
+
+		$selectPrepare = 'SELECT *';
+		$wherePrepare  = '';
+		$fromPrepare   = 'FROM recipes as r';
+		$orderPrepare  = 'ORDER BY created ASC';
+		$limitPrepare  = 'LIMIT 10';
+
+		// Get and sanitize filters from the URL
+		if ( !empty( $opts ) ) {
+			$rawfilters = $opts;
+			unset(
+				$rawfilters['sort'],
+				$rawfilters['fields'],
+				$rawfilters['offset'],
+				$rawfilters['limit']
+			);
+			foreach ( $rawfilters as $key => $value ) {
+				$filters[$key] = filter_var( $value, FILTER_SANITIZE_STRING );
+			}
+
+		}
+
+		// Add filters to the query
+		if ( !empty( $filters ) ) {
+			$wherePrepare = 'WHERE ';
+			if ( isset( $filters['q'] ) ) {
+				$wherePrepare .= '`title` LIKE :q OR `description` LIKE :q)';
+			}
+			$wherePrepare .= $this->whereArrayPrepare( $filters, 'AND', array( 'q' ) );
+		}
+
+		/*
+		// Get and sanitize field list from the URL
+		if ( $fields = $app->request->get( 'fields' ) ) {
+			$fields = explode( ',', $fields );
+			$fields = array_map(
+				function ( $field ) {
+					$field = filter_var( $field, FILTER_SANITIZE_STRING );
+
+					return trim( $field );
+				},
+				$fields
+			);
+		}
+
+		// Add field list to the query
+		if ( is_array( $fields ) && !empty( $fields ) ) {
+			// $results->selectMany( $fields );
+		}
+
+		*/
+		// echo "<xmp style=\"text-align:left;\">" . print_r( $wherePrepare, true ) . "</xmp>";
+
+		$prepareRecipes = $this->db->prepare(
+			$selectPrepare
+			. $fromPrepare
+			. $wherePrepare
+			. $orderPrepare
+			. $limitPrepare
+		);
+
+		if( '' !== $wherePrepare ) {
+
+		}
+		// $prepareRecipes->bindParam( ':offset', intval( $offset ), \PDO::PARAM_INT );
+		// $prepareRecipes->bindParam( ':limit', intval( $limit ), \PDO::PARAM_INT );
+		$prepareRecipes->execute();
+
+		return $prepareRecipes->fetchAll();
+	}
+
+	/**
+	 * Fetches one recipe with all related info
+	 *
 	 * @param $id
 	 *
 	 * @return \App\RecipeEntity on success false on failure.
@@ -29,7 +111,7 @@ class RecipeModel {
 
 		$prepareSelectItem = $this->db->prepare(
 			'SELECT *
-			 FROM recipes as r
+			 FROM recipes AS r
 			 WHERE r.id = :id'
 		);
 
@@ -37,14 +119,14 @@ class RecipeModel {
 
 		$recipeData = $prepareSelectItem->fetch();
 
-		if( empty( $recipeData ) ) {
+		if ( empty( $recipeData ) ) {
 			return false;
 		}
 
 		$prepareSelectIngredients = $this->db->prepare(
 			'SELECT i.id, i.name, i.slug, rel.value, rel.unit
-			 FROM ingredients_rel as rel
-			 JOIN ingredients as i ON ( i.id = rel.ingredient_id )
+			 FROM ingredients_rel AS rel
+			 JOIN ingredients AS i ON ( i.id = rel.ingredient_id )
 			 WHERE rel.recipe_id = :id'
 		);
 
