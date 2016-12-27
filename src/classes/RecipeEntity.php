@@ -31,9 +31,13 @@ class RecipeEntity {
 	 * Accept an array of data matching properties of this class
 	 * and create the class
 	 *
-	 * @param array $data The data to use to create
+	 * @param array|object $data The data to use to create
 	 */
-	public function __construct( array $data ) {
+	public function __construct( $data ) {
+
+		if( is_object( $data )) {
+			$data = $this->objectToArray( $data );
+		}
 		// no id if we're creating
 		if ( isset( $data['id'] ) ) {
 			$this->id = $data['id'];
@@ -77,9 +81,9 @@ class RecipeEntity {
 	 * @return void
 	 */
 	private function _setIngredients( $ingredientData ) {
-		if ( ! empty( $ingredientData ) ) {
+		if ( !empty( $ingredientData ) ) {
 			foreach ( $ingredientData as $ingredient ) {
-				if ( ! empty( $ingredient['name'] ) && ! empty( $ingredient['value'] ) && ! empty( $ingredient['unit'] ) ) {
+				if ( !empty( $ingredient['name'] ) && !empty( $ingredient['value'] ) && !empty( $ingredient['unit'] ) ) {
 					$this->ingredients[] = $ingredient;
 				}
 			}

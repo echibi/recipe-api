@@ -34,14 +34,25 @@ class RecipeModel extends Database {
 	/**
 	 * Gets a list of recipes
 	 *
-	 * @param      array           sort,fields,offset,limit and where clauses
-	 * @param bool $includeRecipes Not implemented
+	 * @param      array               sort,fields,offset,limit and where clauses
+	 * @param bool $includeIngredients Not implemented
 	 *
 	 * @return array
 	 */
-	public function getItems( $opts = array(), $includeRecipes = false ) {
+	public function getItems( $opts = array() ) {
 
 		$mainQuery = \QB::table( 'recipes' );
+
+		// Set default limit
+		if ( isset( $opts['limit'] ) ) {
+			$limit = filter_var(
+				$opts['limit'],
+				FILTER_SANITIZE_NUMBER_INT
+			);
+			$mainQuery->limit( $limit );
+		} else {
+			$mainQuery->limit( 20 );
+		}
 
 		// Get and sanitize filters from the URL
 		if ( !empty( $opts ) ) {
@@ -49,8 +60,9 @@ class RecipeModel extends Database {
 			unset(
 				$rawfilters['sort'],
 				$rawfilters['fields'],
-				$rawfilters['offset'],
-				$rawfilters['limit']
+				$rawfilters['page'],
+				$rawfilters['limit'],
+				$rawfilters['ingredients']
 			);
 			foreach ( $rawfilters as $key => $value ) {
 				$filters[$key] = filter_var( $value, FILTER_SANITIZE_STRING );
@@ -94,12 +106,13 @@ class RecipeModel extends Database {
 			// Remove empty items.
 			$fields = array_filter( $fields );
 
+			// Add field list to the query
+			if ( is_array( $fields ) && !empty( $fields ) ) {
+				$mainQuery->select( $fields );
+			}
+
 		}
 
-		// Add field list to the query
-		if ( is_array( $fields ) && !empty( $fields ) ) {
-			$mainQuery->select( $fields );
-		}
 
 		// Manage sort options
 		// sort=firstname => ORDER BY firstname ASC
@@ -136,12 +149,75 @@ class RecipeModel extends Database {
 			}
 		}
 
-		/**/
+		// Manage pagination
+		if ( isset( $opts['page'] ) ) {
+			$page = filter_var(
+				$opts['page'],
+				FILTER_SANITIZE_NUMBER_INT
+			);
+			if ( !empty( $page ) ) {
+				$perPage = filter_var(
+					$opts['limit'],
+					FILTER_SANITIZE_NUMBER_INT
+				);
+				if ( empty( $perPage ) ) {
+					$perPage = 20;
+				}
+				$mainQuery->limit( $perPage )
+					->offset( $page * $perPage - $perPage );
+			}
+		}
+
+		// Run recipes query
+		$recipes = $mainQuery->get();
+
+		// Remap recipes so that the ID is used as keys.
+		$result = array_reduce( $recipes, function ( $result, $item ) {
+			$result[$item->id] = $item;
+
+			return $result;
+		}, array() );
+
+		// Get related ingredients
+		if ( !empty( $result ) ) {
+
+			$recipesId = array();
+			foreach ( $result as $recipe ) {
+				$recipesId[] = (int) $recipe->id;
+			}
+
+			$ingredientQuery = \QB::table( 'ingredients_rel' );
+			$ingredientQuery->join( 'ingredients', 'ingredients.id', '=', 'ingredients_rel.id' );
+			$ingredientQuery->whereIn( 'recipe_id', $recipesId );
+
+
+			$queryObj = $ingredientQuery->getQuery();
+			echo $queryObj->getRawSql();
+
+
+			$ingredients = $ingredientQuery->get();
+
+			if ( !empty( $ingredients ) ) {
+				foreach ( $ingredients as $ingredient ) {
+					if ( isset( $result[$ingredient->recipe_id] ) ) {
+						$key                                                   = $ingredient->id;
+						$result[$ingredient->recipe_id]->{'ingredients'}[$key] = $ingredient;
+					}
+				}
+			}
+
+		}
+
+
+		/* */
 		$queryObj = $mainQuery->getQuery();
 		echo $queryObj->getRawSql();
+
 		/**/
 
-		return $mainQuery->get();
+		$result = Utilities::objectToArray( $result );
+
+		return $result;
 
 	}
 

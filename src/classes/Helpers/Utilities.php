@@ -114,4 +114,21 @@ class Utilities {
 	public static function value( $value ) {
 		return $value instanceof Closure ? $value() : $value;
 	}
+
+	/**
+	 * @param $data
+	 *
+	 * @return array
+	 */
+	public static function objectToArray( $data ) {
+		if ( is_object( $data ) ) {
+			$data = get_object_vars( $data );
+		}
+
+		if ( is_array( $data ) ) {
+			return array_map( 'self::objectToArray', $data );
+		}
+
+		return $data;
+	}
 }

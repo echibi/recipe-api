@@ -24,7 +24,6 @@ class RecipeMapper {
 	protected $db;
 
 
-
 	/**
 	 * Constructor
 	 *
@@ -53,11 +52,15 @@ class RecipeMapper {
 
 		$recipes = $model->getItems( $queryParams );
 
-		echo "<xmp style=\"text-align:left;\">" . print_r( $recipes, true ) . "</xmp>";
-
 		$uri     = $request->getUri();
 		$baseUrl = $uri->getBaseUrl();
 		$path    = $uri->getPath();
+		$query   = $uri->getQuery();
+
+		echo "<xmp style=\"text-align:left;\">" . print_r( $query, true ) . "</xmp>";
+		echo "<xmp style=\"text-align:left;\">" . print_r( $path, true ) . "</xmp>";
+
+		echo "<xmp style=\"text-align:left;\">" . print_r( $recipes, true ) . "</xmp>";
 
 		// var_export( $path );
 
