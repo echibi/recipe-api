@@ -50,7 +50,7 @@ class RecipeMapper {
 
 		$model = new RecipeModel( $this->db );
 
-		$recipes = $model->getItems( $queryParams );
+		$recipes = $model->getList( $queryParams );
 
 		$uri     = $request->getUri();
 		$baseUrl = $uri->getBaseUrl();
@@ -78,7 +78,7 @@ class RecipeMapper {
 
 		$model = new RecipeModel();
 
-		$recipe = $model->getItem( $args['id'] );
+		$recipe = $model->get( $args['id'] );
 
 		if ( false !== $recipe ) {
 			$returnData['data']   = array(
@@ -171,8 +171,8 @@ class RecipeMapper {
 			// Everything is fine.
 
 			// Create our recipe entity
-			$model   = new RecipeModel();
-
+			$model = new RecipeModel();
+			$model->update( $data );
 
 		} else {
 			// Errors found in validator
@@ -184,5 +184,24 @@ class RecipeMapper {
 		}
 
 		return $response->withJson( $returnData, $status );
+	}
+
+	public function removeRecipe( $request, $response, $args ) {
+		$this->logger->info( "deleted recipe" );
+		$returnData = array();
+		$status     = 200;
+		$model      = new RecipeModel();
+		$success    = $model->remove( $args['id'] );
+		if ( true === $success ) {
+			$returnData['status'] = 'ok';
+
+		} else {
+			$returnData['status']  = 'failed';
+			$returnData['message'] = 'No record found.';
+			$status                = 404;
+		}
+
+		return $response->withJson( $returnData, $status );
+
 	}
 }

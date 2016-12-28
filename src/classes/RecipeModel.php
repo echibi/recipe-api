@@ -37,9 +37,10 @@ class RecipeModel {
 	 *
 	 * @return bool
 	 */
-	public function removeRecipe( $id ) {
+	public function remove( $id ) {
 
-		$item = QB::table( 'recipes' )->find( $id );
+		$item = \QB::table( 'recipes' )->find( $id );
+
 		if ( $item ) {
 			$recipeDel = \QB::table( 'recipes' )->where( 'id', '=', $id );
 			$recipeDel->delete();
@@ -62,7 +63,7 @@ class RecipeModel {
 	 *
 	 * @return array
 	 */
-	public function getItems( $opts = array() ) {
+	public function getList( $opts = array() ) {
 
 		$mainQuery = \QB::table( 'recipes' );
 
@@ -263,7 +264,7 @@ class RecipeModel {
 	 *
 	 * @return \App\RecipeEntity on success false on failure.
 	 */
-	public function getItem( $id ) {
+	public function get( $id ) {
 
 		$prepareSelectItem = $this->db->prepare(
 			'SELECT *

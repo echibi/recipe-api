@@ -1,0 +1,22 @@
+{
+  "name": "recipe-api",
+  "description": "A small API for managing recipes. Based on Slim Framework.",
+  "main": "gulpfile.js",
+  "authors": [
+    "Jonas Rensfeldt"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/echibi/recipe-api",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.1.1",
+    "pure": "^0.6.1"
+  }
+}
