@@ -32,7 +32,53 @@ class RecipeModel {
 	}
 
 	/**
+	 * Updates recipe.
+	 *
+	 * @param $id
+	 * @param $data
+	 *
+	 * @return bool
+	 */
+	public function update( $id, $data ) {
+
+		$rawData = $data;
+
+		$item = \QB::table( 'recipes' )->find( $id );
+
+		if ( $item ) {
+
+			unset( $data['ingredients'] );
+
+			\QB::table( 'recipes' )->where( 'id', $id )->update( $data );
+
+			if ( isset( $rawData['ingredients'] ) ) {
+
+				//TODO:: Save ingredients. Check if they already exists.
+
+				foreach ( $rawData['ingredients'] as $ingredient ) {
+					// We have an id on the ingredient
+					// Check if it exists.
+					if ( isset( $ingredient['id'] ) ) {
+						$ingredientRow = \QB::table( 'ingredients_rel' )->find( $ingredient['id'] );
+						if ( $ingredientRow ) {
+							// Ingredient exists.
+							
+						}
+					}
+				}
+				// $insertIds = QB::table('my_table')->insert( $data );
+
+			}
+
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * Removes a recipe and its related rows.
+	 *
 	 * @param $id
 	 *
 	 * @return bool
