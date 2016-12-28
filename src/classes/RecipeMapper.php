@@ -57,16 +57,12 @@ class RecipeMapper {
 		$path    = $uri->getPath();
 		$query   = $uri->getQuery();
 
+		echo "<xmp style=\"text-align:left;\">" . print_r( $baseUrl, true ) . "</xmp>";
+
 		echo "<xmp style=\"text-align:left;\">" . print_r( $query, true ) . "</xmp>";
 		echo "<xmp style=\"text-align:left;\">" . print_r( $path, true ) . "</xmp>";
 
 		echo "<xmp style=\"text-align:left;\">" . print_r( $recipes, true ) . "</xmp>";
-
-		// var_export( $path );
-
-		// var_export( $uri->getBaseUrl() );
-
-
 	}
 
 	/**
@@ -166,5 +162,27 @@ class RecipeMapper {
 	 */
 	public function updateRecipe( $request, $response, $args ) {
 		$this->logger->info( "update recipe" );
+		$returnData = array();
+		$data       = $request->getParsedBody();
+		$validator  = new RecipeValidator();
+		$status     = 200;
+
+		if ( true === $validator->assert( $data ) ) {
+			// Everything is fine.
+
+			// Create our recipe entity
+			$model   = new RecipeModel();
+
+
+		} else {
+			// Errors found in validator
+			$errors     = $validator->errors();
+			$returnData = $errors;
+
+			$this->logger->info( "recipe-update validator failed" );
+
+		}
+
+		return $response->withJson( $returnData, $status );
 	}
 }

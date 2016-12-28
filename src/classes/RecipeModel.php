@@ -9,7 +9,7 @@ namespace App;
 
 use App\Helpers\Utilities;
 
-class RecipeModel extends Database {
+class RecipeModel {
 
 	/**
 	 * @var \PDO
@@ -29,6 +29,30 @@ class RecipeModel extends Database {
 			'image1',
 			'created'
 		);
+	}
+
+	/**
+	 * Removes a recipe and its related rows.
+	 * @param $id
+	 *
+	 * @return bool
+	 */
+	public function removeRecipe( $id ) {
+
+		$item = QB::table( 'recipes' )->find( $id );
+		if ( $item ) {
+			$recipeDel = \QB::table( 'recipes' )->where( 'id', '=', $id );
+			$recipeDel->delete();
+
+			$ingredientRelDel = \QB::table( 'ingredients_rel' );
+			$ingredientRelDel->where( 'recipe_id', '=', $id );
+			$ingredientRelDel->delete();
+
+			return true;
+		} else {
+			return false;
+		}
+
 	}
 
 	/**
