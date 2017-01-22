@@ -5,6 +5,10 @@ bower_components
 !/logs/README.md
 .idea
 
+# Compiled files
+/public/css
+/public/js
+
 
 # Windows image file caches
 Thumbs.db

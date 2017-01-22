@@ -1,11 +1,88 @@
-var gulp = require('gulp');
-var wiredep = require('wiredep').stream;
+var gulp = require('gulp'),
+	browserSync = require('browser-sync'),
+	reload = browserSync.reload;
 
+// load plugins
+var $ = require('gulp-load-plugins')();
 
-gulp.task('bower', function () {
-	gulp.src('./templates/index.phtml')
-		.pipe(wiredep({
-			ignorePath: '../public/'
+// ---------------------------
+// Configuration
+// ----------------------------
+
+var ROOT = './',
+	SOURCE = ROOT + 'assets/',
+	BUILD_CSS = ROOT + 'public/css/',
+	BUILD_SCRIPTS = ROOT + 'public/js/',
+	BOWER = SOURCE + 'bower_components/';
+
+var FONTS = 'fonts/',
+	IMAGES = 'img/',
+	SCRIPTS = 'scripts/',
+	STYLES = 'styles/';
+
+var onError = function (err) {
+	$.notify.onError({
+		title  : "Gulp error in " + err.plugin,
+		message: err.toString()
+	})(err);
+	this.emit('end');
+};
+
+gulp.task('js-vendor', function () {
+	return gulp.src([
+		BOWER + 'jquery/dist/jquery.js',
+		BOWER + 'tether/dist/js/tether.js',
+		BOWER + 'bootstrap/dist/js/bootstrap.js',
+	])
+		.pipe($.concat('vendor.js'))
+		.pipe(gulp.dest(BUILD_SCRIPTS))
+		.pipe($.rename('vendor.min.js'))
+		.pipe($.uglify())
+		.pipe(gulp.dest(BUILD_SCRIPTS));
+});
+
+//--------------------------//
+//  Styles.
+//  Scss compilation
+//-------------
+gulp.task('styles', function () {
+	return gulp.src(SOURCE + STYLES + 'main.scss')
+		.pipe($.plumber({
+			errorHandler: onError
 		}))
-		.pipe(gulp.dest('./templates'));
+		.pipe($.sourcemaps.init())
+		.pipe($.sass({
+			errLogToConsole: false
+		}))
+		.pipe($.autoprefixer('last 2 versions'))
+		.pipe($.sourcemaps.write('.'))
+		.pipe(gulp.dest(BUILD_CSS))
+		.pipe(reload({
+			stream: true
+		}));
+	//.pipe($.notify("SCSS Compilation complete."));;
+});
+
+//--------------------------//
+//  Default tasks.
+//-------------
+gulp.task('default', function () {
+	gulp.start('watch');
+});
+
+
+gulp.task('build', ['styles','js-vendor']);
+//--------------------------//
+//  Serve & Watch
+//-------------
+
+gulp.task('watch', ['build'], function () {
+
+	browserSync.init({
+		files: ['{src,public}/**/*.php', '{templates}/**/*.twig'],
+		proxy: 'localhost',
+	});
+	gulp.watch(SOURCE + STYLES + '**/*.scss', ['styles']);
+	//gulp.watch(SOURCE + SCRIPTS + '**/*.js', ['scripts']);
+
 });

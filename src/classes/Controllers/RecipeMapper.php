@@ -5,36 +5,16 @@
  * Time: 15:21
  */
 
-namespace App;
+namespace App\Controllers;
 
 use \Interop\Container\ContainerInterface as ContainerInterface;
 use App\Validation\RecipeValidator;
+use App\Models\Recipe;
+use App\RecipeEntity;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class RecipeMapper {
-
-	/**
-	 * @var ContainerInterface
-	 */
-	protected $ci;
-
-	/**
-	 * @var \PDO
-	 */
-	protected $db;
-
-
-	/**
-	 * Constructor
-	 *
-	 * @param ContainerInterface $ci
-	 */
-	public function __construct( ContainerInterface $ci ) {
-		$this->ci     = $ci;
-		$this->logger = $ci->get( 'logger' );
-		$this->db     = $ci->get( 'db' );
-	}
+class RecipeMapper extends Controller {
 
 	/**
 	 * Return a list with recipes
@@ -51,7 +31,7 @@ class RecipeMapper {
 
 		$queryParams = $request->getQueryParams();
 
-		$model = new RecipeModel( $this->db );
+		$model = new Recipe( $this->db );
 
 		$recipes = $model->getList( $queryParams );
 
@@ -76,7 +56,7 @@ class RecipeMapper {
 
 		$this->logger->info( "getRecipe started" );
 
-		$model = new RecipeModel( $this->db );
+		$model = new Recipe( $this->db );
 
 		$recipe = $model->get( $args['id'] );
 
@@ -121,7 +101,7 @@ class RecipeMapper {
 
 			// Create our recipe entity
 			// $db      = $this->ci->get( 'db' );
-			$model   = new RecipeModel( $this->db );
+			$model   = new Recipe( $this->db );
 			$savedId = $model->create( new RecipeEntity( $data ) );
 
 			if ( false !== $savedId ) {
@@ -170,7 +150,7 @@ class RecipeMapper {
 		$validator  = new RecipeValidator();
 		$status     = 200;
 
-		$model  = new RecipeModel( $this->db );
+		$model  = new Recipe( $this->db );
 		$recipe = $model->get( $args['id'] );
 
 		if ( false !== $recipe ) {
@@ -207,7 +187,7 @@ class RecipeMapper {
 		$this->logger->info( "deleted recipe" );
 		$returnData = array();
 		$status     = 200;
-		$model      = new RecipeModel( $this->db );
+		$model      = new Recipe( $this->db );
 		$success    = $model->remove( $args['id'] );
 		if ( true === $success ) {
 			$returnData['status'] = 'ok';

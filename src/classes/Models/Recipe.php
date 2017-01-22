@@ -5,27 +5,22 @@
  * Date: 2016-12-06
  */
 
-namespace App;
+namespace App\Models;
 
 use App\Helpers\Utilities;
 use Pixie\QueryBuilder;
 use Pixie\QueryBuilder\QueryBuilderHandler;
 
-class RecipeModel {
+class Recipe extends Model {
 
 	/**
 	 * @var \PDO
 	 */
 	protected $pdo;
 
-	/**
-	 * @var QueryBuilderHandler
-	 */
-	protected $qb;
-
-	public function __construct( QueryBuilderHandler $qb ) {
-		$this->pdo = $qb->pdo();
-		$this->qb  = $qb;
+	public function __construct( QueryBuilderHandler $db ) {
+		parent::__construct( $db );
+		$this->pdo = $db->pdo();
 
 		$this->fields = array(
 			'title',
@@ -48,13 +43,13 @@ class RecipeModel {
 
 		$rawData = $data;
 
-		$item = $this->qb->table( 'recipes' )->find( $id );
+		$item = $this->db->table( 'recipes' )->find( $id );
 
 		if ( $item ) {
 
 			unset( $data['ingredients'] );
 
-			$this->qb->table( 'recipes' )->where( 'id', $id )->update( $data );
+			$this->db->table( 'recipes' )->where( 'id', $id )->update( $data );
 
 			if ( isset( $rawData['ingredients'] ) ) {
 
@@ -64,7 +59,7 @@ class RecipeModel {
 					// We have an id on the ingredient
 					// Check if it exists.
 					if ( isset( $ingredient['id'] ) ) {
-						$ingredientRow = $this->qb->table( 'ingredients_rel' )->find( $ingredient['id'] );
+						$ingredientRow = $this->db->table( 'ingredients_rel' )->find( $ingredient['id'] );
 						if ( $ingredientRow ) {
 							// Ingredient exists.
 
@@ -90,13 +85,13 @@ class RecipeModel {
 	 */
 	public function remove( $id ) {
 
-		$item = $this->qb->table( 'recipes' )->find( $id );
+		$item = $this->db->table( 'recipes' )->find( $id );
 
 		if ( $item ) {
-			$recipeDel = $this->qb->table( 'recipes' )->where( 'id', '=', $id );
+			$recipeDel = $this->db->table( 'recipes' )->where( 'id', '=', $id );
 			$recipeDel->delete();
 
-			$ingredientRelDel = QueryBuilder::table( 'ingredients_rel' );
+			$ingredientRelDel = $this->db->table( 'ingredients_rel' );
 			$ingredientRelDel->where( 'recipe_id', '=', $id );
 			$ingredientRelDel->delete();
 
@@ -116,7 +111,7 @@ class RecipeModel {
 	 */
 	public function getList( $opts = array() ) {
 
-		$mainQuery = $this->qb->table( 'recipes' );
+		$mainQuery = $this->db->table( 'recipes' );
 
 		// Set default limit
 		if ( isset( $opts['limit'] ) ) {
@@ -284,7 +279,7 @@ class RecipeModel {
 				$recipesId[] = (int) $recipe->id;
 			}
 
-			$ingredientQuery = $this->qb->table( 'ingredients_rel' );
+			$ingredientQuery = $this->db->table( 'ingredients_rel' );
 			$ingredientQuery->join( 'ingredients', 'ingredients.id', '=', 'ingredients_rel.ingredient_id' );
 			$ingredientQuery->whereIn( 'recipe_id', $recipesId );
 
@@ -432,7 +427,7 @@ class RecipeModel {
 			$ingredients
 		);
 
-		$ingredientsQuery = $this->qb->table( 'ingredients_rel' );
+		$ingredientsQuery = $this->db->table( 'ingredients_rel' );
 		$ingredientsQuery->select( array(
 			'ingredients.slug',
 			'ingredients_rel.ingredient_id',

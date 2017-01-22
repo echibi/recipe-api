@@ -5,7 +5,7 @@
  * Date: 2016-12-05
  */
 
-namespace App;
+namespace App\Controllers;
 
 
 class IngredientMapper {

@@ -28,8 +28,8 @@ class CreateApiUsers extends AbstractMigration
     public function change()
     {
 		$users = $this->table('api_users');
-		$users->addColumn('username', 'string', array('limit' => 20))
-			->addColumn('password', 'string', array('limit' => 40))
+		$users->addColumn('username', 'string', array('limit' => 45))
+			->addColumn('password', 'string', array('limit' => 255))
 			->addColumn('email', 'string', array('limit' => 100))
 			->addColumn('created', 'datetime')
 			->addColumn('updated', 'datetime', array('null' => true))
