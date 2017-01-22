@@ -6,6 +6,7 @@
  */
 
 namespace App;
+use App\Helpers\Utilities;
 
 
 class RecipeEntity {
@@ -36,7 +37,7 @@ class RecipeEntity {
 	public function __construct( $data ) {
 
 		if( is_object( $data )) {
-			$data = $this->objectToArray( $data );
+			$data = Utilities::objectToArray( $data );
 		}
 		// no id if we're creating
 		if ( isset( $data['id'] ) ) {

@@ -6,9 +6,9 @@ return [
 
 		// Database
 		'db'                     => [
-			'host' => '127.0.0.1',
-			'user' => 'root',
-			'pass' => '',
+			'host'   => '127.0.0.1',
+			'user'   => 'root',
+			'pass'   => '',
 			'dbname' => 'recept-api'
 		],
 
@@ -20,8 +20,9 @@ return [
 		// Monolog settings
 		'logger'                 => [
 			'name'  => 'recipe-api',
-			'path'  => __DIR__ . '/../logs/app.log',
+			'path'  => __DIR__ . '/../logs/recipe.log',
 			'level' => \Monolog\Logger::DEBUG,
+			'max_files' => 60
 		],
 	],
 ];

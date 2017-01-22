@@ -8,19 +8,24 @@
 namespace App;
 
 use App\Helpers\Utilities;
+use Pixie\QueryBuilder;
+use Pixie\QueryBuilder\QueryBuilderHandler;
 
 class RecipeModel {
 
 	/**
 	 * @var \PDO
 	 */
-	protected $db;
+	protected $pdo;
 
-	public function __construct() {
-		// TODO:: Move away from this. Use the builder if possible.
-		if ( class_exists( '\\QB' ) ) {
-			$this->db = \QB::pdo();
-		}
+	/**
+	 * @var QueryBuilderHandler
+	 */
+	protected $qb;
+
+	public function __construct( QueryBuilderHandler $qb ) {
+		$this->pdo = $qb->pdo();
+		$this->qb  = $qb;
 
 		$this->fields = array(
 			'title',
@@ -43,13 +48,13 @@ class RecipeModel {
 
 		$rawData = $data;
 
-		$item = \QB::table( 'recipes' )->find( $id );
+		$item = $this->qb->table( 'recipes' )->find( $id );
 
 		if ( $item ) {
 
 			unset( $data['ingredients'] );
 
-			\QB::table( 'recipes' )->where( 'id', $id )->update( $data );
+			$this->qb->table( 'recipes' )->where( 'id', $id )->update( $data );
 
 			if ( isset( $rawData['ingredients'] ) ) {
 
@@ -59,10 +64,10 @@ class RecipeModel {
 					// We have an id on the ingredient
 					// Check if it exists.
 					if ( isset( $ingredient['id'] ) ) {
-						$ingredientRow = \QB::table( 'ingredients_rel' )->find( $ingredient['id'] );
+						$ingredientRow = $this->qb->table( 'ingredients_rel' )->find( $ingredient['id'] );
 						if ( $ingredientRow ) {
 							// Ingredient exists.
-							
+
 						}
 					}
 				}
@@ -85,13 +90,13 @@ class RecipeModel {
 	 */
 	public function remove( $id ) {
 
-		$item = \QB::table( 'recipes' )->find( $id );
+		$item = $this->qb->table( 'recipes' )->find( $id );
 
 		if ( $item ) {
-			$recipeDel = \QB::table( 'recipes' )->where( 'id', '=', $id );
+			$recipeDel = $this->qb->table( 'recipes' )->where( 'id', '=', $id );
 			$recipeDel->delete();
 
-			$ingredientRelDel = \QB::table( 'ingredients_rel' );
+			$ingredientRelDel = QueryBuilder::table( 'ingredients_rel' );
 			$ingredientRelDel->where( 'recipe_id', '=', $id );
 			$ingredientRelDel->delete();
 
@@ -111,7 +116,7 @@ class RecipeModel {
 	 */
 	public function getList( $opts = array() ) {
 
-		$mainQuery = \QB::table( 'recipes' );
+		$mainQuery = $this->qb->table( 'recipes' );
 
 		// Set default limit
 		if ( isset( $opts['limit'] ) ) {
@@ -279,7 +284,7 @@ class RecipeModel {
 				$recipesId[] = (int) $recipe->id;
 			}
 
-			$ingredientQuery = \QB::table( 'ingredients_rel' );
+			$ingredientQuery = $this->qb->table( 'ingredients_rel' );
 			$ingredientQuery->join( 'ingredients', 'ingredients.id', '=', 'ingredients_rel.ingredient_id' );
 			$ingredientQuery->whereIn( 'recipe_id', $recipesId );
 
@@ -312,7 +317,7 @@ class RecipeModel {
 	 */
 	public function get( $id ) {
 
-		$prepareSelectItem = $this->db->prepare(
+		$prepareSelectItem = $this->pdo->prepare(
 			'SELECT *
 			 FROM recipes AS r
 			 WHERE r.id = :id'
@@ -326,7 +331,7 @@ class RecipeModel {
 			return false;
 		}
 
-		$prepareSelectIngredients = $this->db->prepare(
+		$prepareSelectIngredients = $this->pdo->prepare(
 			'SELECT i.id, i.name, i.slug, rel.value, rel.unit
 			 FROM ingredients_rel AS rel
 			 JOIN ingredients AS i ON ( i.id = rel.ingredient_id )
@@ -353,7 +358,7 @@ class RecipeModel {
 	public function create( RecipeEntity $recipe ) {
 
 		// Connect to db and prepare inserts.
-		$db = $this->db;
+		$db = $this->pdo;
 
 		$prepareRecipeInsert = $db->prepare(
 			'INSERT INTO recipes ( title, description, created, updated, image1 )
@@ -389,6 +394,7 @@ class RecipeModel {
 
 			if ( !empty( $ingredients ) ) {
 				foreach ( $ingredients as $ingredient ) {
+					// TODO:: only create new if the slug doesn't exist.
 					// Run query
 					$prepareIngredientInsert->execute(
 						array(
@@ -426,7 +432,7 @@ class RecipeModel {
 			$ingredients
 		);
 
-		$ingredientsQuery = \QB::table( 'ingredients_rel' );
+		$ingredientsQuery = $this->qb->table( 'ingredients_rel' );
 		$ingredientsQuery->select( array(
 			'ingredients.slug',
 			'ingredients_rel.ingredient_id',

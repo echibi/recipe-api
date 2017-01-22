@@ -7,9 +7,10 @@
 
 namespace App;
 
-use App\Helpers\Utilities;
 use \Interop\Container\ContainerInterface as ContainerInterface;
 use App\Validation\RecipeValidator;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 class RecipeMapper {
 
@@ -41,8 +42,10 @@ class RecipeMapper {
 	 * @param $request
 	 * @param $response
 	 * @param $args
+	 *
+	 * @return Response
 	 */
-	public function getList( $request, $response, $args ) {
+	public function getList( Request $request, Response $response, $args ) {
 		// Log access
 		$this->logger->info( "getList started" );
 
@@ -52,17 +55,12 @@ class RecipeMapper {
 
 		$recipes = $model->getList( $queryParams );
 
-		$uri     = $request->getUri();
-		$baseUrl = $uri->getBaseUrl();
-		$path    = $uri->getPath();
-		$query   = $uri->getQuery();
+		$uri = $request->getUri();
 
-		echo "<xmp style=\"text-align:left;\">" . print_r( $baseUrl, true ) . "</xmp>";
+		$path  = $uri->getPath();
+		$query = $uri->getQuery();
 
-		echo "<xmp style=\"text-align:left;\">" . print_r( $query, true ) . "</xmp>";
-		echo "<xmp style=\"text-align:left;\">" . print_r( $path, true ) . "</xmp>";
-
-		echo "<xmp style=\"text-align:left;\">" . print_r( $recipes, true ) . "</xmp>";
+		return $response->withJson( $recipes );
 	}
 
 	/**
@@ -71,12 +69,14 @@ class RecipeMapper {
 	 * @param $request
 	 * @param $response
 	 * @param $args
+	 *
+	 * @return Response
 	 */
-	public function getRecipe( $request, $response, $args ) {
+	public function getRecipe( Request $request, Response $response, $args ) {
 
 		$this->logger->info( "getRecipe started" );
 
-		$model = new RecipeModel();
+		$model = new RecipeModel( $this->db );
 
 		$recipe = $model->get( $args['id'] );
 
@@ -106,8 +106,10 @@ class RecipeMapper {
 	 * @param $request
 	 * @param $response
 	 * @param $args
+	 *
+	 * @return Response
 	 */
-	public function addRecipe( $request, $response, $args ) {
+	public function addRecipe( Request $request, Response $response, $args ) {
 
 		$returnData = array();
 		$data       = $request->getParsedBody();
@@ -119,7 +121,7 @@ class RecipeMapper {
 
 			// Create our recipe entity
 			// $db      = $this->ci->get( 'db' );
-			$model   = new RecipeModel();
+			$model   = new RecipeModel( $this->db );
 			$savedId = $model->create( new RecipeEntity( $data ) );
 
 			if ( false !== $savedId ) {
@@ -159,38 +161,53 @@ class RecipeMapper {
 	 * @param $request
 	 * @param $response
 	 * @param $args
+	 *
+	 * @return Response
 	 */
-	public function updateRecipe( $request, $response, $args ) {
-		$this->logger->info( "update recipe" );
+	public function updateRecipe( Request $request, Response $response, $args ) {
 		$returnData = array();
 		$data       = $request->getParsedBody();
 		$validator  = new RecipeValidator();
 		$status     = 200;
 
-		if ( true === $validator->assert( $data ) ) {
-			// Everything is fine.
+		$model  = new RecipeModel( $this->db );
+		$recipe = $model->get( $args['id'] );
 
-			// Create our recipe entity
-			$model = new RecipeModel();
-			$model->update( $data );
+		if ( false !== $recipe ) {
 
-		} else {
-			// Errors found in validator
-			$errors     = $validator->errors();
-			$returnData = $errors;
+			if ( true === $validator->assert( $data ) ) {
+				// Everything is fine.
 
-			$this->logger->info( "recipe-update validator failed" );
+				// Create our recipe entity
+				$model->update( $args['id'], $data );
 
+				$this->logger->info(
+					"updated recipe",
+					array(
+						'args' => $args,
+						'data' => $data
+					)
+				);
+
+			} else {
+				// Errors found in validator
+				$errors     = $validator->errors();
+				$returnData = $errors;
+
+				$this->logger->info( "recipe-update validator failed" );
+
+			}
 		}
 
 		return $response->withJson( $returnData, $status );
 	}
 
-	public function removeRecipe( $request, $response, $args ) {
+	public
+	function removeRecipe( Request $request, $response, $args ) {
 		$this->logger->info( "deleted recipe" );
 		$returnData = array();
 		$status     = 200;
-		$model      = new RecipeModel();
+		$model      = new RecipeModel( $this->db );
 		$success    = $model->remove( $args['id'] );
 		if ( true === $success ) {
 			$returnData['status'] = 'ok';
