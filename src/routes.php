@@ -25,14 +25,16 @@ $app->group( '/v1', function () {
 $app->group( '/admin', function () {
 	$this->get( '', '\App\Controllers\AdminController:index' )->setName( 'admin.index' );
 
-
 	$this->get( '/recipes', '\App\Controllers\AdminController:index' );
-	// Update recipe
-	// $this->put( '/recipes/{id}', '\App\RecipeMapper:updateRecipe' );
+
+	// $this->get( '/recipes/{id}', '\App\Controllers\AdminController:editRecipe' );
+	// $this->post( '/recipes/{id}', '\App\Controllers\AdminController:updateRecipe' );
+
+	// $this->get( '/recipes/add', '\App\Controllers\AdminController:getCreateRecipe' );
+	// $this->post( '/recipes', '\App\RecipeMapper:addRecipe' );
+
 	// Delete recipe
 	// $this->delete( '/recipes/{id}', '\App\RecipeMapper:removeRecipe' );
-	// Insert recipe
-	//$this->post( '/recipes', '\App\RecipeMapper:addRecipe' );
 
 } )->add( new \App\Middleware\AuthMiddleware( $container ) );
 
