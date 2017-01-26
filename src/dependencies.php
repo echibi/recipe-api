@@ -5,7 +5,11 @@ use Interop\Container\ContainerInterface;
 
 $container = $app->getContainer();
 
-// monolog
+/**
+ * @param ContainerInterface $c
+ *
+ * @return \Monolog\Logger
+ */
 $container['logger'] = function ( ContainerInterface $c ) {
 	$settings = $c->get( 'settings' )['logger'];
 	$logger   = new Monolog\Logger( $settings['name'] );
@@ -18,6 +22,11 @@ $container['logger'] = function ( ContainerInterface $c ) {
 	return $logger;
 };
 
+/**
+ * @param ContainerInterface $c
+ *
+ * @return bool|\Pixie\QueryBuilder\QueryBuilderHandler
+ */
 $container['db'] = function ( ContainerInterface $c ) {
 	$db = $c['settings']['db'];
 	$qb = false;
@@ -41,17 +50,40 @@ $container['db'] = function ( ContainerInterface $c ) {
 	return $qb;
 };
 
-// Register component on container
+/**
+ * @param ContainerInterface $c
+ *
+ * @return \Slim\Views\Twig
+ */
 $container['view'] = function ( ContainerInterface $c ) {
 	$settings = $c->get( 'settings' )['renderer'];
 	$view     = new \Slim\Views\Twig( $settings['template_path'], [
 		'cache' => false
 	] );
 
-	// Instantiate and add Slim specific extension
-	// $basePath = rtrim( str_ireplace( 'index.php', '', $c['request']->getUri()->getBasePath() ), '/' );
+	$view->addExtension( new Slim\Views\TwigExtension(
+			$c['router'],
+			$c['request']->getUri()
+		)
+	);
 
-	$view->addExtension( new Slim\Views\TwigExtension( $c['router'], $c['request']->getUri() ) );
+	$view->getEnvironment()->addGlobal( 'flash', $c['flash'] );
 
 	return $view;
+};
+
+/**
+ * @return \Slim\Flash\Messages
+ */
+$container['flash'] = function () {
+	return new \Slim\Flash\Messages();
+};
+
+/**
+ * @param ContainerInterface $c
+ *
+ * @return \App\Auth\Auth
+ */
+$container['auth'] = function ( ContainerInterface $c ) {
+	return new \App\Auth\Auth( $c );
 };

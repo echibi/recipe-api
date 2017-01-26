@@ -7,11 +7,24 @@
 namespace App\Controllers;
 
 
-use App\Auth\Auth;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class AdminController extends Controller {
+
+	/**
+	 * Logout user
+	 *
+	 * @param Request  $request
+	 * @param Response $response
+	 *
+	 * @return Response
+	 */
+	public function getSignOut( Request $request, Response $response ) {
+		$this->auth->logout();
+
+		return $response->withRedirect( $this->ci->get( 'router' )->pathFor( 'admin.login' ) );
+	}
 
 	/**
 	 * @param Request  $request
@@ -33,12 +46,18 @@ class AdminController extends Controller {
 		return $this->view->render( $response, 'admin/login.twig' );
 	}
 
+	/**
+	 * @param Request  $request
+	 * @param Response $response
+	 *
+	 * @return Response
+	 */
 	public function loginAttempt( Request $request, Response $response ) {
-		$authentication = new Auth( $this->ci );
-		$auth           = $authentication->attempt(
+		$auth = $this->auth->attempt(
 			$request->getParam( 'username' ),
 			$request->getParam( 'password' )
 		);
+
 		if ( !$auth ) {
 
 			return $response->withRedirect( $this->ci->get( 'router' )->pathFor( 'admin.login' ) );

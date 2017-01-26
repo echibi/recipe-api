@@ -3,13 +3,14 @@
 <head>
 	<meta charset="utf-8" />
 	<title>{% block title %}Welcome{% endblock %} | Recipe API</title>
-	<link rel="stylesheet" href="css/main.css">
+	<link rel="stylesheet" href="{{ base_url() }}/css/main.css">
 </head>
 <body>
 <div class="wrap container-fluid">
+	{% include "partials/flash-messages.twig" %}
 	{% block content %}{% endblock %}
 </div>
-<script src="js/vendor.min.js"></script>
-<script src="js/main.js"></script>
+<script src="{{ base_url() }}/js/vendor.min.js"></script>
+<script src="{{ base_url() }}/js/main.js"></script>
 </body>
 </html>

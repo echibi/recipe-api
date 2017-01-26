@@ -7,7 +7,12 @@
 namespace App\Controllers;
 
 
+use App\Auth\Auth;
 use Interop\Container\ContainerInterface;
+use Monolog\Logger;
+use Pixie\QueryBuilder\QueryBuilderHandler;
+use Slim\Flash\Messages;
+use Slim\Views\Twig;
 
 class Controller {
 	/**
@@ -16,10 +21,29 @@ class Controller {
 	protected $ci;
 
 	/**
-	 * @var \PDO
+	 * @var QueryBuilderHandler
 	 */
 	protected $db;
 
+	/**
+	 * @var Twig
+	 */
+	protected $view;
+
+	/**
+	 * @var Messages
+	 */
+	protected $flash;
+
+	/**
+	 * @var Auth
+	 */
+	protected $auth;
+
+	/**
+	 * @var Logger
+	 */
+	protected $logger;
 
 	/**
 	 * Constructor
@@ -31,5 +55,7 @@ class Controller {
 		$this->logger = $ci->get( 'logger' );
 		$this->db     = $ci->get( 'db' );
 		$this->view   = $ci->get( 'view' );
+		$this->flash  = $ci->get( 'flash' );
+		$this->auth   = $ci->get( 'auth' );
 	}
 }

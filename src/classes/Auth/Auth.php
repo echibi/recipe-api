@@ -16,21 +16,36 @@ class Auth {
 	 */
 	protected $container;
 
+	/**
+	 * @param ContainerInterface $container
+	 */
 	function __construct( ContainerInterface $container ) {
 		$this->container = $container;
 		$this->db        = $this->container->get( 'db' );
 	}
 
+	/**
+	 * @return null|\stdClass
+	 */
 	public function current_user() {
 		$user = new User( $this->db );
 
-		return $user->get( $_SESSION['id'] );
+		return $user->get( $_SESSION['user'] );
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function check() {
 		return isset( $_SESSION['user'] );
 	}
 
+	/**
+	 * @param $username
+	 * @param $password
+	 *
+	 * @return bool
+	 */
 	public function attempt( $username, $password ) {
 		$user = $this->db->table( 'api_users' )->where( 'username', '=', $username )->first();
 
@@ -44,5 +59,14 @@ class Auth {
 			return true;
 		}
 
+		return false;
+
+	}
+
+	/**
+	 * Logout the user
+	 */
+	public function logout() {
+		unset( $_SESSION['user'] );
 	}
 }

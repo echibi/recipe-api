@@ -34,8 +34,10 @@ $app->group( '/admin', function () {
 	// Insert recipe
 	//$this->post( '/recipes', '\App\RecipeMapper:addRecipe' );
 
-} );
+} )->add( new \App\Middleware\AuthMiddleware( $container ) );
 
 $app->get( '/login', '\App\Controllers\AdminController:login' )->setName( 'admin.login' );
 $app->post( '/login', '\App\Controllers\AdminController:loginAttempt' );
+
+$app->get( '/logout', '\App\Controllers\AdminController:getSignOut' )->setName( 'admin.logout' );
 
