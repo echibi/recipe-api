@@ -7,6 +7,7 @@
 namespace App\Controllers;
 
 
+use App\Models\Recipe;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -33,7 +34,18 @@ class AdminController extends Controller {
 	 * @return mixed
 	 */
 	public function index( Request $request, Response $response ) {
-		return $this->view->render( $response, 'admin/list-recipes.twig' );
+
+		$recipeModel = new Recipe( $this->db );
+
+		$recipes = $recipeModel->getList( array(
+			'sort' => '-created',
+		) );
+
+		return $this->view->render( $response, 'admin/list-recipes.twig',
+			array(
+				'recipes' => $recipes,
+			)
+		);
 	}
 
 	/**

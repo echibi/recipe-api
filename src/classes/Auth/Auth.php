@@ -27,7 +27,10 @@ class Auth {
 	/**
 	 * @return null|\stdClass
 	 */
-	public function current_user() {
+	public function currentUser() {
+		if ( !isset( $_SESSION['user'] ) ) {
+			return null;
+		}
 		$user = new User( $this->db );
 
 		return $user->get( $_SESSION['user'] );

@@ -7,6 +7,7 @@
 
 namespace App\Models;
 
+use App\Entities\RecipeEntity;
 use App\Helpers\Utilities;
 use Pixie\QueryBuilder;
 use Pixie\QueryBuilder\QueryBuilderHandler;
@@ -308,19 +309,11 @@ class Recipe extends Model {
 	 *
 	 * @param $id
 	 *
-	 * @return \App\RecipeEntity on success false on failure.
+	 * @return RecipeEntity on success false on failure.
 	 */
 	public function get( $id ) {
 
-		$prepareSelectItem = $this->pdo->prepare(
-			'SELECT *
-			 FROM recipes AS r
-			 WHERE r.id = :id'
-		);
-
-		$prepareSelectItem->execute( array( 'id' => $id ) );
-
-		$recipeData = $prepareSelectItem->fetch();
+		$recipeData = $this->db->table('recipes')->find( $id );
 
 		if ( empty( $recipeData ) ) {
 			return false;
@@ -346,7 +339,7 @@ class Recipe extends Model {
 	}
 
 	/**
-	 * @param \App\RecipeEntity $recipe
+	 * @param RecipeEntity $recipe
 	 *
 	 * @return bool|int Returns saved recipe ID on success and false on failure.
 	 */

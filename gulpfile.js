@@ -80,7 +80,7 @@ gulp.task('watch', ['build'], function () {
 
 	browserSync.init({
 		files: ['{src,public}/**/*.php', '{templates}/**/*.twig'],
-		proxy: 'localhost',
+		proxy: 'localhost/recept-api/public',
 	});
 	gulp.watch(SOURCE + STYLES + '**/*.scss', ['styles']);
 	//gulp.watch(SOURCE + SCRIPTS + '**/*.js', ['scripts']);

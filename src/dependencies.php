@@ -69,6 +69,11 @@ $container['view'] = function ( ContainerInterface $c ) {
 	// Allow flash messages inside views.
 	$view->getEnvironment()->addGlobal( 'flash', $c['flash'] );
 
+	$view->getEnvironment()->addGlobal( 'auth', array(
+		'check' => $c->get( 'auth' )->check(),
+		'user'  => $c->get( 'auth' )->currentUser()
+	) );
+
 	return $view;
 };
 

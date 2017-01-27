@@ -2,7 +2,11 @@
 
 {% block content %}
 	{% include "partials/page-header.twig" with { 'title' : 'Recipes' } %}
-	List recipies here...
-	<a href="{{ path_for("admin.logout") }}" class="btn btn-primary">Logout</a>
-
+	<ul>
+		{% for item in recipes %}
+			<li>
+				<a href="{{ path_for("admin.edit-recipe", {'id': item.id}) }}">{{ item.id }} - {{ item.title }}</a>
+			</li>
+		{% endfor %}
+	</ul>
 {% endblock %}

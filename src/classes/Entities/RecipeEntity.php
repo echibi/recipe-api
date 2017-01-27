@@ -5,11 +5,11 @@
  * Date: 2016-11-29
  */
 
-namespace App;
+namespace App\Entities;
 use App\Helpers\Utilities;
 
 
-class RecipeEntity {
+class RecipeEntity extends Entity{
 
 	/**
 	 * @var int

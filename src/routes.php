@@ -20,24 +20,33 @@ $app->group( '/v1', function () {
 	// $app->get('/ingredients/{id}', '\App\IngredientMapper:getIngredients');
 	// Get all units
 	// $this->get( '/units', '\App\IngredientMapper:getUnits' );
+
 } );
 
-$app->group( '/admin', function () {
-	$this->get( '', '\App\Controllers\AdminController:index' )->setName( 'admin.index' );
+// Protected routes
+$app->group( '', function () {
+	//$this->post( '/recipes', '\App\RecipeMapper:addRecipe' );
 
-	$this->get( '/recipes', '\App\Controllers\AdminController:index' );
+	// Admin
+	$this->group( '/admin', function () {
+		$this->get( '', '\App\Controllers\AdminController:index' )->setName( 'admin.index' );
 
-	// $this->get( '/recipes/{id}', '\App\Controllers\AdminController:editRecipe' );
-	// $this->post( '/recipes/{id}', '\App\Controllers\AdminController:updateRecipe' );
+		$this->get( '/recipes', '\App\Controllers\AdminController:index' )->setName('admin.list-recipes');
 
-	// $this->get( '/recipes/add', '\App\Controllers\AdminController:getCreateRecipe' );
-	// $this->post( '/recipes', '\App\RecipeMapper:addRecipe' );
+		$this->get( '/recipes/{id}', '\App\Controllers\AdminController:editRecipe' )->setName( 'admin.edit-recipe' );
+		// $this->post( '/recipes/{id}', '\App\Controllers\AdminController:updateRecipe' );
 
-	// Delete recipe
-	// $this->delete( '/recipes/{id}', '\App\RecipeMapper:removeRecipe' );
+		// $this->get( '/recipes/add', '\App\Controllers\AdminController:getCreateRecipe' );
+		// $this->post( '/recipes', '\App\RecipeMapper:addRecipe' );
 
+		// Delete recipe
+		// $this->delete( '/recipes/{id}', '\App\RecipeMapper:removeRecipe' );
+
+	} );
 } )->add( new \App\Middleware\AuthMiddleware( $container ) );
 
+// Guest Routes
+// Only accessible when not logged in
 $app->get( '/login', '\App\Controllers\AdminController:login' )->setName( 'admin.login' );
 $app->post( '/login', '\App\Controllers\AdminController:loginAttempt' );
 

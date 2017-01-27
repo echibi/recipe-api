@@ -11,7 +11,7 @@ use App\Controllers\Controller;
 use \Interop\Container\ContainerInterface as ContainerInterface;
 use App\Validation\RecipeValidator;
 use App\Models\Recipe;
-use App\RecipeEntity;
+use App\Entities\RecipeEntity;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
