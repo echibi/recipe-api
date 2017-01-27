@@ -5,8 +5,9 @@
  * Time: 15:21
  */
 
-namespace App\Controllers;
+namespace App\Controllers\API;
 
+use App\Controllers\Controller;
 use \Interop\Container\ContainerInterface as ContainerInterface;
 use App\Validation\RecipeValidator;
 use App\Models\Recipe;

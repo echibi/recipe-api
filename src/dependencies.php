@@ -66,7 +66,7 @@ $container['view'] = function ( ContainerInterface $c ) {
 			$c['request']->getUri()
 		)
 	);
-
+	// Allow flash messages inside views.
 	$view->getEnvironment()->addGlobal( 'flash', $c['flash'] );
 
 	return $view;
@@ -86,4 +86,11 @@ $container['flash'] = function () {
  */
 $container['auth'] = function ( ContainerInterface $c ) {
 	return new \App\Auth\Auth( $c );
+};
+
+/**
+ * @return \Slim\Csrf\Guard
+ */
+$container['csrf'] = function () {
+	return new \Slim\Csrf\Guard();
 };

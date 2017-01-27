@@ -35,4 +35,5 @@ class Middleware {
 		$this->auth      = $container->get( 'auth' );
 		$this->flash     = $container->get( 'flash' );
 	}
+
 }

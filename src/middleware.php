@@ -1,4 +1,7 @@
 <?php
 // Application middleware
 
-// e.g: $app->add(new \Slim\Csrf\Guard);
+// This is leaked here in public/index.php
+// $container = $app->getContainer();
+
+$app->add( new \App\Middleware\CsrfViewMiddleware( $container ) );

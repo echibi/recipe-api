@@ -1,5 +1,7 @@
 {% extends "base.twig" %}
+
 {% block content %}
+	{% include "partials/page-header.twig" with { 'title' : 'Recipes' } %}
 	List recipies here...
 	<a href="{{ path_for("admin.logout") }}" class="btn btn-primary">Logout</a>
 

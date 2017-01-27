@@ -4,6 +4,7 @@
 {% block content %}
 	{% include "partials/page-header.twig" with { 'title' : 'Login' } %}
 	<form method="post" action="{{ path_for("admin.login") }}">
+		{% include "partials/csrf-input.twig" %}
 		<div class="form-group">
 			<label for="username">Username</label>
 			<input type="text" class="form-control" name="username" id="username" placeholder="Username">
