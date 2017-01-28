@@ -3,28 +3,7 @@
 {% block title %}Admin{% endblock %}
 {% block content %}
 	{% include "partials/page-header.twig" with { 'title' : 'Add/ edit Recipe' } %}
-	<form method="post" action="{{ base_url() }}/admin/recipes">
-		<input type="text" name="title" placeholder="Title" />
-		<input type="text" name="description" placeholder="Description" />
-		<input type="text" name="ingredients[0][name]" placeholder="Ingredient" />
-		<input type="text" name="ingredients[0][value]" placeholder="Value" />
-		<input type="text" name="ingredients[0][unit]" placeholder="Unit" />
-		<input type="text" name="ingredients[1][name]" placeholder="Ingredient" />
-		<input type="text" name="ingredients[1][value]" placeholder="Value" />
-		<input type="text" name="ingredients[1][unit]" placeholder="Unit" />
-		<div class="form-group">
-			<label for="username">Username</label>
-			<input type="text" class="form-control" id="username" placeholder="you@domain.com">
-		</div>
-		<div class="form-group">
-			<label for="password">Password</label>
-			<input type="password" class="form-control" id="password">
-		</div>
-		<button type="submit" class="btn btn-primary">Send</button>
-	</form>
-	<button class="delete-recipe pure-button" data-id="1">Ta bort nr 1</button>
-	<button class="update-recipe pure-button" data-id="2" data-title="uppdaterad title">Uppdatera titel på nr 2</button>
-
+	{% include "partials/form-recipe.twig" with { 'post_url' : path_for('admin.add-recipe') } %}
 {% endblock %}
 
 {#

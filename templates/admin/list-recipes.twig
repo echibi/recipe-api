@@ -1,12 +1,17 @@
 {% extends "base.twig" %}
 
 {% block content %}
-	{% include "partials/page-header.twig" with { 'title' : 'Recipes' } %}
-	<ul>
-		{% for item in recipes %}
-			<li>
-				<a href="{{ path_for("admin.edit-recipe", {'id': item.id}) }}">{{ item.id }} - {{ item.title }}</a>
+	<div class="recipe-list">
+		{% include "partials/page-header.twig" with { 'title' : 'Recipes' } %}
+		<ul class="list-group">
+			<li class="list-group-item list-group-item-info">
+				<a href="{{ path_for('admin.add-recipe') }}" class="btn btn-success">Create new</a>
 			</li>
-		{% endfor %}
-	</ul>
+			{% for item in recipes %}
+				<li class="list-group-item">
+					<a href="{{ path_for("admin.edit-recipe", {'id': item.id}) }}">{{ item.id }} - {{ item.title }}</a>
+				</li>
+			{% endfor %}
+		</ul>
+	</div>
 {% endblock %}

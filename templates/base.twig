@@ -7,7 +7,7 @@
 </head>
 <body>
 <div class="wrap container-fluid">
-	{% include "partials/navigation.twig" with { 'menu' : { 'active' : 'home' } } %}
+	{% include "partials/navigation.twig" %}
 	{% include "partials/flash-messages.twig" %}
 	{% block content %}{% endblock %}
 </div>

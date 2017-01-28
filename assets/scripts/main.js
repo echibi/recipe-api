@@ -3,6 +3,11 @@
  */
 
 $(function () {
+
+	tinyMCE.init({
+			'selector' : '.mce-tinymce'
+		}
+	);
 	$('.delete-recipe').on('click', function (e) {
 		e.preventDefault();
 		$this = $(this);

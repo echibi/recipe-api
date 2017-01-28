@@ -52,6 +52,35 @@ class AdminController extends Controller {
 	 * @param Request  $request
 	 * @param Response $response
 	 *
+	 * @return \Psr\Http\Message\ResponseInterface
+	 */
+	public function getCreateRecipe( Request $request, Response $response ) {
+		return $this->view->render( $response, 'admin/edit-recipe.twig' );
+	}
+	/**
+	 * @param Request  $request
+	 * @param Response $response
+	 *
+	 * @return \Psr\Http\Message\ResponseInterface
+	 */
+	public function postCreateRecipe( Request $request, Response $response ) {
+		return $this->view->render( $response, 'admin/edit-recipe.twig' );
+	}
+
+	/**
+	 * @param Request  $request
+	 * @param Response $response
+	 *
+	 * @return \Psr\Http\Message\ResponseInterface
+	 */
+	public function editRecipe( Request $request, Response $response ) {
+		return $this->view->render( $response, 'admin/edit-recipe.twig' );
+	}
+
+	/**
+	 * @param Request  $request
+	 * @param Response $response
+	 *
 	 * @return mixed
 	 */
 	public function login( Request $request, Response $response ) {

@@ -33,12 +33,24 @@ gulp.task('js-vendor', function () {
 		BOWER + 'jquery/dist/jquery.js',
 		BOWER + 'tether/dist/js/tether.js',
 		BOWER + 'bootstrap/dist/js/bootstrap.js',
+		BOWER + 'tinymce/tinymce.js',
 	])
 		.pipe($.concat('vendor.js'))
 		.pipe(gulp.dest(BUILD_SCRIPTS))
 		.pipe($.rename('vendor.min.js'))
 		.pipe($.uglify())
 		.pipe(gulp.dest(BUILD_SCRIPTS));
+});
+
+// Move TinyMCE themes etc
+gulp.task('tinymce', function () {
+	return gulp.src([
+		BOWER + 'tinymce/themes/**/*.js',
+		BOWER + 'tinymce/skins/**/*'
+	], {
+		base: './assets/bower_components/tinymce'
+	})
+		.pipe(gulp.dest(BUILD_SCRIPTS))
 });
 
 //--------------------------//
@@ -63,6 +75,12 @@ gulp.task('styles', function () {
 	//.pipe($.notify("SCSS Compilation complete."));;
 });
 
+gulp.task('scripts', function () {
+	return gulp.src(SOURCE + SCRIPTS + 'main.js')
+		//.pipe($.rename('main.min.js'))
+		.pipe($.uglify())
+		.pipe(gulp.dest(BUILD_SCRIPTS));
+});
 //--------------------------//
 //  Default tasks.
 //-------------
@@ -71,7 +89,7 @@ gulp.task('default', function () {
 });
 
 
-gulp.task('build', ['styles','js-vendor']);
+gulp.task('build', ['styles', 'js-vendor', 'scripts']);
 //--------------------------//
 //  Serve & Watch
 //-------------
@@ -83,6 +101,6 @@ gulp.task('watch', ['build'], function () {
 		proxy: 'localhost/recept-api/public',
 	});
 	gulp.watch(SOURCE + STYLES + '**/*.scss', ['styles']);
-	//gulp.watch(SOURCE + SCRIPTS + '**/*.js', ['scripts']);
+	gulp.watch(SOURCE + SCRIPTS + '**/*.js', ['scripts']);
 
 });
