@@ -13,6 +13,7 @@ var ROOT = './',
 	SOURCE = ROOT + 'assets/',
 	BUILD_CSS = ROOT + 'public/css/',
 	BUILD_SCRIPTS = ROOT + 'public/js/',
+	BUILD_FONTS = ROOT + 'public/fonts/',
 	BOWER = SOURCE + 'bower_components/';
 
 var FONTS = 'fonts/',
@@ -27,6 +28,13 @@ var onError = function (err) {
 	})(err);
 	this.emit('end');
 };
+
+gulp.task('scripts', function () {
+	return gulp.src(SOURCE + SCRIPTS + 'main.js')
+		//.pipe($.rename('main.min.js'))
+		.pipe($.uglify())
+		.pipe(gulp.dest(BUILD_SCRIPTS));
+});
 
 gulp.task('js-vendor', function () {
 	return gulp.src([
@@ -75,12 +83,12 @@ gulp.task('styles', function () {
 	//.pipe($.notify("SCSS Compilation complete."));;
 });
 
-gulp.task('scripts', function () {
-	return gulp.src(SOURCE + SCRIPTS + 'main.js')
-		//.pipe($.rename('main.min.js'))
-		.pipe($.uglify())
-		.pipe(gulp.dest(BUILD_SCRIPTS));
+// Move font-awesome fonts folder to css compiled folder
+gulp.task('icons', function () {
+	return gulp.src(BOWER + '/components-font-awesome/fonts/**.*')
+		.pipe(gulp.dest(BUILD_FONTS));
 });
+
 //--------------------------//
 //  Default tasks.
 //-------------
@@ -89,7 +97,7 @@ gulp.task('default', function () {
 });
 
 
-gulp.task('build', ['styles', 'js-vendor', 'scripts']);
+gulp.task('build', ['styles', 'icons', 'js-vendor', 'scripts', 'tinymce']);
 //--------------------------//
 //  Serve & Watch
 //-------------

@@ -1,9 +1,9 @@
 {% extends "base.twig" %}
 
-{% block title %}Admin{% endblock %}
+{% block title %}Redigera recept{% endblock %}
 {% block content %}
-	{% include "partials/page-header.twig" with { 'title' : 'Add/ edit Recipe' } %}
-	{% include "partials/form-recipe.twig" with { 'post_url' : path_for('admin.add-recipe') } %}
+	{% include "partials/page-header.twig" with { 'title' : 'Redigera recept' } %}
+	{% include "partials/form-recipe.twig" with { 'post_url' : path_for('admin.edit-recipe', recipe.id) } %}
 {% endblock %}
 
 {#

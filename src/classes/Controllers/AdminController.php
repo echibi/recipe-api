@@ -8,10 +8,16 @@ namespace App\Controllers;
 
 
 use App\Models\Recipe;
+use App\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Respect\Validation\Validator as v;
 
 class AdminController extends Controller {
+	/**
+	 * @var Validator
+	 */
+	protected $validator;
 
 	/**
 	 * Logout user
@@ -55,8 +61,9 @@ class AdminController extends Controller {
 	 * @return \Psr\Http\Message\ResponseInterface
 	 */
 	public function getCreateRecipe( Request $request, Response $response ) {
-		return $this->view->render( $response, 'admin/edit-recipe.twig' );
+		return $this->view->render( $response, 'admin/add-recipe.twig' );
 	}
+
 	/**
 	 * @param Request  $request
 	 * @param Response $response
@@ -64,6 +71,21 @@ class AdminController extends Controller {
 	 * @return \Psr\Http\Message\ResponseInterface
 	 */
 	public function postCreateRecipe( Request $request, Response $response ) {
+		$this->validator = $this->ci->get( 'validator' );
+
+		$validation = $this->validator->validate( $request, array(
+			'title'       => v::notEmpty(),
+			// 'description' => '',
+			'portions'    => v::notEmpty(),
+			// 'ingredients' => '',
+			'category'    => v::notEmpty(),
+			'image1'      => v::optional( v::image() ),
+		) );
+
+		if ( $validation->failed() ) {
+			return $response->withRedirect( $this->ci->get( 'router' )->pathFor( 'admin.add-recipe' ) );
+		}
+
 		return $this->view->render( $response, 'admin/edit-recipe.twig' );
 	}
 
@@ -76,6 +98,7 @@ class AdminController extends Controller {
 	public function editRecipe( Request $request, Response $response ) {
 		return $this->view->render( $response, 'admin/edit-recipe.twig' );
 	}
+
 
 	/**
 	 * @param Request  $request

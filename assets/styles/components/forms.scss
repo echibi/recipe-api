@@ -1,0 +1,34 @@
+.list-group {
+	&.ingredients {
+		margin:0 0 1em;
+		.list-group-item {
+			display:         flex;
+			flex-direction:  row;
+			&:nth-child(2) .repeater-remove {
+				display: none;
+			}
+			&:not(:last-child) .repeater-add{
+				display: none;
+			}
+		}
+		.form-control {
+			margin: 0 0 0 5px;
+			width:  auto;
+			&.value {
+				margin: 0;
+				width:  75px;
+			}
+			&.unit {
+				width: 75px;
+			}
+			&.name {
+				flex-grow: 1;
+			}
+		}
+		.btn {
+			margin-left:5px;
+			padding: 0.5rem 0.75rem;
+		}
+	}
+}
+

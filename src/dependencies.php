@@ -99,3 +99,10 @@ $container['auth'] = function ( ContainerInterface $c ) {
 $container['csrf'] = function () {
 	return new \Slim\Csrf\Guard();
 };
+
+/**
+ * @return \App\Validation\Validator
+ */
+$container['validator'] = function () {
+	return new \App\Validation\Validator();
+};

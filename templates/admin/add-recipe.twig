@@ -1,0 +1,10 @@
+{% extends "base.twig" %}
+
+{% block title %}Skapa recept{% endblock %}
+{% block content %}
+	{% include "partials/page-header.twig" with { 'title' : 'Skapa recept' } %}
+	{% include "partials/form-recipe.twig" with { 'post_url' : path_for('admin.post-add-recipe') } %}
+{% endblock %}
+
+{#
+#}

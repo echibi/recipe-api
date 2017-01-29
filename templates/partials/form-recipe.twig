@@ -1,50 +1,82 @@
-<form method="post" action="{{ post_url }}">
-	<input type="text" name="title" placeholder="Title" />
-	<input type="text" name="description" placeholder="Description" />
-	<input type="text" name="ingredients[0][name]" placeholder="Ingredient" />
-	<input type="text" name="ingredients[0][value]" placeholder="Value" />
-	<input type="text" name="ingredients[0][unit]" placeholder="Unit" />
-	<input type="text" name="ingredients[1][name]" placeholder="Ingredient" />
-	<input type="text" name="ingredients[1][value]" placeholder="Value" />
-	<input type="text" name="ingredients[1][unit]" placeholder="Unit" />
-
-	<div class="form-group">
-		<label for="title">Title</label>
-		<input name="title" type="text" class="form-control" id="title" aria-describedby="emailHelp" placeholder="Enter title">
+{{ old | json_encode }}
+<form method="post" action="{{ post_url }}" enctype="multipart/form-data">
+	<div class="form-group{{ form_errors.title ? ' has-danger' : '' }}">
+		<label for="title">Titel</label>
+		<input name="title" type="text" class="form-control" id="title" value="{{ old.title }}">
+		{% if form_errors.title %}
+			<span class="form-text">{{ form_errors.title | first }}</span>
+		{% endif %}
 	</div>
 	<div class="form-group">
-		<label for="description">Description</label>
+		<label for="description">Beskrivning</label>
 		<textarea name="description" id="description" class="mce-tinymce" cols="30" rows="10"></textarea>
 	</div>
 	<div class="form-group">
-		<label for="exampleSelect1">Example select</label>
-		<select class="form-control" id="exampleSelect1">
-			<option>1</option>
-			<option>2</option>
-			<option>3</option>
-			<option>4</option>
-			<option>5</option>
+		<label for="portions">Portioner</label>
+		<input name="portions" type="number" class="form-control" value="2">
+	</div>
+	<ul class="list-group repeatable-wrap ingredients">
+		<li class="list-group-item list-group-item-info">
+			Ingredienser
+		</li>
+		{% for ingredient in old.ingredients %}
+			{% if ingredient.name %}
+				<li class="repeatable list-group-item">
+					<input class="form-control value" type="text" name="ingredients[{{ loop.index0 }}][value]" placeholder="Antal" value="{{ ingredient.value }}" />
+					<select class="form-control unit" name="ingredients[{{ loop.index0 }}][unit]">
+						<option selected value="st">st</option>
+						<option value="krm">krm</option>
+						<option value="tsk">tsk</option>
+						<option value="msk">msk</option>
+						<option value="dl">dl</option>
+						<option value="l">l</option>
+						<option value="g">gram</option>
+					</select>
+					<input class="form-control name" type="text" name="ingredients[{{ loop.index0 }}][name]" placeholder="Ingrediens" value="{{ ingredient.name }}" />
+					<button class="btn btn-danger repeater-remove" type="button">
+						<i class="fa fa-minus-circle" aria-hidden="true"></i>
+					</button>
+					<button class="btn btn-success repeater-add" type="button">
+						<i class="fa fa-plus-circle" aria-hidden="true"></i>
+					</button>
+				</li>
+			{% endif %}
+		{% endfor %}
+		<li class="repeatable list-group-item">
+			<input class="form-control value" type="text" name="ingredients[{{ old.ingredients | length }}][value]" placeholder="Antal" />
+			<select class="form-control unit" name="ingredients[{{ old.ingredients | length }}][unit]">
+				<option selected value="st">st</option>
+				<option value="krm">krm</option>
+				<option value="tsk">tsk</option>
+				<option value="msk">msk</option>
+				<option value="dl">dl</option>
+				<option value="l">l</option>
+				<option value="g">gram</option>
+			</select>
+			<input class="form-control name" type="text" name="ingredients[{{ old.ingredients | length }}][name]" placeholder="Ingrediens" />
+			<button class="btn btn-danger repeater-remove" type="button">
+				<i class="fa fa-minus-circle" aria-hidden="true"></i>
+			</button>
+			<button class="btn btn-success repeater-add" type="button">
+				<i class="fa fa-plus-circle" aria-hidden="true"></i>
+			</button>
+		</li>
+	</ul>
+	<div class="form-group">
+		<label for="category">Kategori</label>
+		<select name="category" class="form-control" id="category">
+			<option value="huvudrätt">Huvudrätt</option>
+			<option value="bakverk">Bakverk</option>
+			<option value="sylt">Sylt</option>
+			<option value="sås">Sås</option>
 		</select>
 	</div>
 	<div class="form-group">
-		<label for="exampleSelect2">Example multiple select</label>
-		<select multiple class="form-control" id="exampleSelect2">
-			<option>1</option>
-			<option>2</option>
-			<option>3</option>
-			<option>4</option>
-			<option>5</option>
-		</select>
+		<label for="image1">Huvudbild</label>
+		<input type="file" class="form-control-file" id="image1" name="image1" aria-describedby="fileHelp">
+		<small id="fileHelp" class="form-text text-muted">Ladda gärna upp en bild på slutresultatet.</small>
 	</div>
-	<div class="form-group">
-		<label for="exampleTextarea">Example textarea</label>
-		<textarea class="form-control" id="exampleTextarea" rows="3"></textarea>
-	</div>
-	<div class="form-group">
-		<label for="exampleInputFile">File input</label>
-		<input type="file" class="form-control-file" id="exampleInputFile" aria-describedby="fileHelp">
-		<small id="fileHelp" class="form-text text-muted">This is some placeholder block-level help text for the above input. It's a bit lighter and easily wraps to a new line.</small>
-	</div>
+	{#
 	<fieldset class="form-group">
 		<legend>Radio buttons</legend>
 		<div class="form-check">
@@ -72,5 +104,6 @@
 			Check me out
 		</label>
 	</div>
-	<button type="submit" class="btn btn-primary">Submit</button>
+	#}
+	<button type="submit" class="btn btn-primary">Spara</button>
 </form>

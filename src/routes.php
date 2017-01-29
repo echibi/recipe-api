@@ -35,7 +35,7 @@ $app->group( '', function () {
 		$this->get( '/recipes', '\App\Controllers\AdminController:index' )->setName( 'admin.list-recipes' );
 
 		$this->get( '/recipes/add', '\App\Controllers\AdminController:getCreateRecipe' )->setName( 'admin.add-recipe' );
-		$this->post( '/recipes', '\App\RecipeMapper:addRecipe' );
+		$this->post( '/recipes', '\App\Controllers\AdminController:postCreateRecipe' )->setName( 'admin.post-add-recipe' );;
 
 		$this->get( '/recipes/{id}', '\App\Controllers\AdminController:editRecipe' )->setName( 'admin.edit-recipe' );
 		// $this->post( '/recipes/{id}', '\App\Controllers\AdminController:updateRecipe' );
