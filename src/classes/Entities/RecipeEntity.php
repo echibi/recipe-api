@@ -6,27 +6,48 @@
  */
 
 namespace App\Entities;
+
 use App\Helpers\Utilities;
 
 
-class RecipeEntity extends Entity{
+/**
+ * Class RecipeEntity
+ * @package App\Entities
+ */
+class RecipeEntity extends Entity {
 
 	/**
 	 * @var int
 	 */
-	protected $id;
+	public $id;
 	/**
 	 * @var string
 	 */
-	protected $title;
+	public $title;
 	/**
 	 * @var string
 	 */
-	protected $description;
+	public $description;
 	/**
 	 * @var array
 	 */
-	protected $ingredients;
+	public $ingredients;
+	/**
+	 * @var array
+	 */
+	public $images;
+	/**
+	 * @var int
+	 */
+	public $category_id;
+	/**
+	 * @var string Y-m-d H:i:s
+	 */
+	public $created;
+	/**
+	 * @var string Y-m-d H:i:s
+	 */
+	public $updated;
 
 	/**
 	 * Accept an array of data matching properties of this class
@@ -35,8 +56,7 @@ class RecipeEntity extends Entity{
 	 * @param array|object $data The data to use to create
 	 */
 	public function __construct( $data ) {
-
-		if( is_object( $data )) {
+		if ( is_object( $data ) ) {
 			$data = Utilities::objectToArray( $data );
 		}
 		// no id if we're creating
@@ -51,43 +71,23 @@ class RecipeEntity extends Entity{
 		}
 
 		if ( isset( $data['ingredients'] ) ) {
-			$this->_setIngredients( $data['ingredients'] );
+			$this->ingredients = $data['ingredients'];
 		}
 
-	}
+		if ( isset( $data['image1'] ) ) {
+			$this->images[] = $data['image1'];
+		}
 
-	public function getId() {
-		return $this->id;
-	}
+		if ( isset( $data['description'] ) ) {
+			$this->category_id = $data['category_id'];
+		}
 
-	public function getTitle() {
-		return $this->title;
-	}
-
-	public function getDescription() {
-		return $this->description;
-	}
-
-	public function getShortDescription() {
-		return substr( $this->description, 0, 20 );
-	}
-
-	public function getIngredients() {
-		return $this->ingredients;
-	}
-
-	/**
-	 * @param $ingredientData array
-	 *
-	 * @return void
-	 */
-	private function _setIngredients( $ingredientData ) {
-		if ( !empty( $ingredientData ) ) {
-			foreach ( $ingredientData as $ingredient ) {
-				if ( !empty( $ingredient['name'] ) && !empty( $ingredient['value'] ) && !empty( $ingredient['unit'] ) ) {
-					$this->ingredients[] = $ingredient;
-				}
-			}
+		if ( isset( $data['created'] ) ) {
+			$this->created = $data['created'];
+		}
+		if ( isset( $data['updated'] ) ) {
+			$this->updated = $data['updated'];
 		}
 	}
+
 }

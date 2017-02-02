@@ -2,6 +2,7 @@
  * Created by echibi on 22/01/17.
  */
 
+// TODO:: Make this more modular so that we can use it on more stuff
 var repeatable = {
 	fieldAdd   : null,
 	fieldRemove: null,
@@ -25,14 +26,14 @@ var repeatable = {
 		add   : function ($this) {
 			var theField = $this.closest('.repeatable-wrap').find('.repeatable.list-group-item:last').clone(true);
 			var theLocation = $this.closest('.repeatable-wrap').find('.repeatable.list-group-item:last');
-			$('input, select, textarea', theField).val('').attr('name', function (index, name) {
+			$('input, select, textarea', theField).attr('name', function (index, name) {
 				return name.replace(/(\d+)/, function (fullMatch, n) {
 					return Number(n) + 1;
 				});
 			});
-			theField.insertAfter(theLocation, $(this).closest('div.repeatable-wrap'));
+			$('input, textarea', theField).val('');
 
-			console.log(theField);
+			theField.insertAfter(theLocation, $(this).closest('div.repeatable-wrap'));
 
 		},
 		remove: function ($this) {
@@ -45,62 +46,68 @@ var repeatable = {
 $(function () {
 
 	tinyMCE.init({
-			'selector': '.mce-tinymce'
+			selector: '.mce-tinymce',
+			plugins : ['code', 'link'],
+			themes  : 'inlite'
 		}
 	);
 
+	// Init our repeatable fields
 	repeatable.init();
 
-	//All options are optional.
+	// Remove empty ingredients from edit-recipe form
+	$('#edit-recipe').on('submit', function (e) {
+		var $ingredients = $('.ingredients-list .repeatable.list-group-item');
+
+		$.each($ingredients, function (i, obj) {
+			var $valueInput = $('input.value', obj),
+				$nameInput = $('input.name', obj),
+				nameVal = $nameInput.val(),
+				valueVal = $valueInput.val();
+
+			if ((undefined === nameVal || '' === nameVal) && (undefined === valueVal || '' === valueVal)) {
+				$valueInput.attr('name', null);
+				$nameInput.attr('name', null);
+			}
+		});
+	});
+
 	/*
-	 new Repeater($('.repeatable'), {
-	 addSelector: '.repeater-add', //The css selector for the add button.
-	 addSelectorOut: false, // Set to true if the add selector is outside the repeater wrap.
-	 removeSelector: '.repeater-remove', //The css selector for the remove button.
-	 withDataAndEvents: false, //Should data and events on repeatable sections be cloned?
-	 deepWithDataAndEvents: false, //Should data and events of repeatable sections descendants be cloned?
-	 addCallback: function(){
-	 // console.log("Am I repeating myself?");
-	 console.log(this);
-	 return false;
-	 }, //A callback function that generated repeatable sections will be passed into.
-	 wrapperHtml: "<div class='repeater-wrap'></div>" //HTML for an element to wrap all repeatable sections in.
+
+	 $('.delete-recipe').on('click', function (e) {
+	 e.preventDefault();
+	 $this = $(this);
+
+	 var recipeId = $this.data('id');
+
+	 $.ajax({
+	 url    : '/recipes/' + recipeId,
+	 type   : 'DELETE',
+	 success: function (result) {
+	 // Do something with the result
+	 console.log(result);
+	 }
+	 });
+	 });
+
+	 $('.update-recipe').on('click', function (e) {
+	 e.preventDefault();
+	 $this = $(this);
+
+	 var recipeId = $this.data('id'),
+	 updateTitle = $this.data('title');
+
+	 $.ajax({
+	 url    : '/recipes/' + recipeId,
+	 type   : 'PUT',
+	 data   : {
+	 'title': updateTitle
+	 },
+	 success: function (result) {
+	 // Do something with the result
+	 console.log(result);
+	 }
+	 });
 	 });
 	 */
-
-	$('.delete-recipe').on('click', function (e) {
-		e.preventDefault();
-		$this = $(this);
-
-		var recipeId = $this.data('id');
-
-		$.ajax({
-			url    : '/recipes/' + recipeId,
-			type   : 'DELETE',
-			success: function (result) {
-				// Do something with the result
-				console.log(result);
-			}
-		});
-	});
-
-	$('.update-recipe').on('click', function (e) {
-		e.preventDefault();
-		$this = $(this);
-
-		var recipeId = $this.data('id'),
-			updateTitle = $this.data('title');
-
-		$.ajax({
-			url    : '/recipes/' + recipeId,
-			type   : 'PUT',
-			data   : {
-				'title': updateTitle
-			},
-			success: function (result) {
-				// Do something with the result
-				console.log(result);
-			}
-		});
-	});
 });

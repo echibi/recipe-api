@@ -10,8 +10,9 @@ namespace App\Validation;
 use Respect\Validation\Validator as V;
 use Respect\Validation\Exceptions\NestedValidationException;
 use App\Helpers\Utilities as Util;
+use Slim\Http\Request;
 
-class RecipeValidator {
+class RecipeValidator extends Validator {
 	/**
 	 * List of constraints
 	 *
@@ -20,25 +21,10 @@ class RecipeValidator {
 	protected $rules = [ ];
 
 	/**
-	 * List of customized messages
-	 *
-	 * @var array
-	 */
-	protected $messages = [ ];
-
-	/**
-	 * List of returned errors in case of a failing assertion
-	 *
-	 * @var array
-	 */
-	protected $errors = [ ];
-
-	/**
-	 * Inits rules and messages
+	 * Init rules
 	 */
 	public function __construct() {
 		$this->initRules();
-		$this->initMessages();
 	}
 
 	/**
@@ -48,35 +34,50 @@ class RecipeValidator {
 	 */
 	public function initRules() {
 
-		$this->rules['title']       = V::stringType()->notEmpty()->setName( 'title' );
-		$this->rules['description'] = V::optional( V::stringType() )->setName( 'description' );
-		$this->rules['ingredients'] = V::optional( V::arrayType() )->setName( 'ingredients' );
-		$this->rules['image1']      = V::optional( V::image() )->setName( 'image1' );
-		$this->rules['videoUrl']    = V::optional( V::videoUrl() )->setName( 'video' );
+		$this->rules['title']       = v::notEmpty();
+		$this->rules['ingredients'] = V::arrayType()->IngredientsCheck();
+		$this->rules['image1']      = V::optional( V::image() );
+		$this->rules['category_id'] = v::intVal();
+		// $this->rules['description'] = '';
+		// $this->rules['videoUrl']    = V::optional( V::videoUrl() )->setName( 'video' );
 
 	}
 
 	/**
-	 * Set user custom error messages
+	 * @param Request $request
+	 * @param array   $rules
 	 *
-	 * @return void
+	 * @return $this
 	 */
-	public function initMessages() {
-		$this->messages = [
-			'alpha'                 => '{{name}} must only contain alphabetic characters.',
-			'alnum'                 => '{{name}} must only contain alpha numeric characters and dashes.',
-			'numeric'               => '{{name}} must only contain numeric characters.',
-			'noWhitespace'          => '{{name}} must not contain white spaces.',
-			'length'                => '{{name}} must length between {{minValue}} and {{maxValue}}.',
-			'email'                 => 'Please make sure you typed a correct email address.',
-			'creditCard'            => 'Please make sure you typed a valid card number.',
-			'date'                  => 'Make sure you typed a valid date for the {{name}} ({{format}}).',
-			'password_confirmation' => 'Password confirmation doesn\'t match.'
-		];
+	public function validate( Request $request, array $rules = array() ) {
+		if ( !empty( $rules ) ) {
+			$this->rules = $rules;
+		}
+
+		// Need to validate files separately
+		$files = $request->getUploadedFiles();
+
+		if ( !empty( $files ) ) {
+			foreach ( $files as $key => $fileObject ) {
+				if ( isset( $this->rules[$key] ) ) {
+					try {
+						$this->rules[$key]->setName( ucfirst( $key ) )->assert( $fileObject->file );
+					} catch ( NestedValidationException $e ) {
+						$this->errors[$key] = $e->getMessages();
+					}
+				}
+			}
+		}
+
+		// After we have checked all uploads that recipes will allow;
+		// Run our parent function also to set session etc.
+		parent::validate( $request, $this->rules );
+
+		return $this;
 	}
 
 	/**
-	 * Assert validation rules.
+	 * @deprecated Old assert
 	 *
 	 * @param array $inputs
 	 *   The inputs to validate.
@@ -109,14 +110,5 @@ class RecipeValidator {
 		}
 
 		return true;
-	}
-
-	/**
-	 * Returns all errors.
-	 *
-	 * @return array
-	 */
-	public function errors() {
-		return $this->errors;
 	}
 }

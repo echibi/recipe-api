@@ -7,7 +7,9 @@
 namespace App\Controllers;
 
 
+use App\Entities\RecipeEntity;
 use App\Models\Recipe;
+use App\Validation\RecipeValidator;
 use App\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -18,6 +20,11 @@ class AdminController extends Controller {
 	 * @var Validator
 	 */
 	protected $validator;
+
+	/**
+	 * @var RecipeValidator
+	 */
+	protected $recipeValidator;
 
 	/**
 	 * Logout user
@@ -47,6 +54,7 @@ class AdminController extends Controller {
 			'sort' => '-created',
 		) );
 
+
 		return $this->view->render( $response, 'admin/list-recipes.twig',
 			array(
 				'recipes' => $recipes,
@@ -61,7 +69,47 @@ class AdminController extends Controller {
 	 * @return \Psr\Http\Message\ResponseInterface
 	 */
 	public function getCreateRecipe( Request $request, Response $response ) {
-		return $this->view->render( $response, 'admin/add-recipe.twig' );
+
+		//TODO:: Move to DB...
+		$categories = array(
+			array(
+				'id'   => 0,
+				'name' => 'Huvudrätt',
+				'slug' => 'huvudrätt'
+			),
+			array(
+				'id'   => 1,
+				'name' => 'Bakverk',
+				'slug' => 'bakverk'
+			),
+			array(
+				'id'   => 2,
+				'name' => 'Sylt',
+				'slug' => 'sylt'
+			),
+			array(
+				'id'   => 3,
+				'name' => 'Sås',
+				'slug' => 'sas'
+			),
+		);
+
+		$units = array(
+			array( 'name' => 'st' ),
+			array( 'name' => 'krm' ),
+			array( 'name' => 'tsk' ),
+			array( 'name' => 'msk' ),
+			array( 'name' => 'dl' ),
+			array( 'name' => 'l' ),
+			array( 'name' => 'g' ),
+		);
+
+		return $this->view->render( $response, 'admin/add-recipe.twig',
+			array(
+				'categories' => $categories,
+				'units'      => $units
+			)
+		);
 	}
 
 	/**
@@ -71,20 +119,30 @@ class AdminController extends Controller {
 	 * @return \Psr\Http\Message\ResponseInterface
 	 */
 	public function postCreateRecipe( Request $request, Response $response ) {
-		$this->validator = $this->ci->get( 'validator' );
 
-		$validation = $this->validator->validate( $request, array(
-			'title'       => v::notEmpty(),
-			// 'description' => '',
-			'portions'    => v::notEmpty(),
-			// 'ingredients' => '',
-			'category'    => v::notEmpty(),
-			'image1'      => v::optional( v::image() ),
-		) );
+		$this->recipeValidator = $this->ci->get( 'recipe-validator' );
+		$validation            = $this->recipeValidator->validate( $request );
 
 		if ( $validation->failed() ) {
 			return $response->withRedirect( $this->ci->get( 'router' )->pathFor( 'admin.add-recipe' ) );
 		}
+
+		// Validation OK
+
+		// $this->logger->addDebug( 'postCreate', array( $request->getParams() ) );
+
+		// Create RecipeEntity
+		$recipeEntity = new RecipeEntity(
+			array_merge(
+				$request->getParams(),
+				$request->getUploadedFiles()
+			)
+		);
+
+		// Save Entity
+		$recipeModel = new Recipe( $this->db );
+
+		$recipeModel->create( $recipeEntity );
 
 		return $this->view->render( $response, 'admin/edit-recipe.twig' );
 	}

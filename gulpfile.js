@@ -54,7 +54,8 @@ gulp.task('js-vendor', function () {
 gulp.task('tinymce', function () {
 	return gulp.src([
 		BOWER + 'tinymce/themes/**/*.js',
-		BOWER + 'tinymce/skins/**/*'
+		BOWER + 'tinymce/skins/**/*',
+		BOWER + 'tinymce/plugins/**/*'
 	], {
 		base: './assets/bower_components/tinymce'
 	})

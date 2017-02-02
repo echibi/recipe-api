@@ -297,11 +297,7 @@ class Recipe extends Model {
 
 		}
 
-
-		$result = Utilities::objectToArray( $result );
-
 		return $result;
-
 	}
 
 	/**
@@ -339,13 +335,16 @@ class Recipe extends Model {
 	}
 
 	/**
-	 * @param RecipeEntity $recipe
+	 * @param  RecipeEntity $recipe
 	 *
 	 * @return bool|int Returns saved recipe ID on success and false on failure.
 	 */
-	public function create( RecipeEntity $recipe ) {
+	public function create( $recipe ) {
+
+		// TODO:: Rewrite.
 
 		// Connect to db and prepare inserts.
+		/**/
 		$db = $this->pdo;
 
 		$prepareRecipeInsert = $db->prepare(
@@ -356,8 +355,8 @@ class Recipe extends Model {
 		$nowDatetime = date( 'Y-m-d H:i:s' );
 		$saveOk      = $prepareRecipeInsert->execute(
 			array(
-				'title'       => $recipe->getTitle(),
-				'description' => $recipe->getDescription(),
+				'title'       => $recipe->title,
+				'description' => $recipe->description,
 				'created'     => $nowDatetime,
 				'updated'     => $nowDatetime,
 				'image1'      => '' // Placeholder
@@ -378,7 +377,7 @@ class Recipe extends Model {
 				 VALUES (:recipe_id, :ingredient_id, :value, :unit)'
 			);
 
-			$ingredients = $recipe->getIngredients();
+			$ingredients = $recipe->ingredients;
 
 			if ( !empty( $ingredients ) ) {
 				foreach ( $ingredients as $ingredient ) {
@@ -407,6 +406,7 @@ class Recipe extends Model {
 		} else {
 			return false;
 		}
+		/**/
 	}
 
 	private function findRecipeIngredients( $ingredients ) {

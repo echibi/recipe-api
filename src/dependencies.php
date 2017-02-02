@@ -1,5 +1,6 @@
 <?php
 use Interop\Container\ContainerInterface;
+use Respect\Validation\Validator as v;
 
 // DIC configuration
 
@@ -106,3 +107,15 @@ $container['csrf'] = function () {
 $container['validator'] = function () {
 	return new \App\Validation\Validator();
 };
+
+/**
+ * @return \App\Validation\RecipeValidator
+ */
+$container['recipe-validator'] = function () {
+	return new \App\Validation\RecipeValidator();
+};
+
+// Include custom AbstractRules
+v::with('\\App\\Validation\\Rules\\');
+
+
