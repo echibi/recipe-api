@@ -311,10 +311,11 @@ class Recipe extends Model {
 
 		$recipeData = $this->db->table('recipes')->find( $id );
 
-		if ( empty( $recipeData ) ) {
-			return false;
+		if ( null === $recipeData  ) {
+			return null;
 		}
 
+		// TODO:: Rewrite
 		$prepareSelectIngredients = $this->pdo->prepare(
 			'SELECT i.id, i.name, i.slug, rel.value, rel.unit
 			 FROM ingredients_rel AS rel
@@ -328,7 +329,7 @@ class Recipe extends Model {
 		$ingredients = $prepareSelectIngredients->fetchAll();
 
 		if ( !empty( $ingredients ) ) {
-			$recipeData['ingredients'] = $ingredients;
+			$recipeData->ingredients = $ingredients;
 		}
 
 		return new RecipeEntity( $recipeData );

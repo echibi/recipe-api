@@ -14,6 +14,7 @@ use App\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Respect\Validation\Validator as v;
+use Slim\Router;
 
 class AdminController extends Controller {
 	/**
@@ -25,6 +26,11 @@ class AdminController extends Controller {
 	 * @var RecipeValidator
 	 */
 	protected $recipeValidator;
+
+	/**
+	 * @var Router
+	 */
+	protected $router;
 
 	/**
 	 * Logout user
@@ -120,11 +126,12 @@ class AdminController extends Controller {
 	 */
 	public function postCreateRecipe( Request $request, Response $response ) {
 
+		$this->router          = $this->ci->get( 'router' );
 		$this->recipeValidator = $this->ci->get( 'recipe-validator' );
 		$validation            = $this->recipeValidator->validate( $request );
 
 		if ( $validation->failed() ) {
-			return $response->withRedirect( $this->ci->get( 'router' )->pathFor( 'admin.add-recipe' ) );
+			return $response->withRedirect( $this->router->pathFor( 'admin.add-recipe' ) );
 		}
 
 		// Validation OK
@@ -139,12 +146,20 @@ class AdminController extends Controller {
 			)
 		);
 
+		$this->logger->addDebug( 'postCreate RecipeEntity', array( $recipeEntity ) );
+
 		// Save Entity
 		$recipeModel = new Recipe( $this->db );
 
 		$recipeModel->create( $recipeEntity );
 
-		return $this->view->render( $response, 'admin/edit-recipe.twig' );
+		return $this->view->render(
+			$response,
+			$this->router->pathFor(
+				'admin.edit-recipe',
+				array( 'id' => 12 ) // tmp
+			)
+		);
 	}
 
 	/**
@@ -154,7 +169,35 @@ class AdminController extends Controller {
 	 * @return \Psr\Http\Message\ResponseInterface
 	 */
 	public function editRecipe( Request $request, Response $response ) {
-		return $this->view->render( $response, 'admin/edit-recipe.twig' );
+
+		$id          = $request->getAttribute( 'id' );
+		$recipeModel = new Recipe( $this->db );
+		$recipe      = $recipeModel->get( $id );
+
+
+		$this->logger->addDebug( 'recipe Edit', array(
+			'entity' => $recipe,
+			'id' => $id
+		) );
+
+		$array = array(
+			'id'          => $recipe->id,
+			'title'       => $recipe->title,
+			'description' => $recipe->description,
+			'ingredients' => $recipe->ingredients,
+			'category_id' => $recipe->category_id,
+			'created'     => $recipe->created,
+			'updated'     => $recipe->updated,
+		);
+
+		return $this->view->render(
+			$response,
+			'admin/edit-recipe.twig',
+			array(
+				'recipe' => $array,
+				'old'    => $array
+			)
+		);
 	}
 
 
