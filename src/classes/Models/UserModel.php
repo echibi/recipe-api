@@ -7,7 +7,7 @@
 namespace App\Models;
 
 
-class User extends Model {
+class UserModel extends Model {
 	/**
 	 * @param $id
 	 *

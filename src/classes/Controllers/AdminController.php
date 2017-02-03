@@ -8,7 +8,7 @@ namespace App\Controllers;
 
 
 use App\Entities\RecipeEntity;
-use App\Models\Recipe;
+use App\Models\RecipeModel;
 use App\Validation\RecipeValidator;
 use App\Validation\Validator;
 use Slim\Http\Request;
@@ -26,11 +26,6 @@ class AdminController extends Controller {
 	 * @var RecipeValidator
 	 */
 	protected $recipeValidator;
-
-	/**
-	 * @var Router
-	 */
-	protected $router;
 
 	/**
 	 * Logout user
@@ -54,7 +49,7 @@ class AdminController extends Controller {
 	 */
 	public function index( Request $request, Response $response ) {
 
-		$recipeModel = new Recipe( $this->db );
+		$recipeModel = new RecipeModel( $this->db );
 
 		$recipes = $recipeModel->getList( array(
 			'sort' => '-created',
@@ -126,7 +121,6 @@ class AdminController extends Controller {
 	 */
 	public function postCreateRecipe( Request $request, Response $response ) {
 
-		$this->router          = $this->ci->get( 'router' );
 		$this->recipeValidator = $this->ci->get( 'recipe-validator' );
 		$validation            = $this->recipeValidator->validate( $request );
 
@@ -149,7 +143,7 @@ class AdminController extends Controller {
 		$this->logger->addDebug( 'postCreate RecipeEntity', array( $recipeEntity ) );
 
 		// Save Entity
-		$recipeModel = new Recipe( $this->db );
+		$recipeModel = new RecipeModel( $this->db );
 
 		$recipeModel->create( $recipeEntity );
 
@@ -168,17 +162,12 @@ class AdminController extends Controller {
 	 *
 	 * @return \Psr\Http\Message\ResponseInterface
 	 */
-	public function editRecipe( Request $request, Response $response ) {
+	public function getEditRecipe( Request $request, Response $response ) {
 
 		$id          = $request->getAttribute( 'id' );
-		$recipeModel = new Recipe( $this->db );
+		$recipeModel = new RecipeModel( $this->db );
 		$recipe      = $recipeModel->get( $id );
 
-
-		$this->logger->addDebug( 'recipe Edit', array(
-			'entity' => $recipe,
-			'id' => $id
-		) );
 
 		$array = array(
 			'id'          => $recipe->id,
@@ -190,14 +179,44 @@ class AdminController extends Controller {
 			'updated'     => $recipe->updated,
 		);
 
+		$globals = $this->view->getEnvironment()->getGlobals();
+
+		$viewData           = array();
+		$viewData['recipe'] = $recipe;
+		if ( empty( $globals['old'] ) ) {
+			$viewData['old'] = $recipe;
+		}
+
+		$this->logger->addDebug( 'recipe Edit', array(
+			'id'       => $id,
+			'viewData' => $viewData,
+		) );
+
 		return $this->view->render(
 			$response,
 			'admin/edit-recipe.twig',
-			array(
-				'recipe' => $array,
-				'old'    => $array
-			)
+			$viewData
 		);
+	}
+
+	/**
+	 * Update recipe
+	 *
+	 * @param Request  $request
+	 * @param Response $response
+	 *
+	 * @return \Psr\Http\Message\ResponseInterface
+	 */
+	public function postEditRecipe( Request $request, Response $response ) {
+		$id                    = $request->getAttribute( 'id' );
+		$this->recipeValidator = $this->ci->get( 'recipe-validator' );
+		$validation            = $this->recipeValidator->validate( $request );
+
+		if ( $validation->failed() ) {
+			return $response->withRedirect( $this->router->pathFor( 'admin.edit-recipe', array( 'id' => $id ) ) );
+		}
+
+		// Validation OK
 	}
 
 

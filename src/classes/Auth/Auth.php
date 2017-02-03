@@ -8,7 +8,7 @@ namespace App\Auth;
 
 
 use Interop\Container\ContainerInterface;
-use App\Models\User;
+use App\Models\UserModel;
 
 class Auth {
 	/**
@@ -31,7 +31,7 @@ class Auth {
 		if ( !isset( $_SESSION['user'] ) ) {
 			return null;
 		}
-		$user = new User( $this->db );
+		$user = new UserModel( $this->db );
 
 		return $user->get( $_SESSION['user'] );
 	}

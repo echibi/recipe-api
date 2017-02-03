@@ -12,7 +12,7 @@ use App\Helpers\Utilities;
 use Pixie\QueryBuilder;
 use Pixie\QueryBuilder\QueryBuilderHandler;
 
-class Recipe extends Model {
+class RecipeModel extends Model {
 
 	/**
 	 * @var \PDO

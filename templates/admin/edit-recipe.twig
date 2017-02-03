@@ -3,7 +3,7 @@
 {% block title %}Redigera recept{% endblock %}
 {% block content %}
 	{% include "partials/page-header.twig" with { 'title' : 'Redigera recept' } %}
-	{% include "partials/form-recipe.twig" with { 'post_url' : path_for('admin.edit-recipe', {id:recipe.id}) } %}
+	{% include "partials/form-recipe.twig" with { 'post_url' : path_for('admin.post-edit-recipe', {id:recipe.id}) } %}
 {% endblock %}
 
 {#

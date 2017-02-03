@@ -78,7 +78,7 @@ class RecipeEntity extends Entity {
 			$this->images[] = $data['image1'];
 		}
 
-		if ( isset( $data['description'] ) ) {
+		if ( isset( $data['category_id'] ) ) {
 			$this->category_id = $data['category_id'];
 		}
 

@@ -10,7 +10,7 @@ namespace App\Controllers\API;
 use App\Controllers\Controller;
 use \Interop\Container\ContainerInterface as ContainerInterface;
 use App\Validation\RecipeValidator;
-use App\Models\Recipe;
+use App\Models\RecipeModel;
 use App\Entities\RecipeEntity;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -32,7 +32,7 @@ class RecipeMapper extends Controller {
 
 		$queryParams = $request->getQueryParams();
 
-		$model = new Recipe( $this->db );
+		$model = new RecipeModel( $this->db );
 
 		$recipes = $model->getList( $queryParams );
 
@@ -57,7 +57,7 @@ class RecipeMapper extends Controller {
 
 		$this->logger->info( "getRecipe started" );
 
-		$model = new Recipe( $this->db );
+		$model = new RecipeModel( $this->db );
 
 		$recipe = $model->get( $args['id'] );
 
@@ -102,7 +102,7 @@ class RecipeMapper extends Controller {
 
 			// Create our recipe entity
 			// $db      = $this->ci->get( 'db' );
-			$model   = new Recipe( $this->db );
+			$model   = new RecipeModel( $this->db );
 			$savedId = $model->create( new RecipeEntity( $data ) );
 
 			if ( false !== $savedId ) {
@@ -151,7 +151,7 @@ class RecipeMapper extends Controller {
 		$validator  = new RecipeValidator();
 		$status     = 200;
 
-		$model  = new Recipe( $this->db );
+		$model  = new RecipeModel( $this->db );
 		$recipe = $model->get( $args['id'] );
 
 		if ( false !== $recipe ) {
@@ -188,7 +188,7 @@ class RecipeMapper extends Controller {
 		$this->logger->info( "deleted recipe" );
 		$returnData = array();
 		$status     = 200;
-		$model      = new Recipe( $this->db );
+		$model      = new RecipeModel( $this->db );
 		$success    = $model->remove( $args['id'] );
 		if ( true === $success ) {
 			$returnData['status'] = 'ok';

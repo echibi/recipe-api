@@ -12,6 +12,7 @@ use Interop\Container\ContainerInterface;
 use Monolog\Logger;
 use Pixie\QueryBuilder\QueryBuilderHandler;
 use Slim\Flash\Messages;
+use Slim\Router;
 use Slim\Views\Twig;
 
 class Controller {
@@ -46,6 +47,11 @@ class Controller {
 	protected $logger;
 
 	/**
+	 * @var Router
+	 */
+	protected $router;
+
+	/**
 	 * Constructor
 	 *
 	 * @param ContainerInterface $ci
@@ -57,5 +63,6 @@ class Controller {
 		$this->view   = $ci->get( 'view' );
 		$this->flash  = $ci->get( 'flash' );
 		$this->auth   = $ci->get( 'auth' );
+		$this->router = $ci->get( 'router' );
 	}
 }
