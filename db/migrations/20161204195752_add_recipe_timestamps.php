@@ -25,9 +25,9 @@ class AddRecipeTimestamps extends AbstractMigration {
 	 * with the Table class.
 	 */
 	public function change() {
-		$table = $this->table('recipes');
-		$table->addColumn('created', 'datetime')
-			->addColumn('updated', 'datetime',array('null' => true))
+		$table = $this->table( 'recipes' );
+		$table->addColumn( 'created', 'datetime' )
+			->addColumn( 'updated', 'datetime', array( 'null' => true ) )
 			->update();
 	}
 }

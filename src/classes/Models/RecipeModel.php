@@ -20,6 +20,11 @@ class RecipeModel extends Model {
 	 */
 	protected $pdo;
 
+	/**
+	 * @var array Allowed fields to filter on.
+	 */
+	protected $fields;
+
 	public function __construct( ContainerInterface $container ) {
 		parent::__construct( $container );
 		$this->pdo = $this->db->pdo();
