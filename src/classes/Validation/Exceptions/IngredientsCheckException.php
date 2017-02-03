@@ -11,7 +11,7 @@ use Respect\Validation\Exceptions\ValidationException;
 class IngredientsCheckException extends ValidationException {
 	public static $defaultTemplates = [
 		self::MODE_DEFAULT => [
-			self::STANDARD => 'Ingredient check failed',
+			self::STANDARD => 'Need at least one ingredient',
 		],
 	];
 }

@@ -48,7 +48,7 @@
 				</li>
 			{% endif %}
 		{% endfor %}
-		<li class="repeatable list-group-item">
+		<li class="repeatable list-group-item{{ form_errors.ingredients ? ' has-danger' : '' }}">
 			<input class="form-control value" type="text" name="ingredients[{{ old.ingredients | length }}][value]" placeholder="Antal" />
 			<select class="form-control unit" name="ingredients[{{ old.ingredients | length }}][unit]">
 				{% for option in units %}
@@ -68,6 +68,11 @@
 				<i class="fa fa-plus-circle" aria-hidden="true"></i>
 			</button>
 		</li>
+		{% if form_errors.ingredients %}
+			<li class="list-group-item list-group-item-danger">
+				<span class="form-text">{{ form_errors.ingredients | first }}</span>
+			</li>
+		{% endif %}
 	</ul>
 	<div class="form-group">
 		<label for="category">Kategori</label>

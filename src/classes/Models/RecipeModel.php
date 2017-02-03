@@ -356,7 +356,7 @@ class RecipeModel extends Model {
 
 		$nowDatetime = date( 'Y-m-d H:i:s' );
 
-		$saveOk = $this->db->table( 'recipes' )->insert(
+		$savedId = $this->db->table( 'recipes' )->insert(
 			array(
 				'title'       => $recipe->title,
 				'description' => $recipe->description,
@@ -367,7 +367,7 @@ class RecipeModel extends Model {
 		);
 		//$this->logger;
 
-		if ( true === $saveOk ) {
+		if ( true === $savedId ) {
 
 			// Save OK
 			$recipeId = $db->lastInsertId();
