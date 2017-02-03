@@ -7,6 +7,8 @@
 namespace App\Models;
 
 
+use Interop\Container\ContainerInterface;
+use Monolog\Logger;
 use Pixie\QueryBuilder\QueryBuilderHandler;
 
 class Model {
@@ -16,9 +18,15 @@ class Model {
 	protected $db;
 
 	/**
-	 * @param QueryBuilderHandler $db
+	 * @var Logger
 	 */
-	function __construct( QueryBuilderHandler $db ) {
-		$this->db = $db;
+	protected $logger;
+
+	/**
+	 * @param ContainerInterface $container
+	 */
+	function __construct( ContainerInterface $container ) {
+		$this->db     = $container->get( 'db' );
+		$this->logger = $container->get( 'logger' );
 	}
 }

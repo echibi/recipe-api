@@ -32,7 +32,7 @@ class RecipeMapper extends Controller {
 
 		$queryParams = $request->getQueryParams();
 
-		$model = new RecipeModel( $this->db );
+		$model = new RecipeModel( $this->ci );
 
 		$recipes = $model->getList( $queryParams );
 
@@ -57,7 +57,7 @@ class RecipeMapper extends Controller {
 
 		$this->logger->info( "getRecipe started" );
 
-		$model = new RecipeModel( $this->db );
+		$model = new RecipeModel( $this->ci );
 
 		$recipe = $model->get( $args['id'] );
 
@@ -102,7 +102,7 @@ class RecipeMapper extends Controller {
 
 			// Create our recipe entity
 			// $db      = $this->ci->get( 'db' );
-			$model   = new RecipeModel( $this->db );
+			$model   = new RecipeModel( $this->ci );
 			$savedId = $model->create( new RecipeEntity( $data ) );
 
 			if ( false !== $savedId ) {
@@ -151,7 +151,7 @@ class RecipeMapper extends Controller {
 		$validator  = new RecipeValidator();
 		$status     = 200;
 
-		$model  = new RecipeModel( $this->db );
+		$model  = new RecipeModel( $this->ci );
 		$recipe = $model->get( $args['id'] );
 
 		if ( false !== $recipe ) {
@@ -188,7 +188,7 @@ class RecipeMapper extends Controller {
 		$this->logger->info( "deleted recipe" );
 		$returnData = array();
 		$status     = 200;
-		$model      = new RecipeModel( $this->db );
+		$model      = new RecipeModel( $this->ci );
 		$success    = $model->remove( $args['id'] );
 		if ( true === $success ) {
 			$returnData['status'] = 'ok';

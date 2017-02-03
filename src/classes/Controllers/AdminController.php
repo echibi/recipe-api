@@ -49,7 +49,7 @@ class AdminController extends Controller {
 	 */
 	public function index( Request $request, Response $response ) {
 
-		$recipeModel = new RecipeModel( $this->db );
+		$recipeModel = new RecipeModel( $this->ci );
 
 		$recipes = $recipeModel->getList( array(
 			'sort' => '-created',
@@ -143,7 +143,7 @@ class AdminController extends Controller {
 		$this->logger->addDebug( 'postCreate RecipeEntity', array( $recipeEntity ) );
 
 		// Save Entity
-		$recipeModel = new RecipeModel( $this->db );
+		$recipeModel = new RecipeModel( $this->ci );
 
 		$recipeModel->create( $recipeEntity );
 
@@ -165,7 +165,7 @@ class AdminController extends Controller {
 	public function getEditRecipe( Request $request, Response $response ) {
 
 		$id          = $request->getAttribute( 'id' );
-		$recipeModel = new RecipeModel( $this->db );
+		$recipeModel = new RecipeModel( $this->ci );
 		$recipe      = $recipeModel->get( $id );
 
 

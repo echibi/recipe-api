@@ -9,6 +9,7 @@ namespace App\Models;
 
 use App\Entities\RecipeEntity;
 use App\Helpers\Utilities;
+use Interop\Container\ContainerInterface;
 use Pixie\QueryBuilder;
 use Pixie\QueryBuilder\QueryBuilderHandler;
 
@@ -19,9 +20,9 @@ class RecipeModel extends Model {
 	 */
 	protected $pdo;
 
-	public function __construct( QueryBuilderHandler $db ) {
-		parent::__construct( $db );
-		$this->pdo = $db->pdo();
+	public function __construct( ContainerInterface $container ) {
+		parent::__construct( $container );
+		$this->pdo = $this->db->pdo();
 
 		$this->fields = array(
 			'title',
@@ -309,9 +310,9 @@ class RecipeModel extends Model {
 	 */
 	public function get( $id ) {
 
-		$recipeData = $this->db->table('recipes')->find( $id );
+		$recipeData = $this->db->table( 'recipes' )->find( $id );
 
-		if ( null === $recipeData  ) {
+		if ( null === $recipeData ) {
 			return null;
 		}
 
@@ -348,13 +349,9 @@ class RecipeModel extends Model {
 		/**/
 		$db = $this->pdo;
 
-		$prepareRecipeInsert = $db->prepare(
-			'INSERT INTO recipes ( title, description, created, updated, image1 )
-				 VALUES (:title, :description, :created, :updated, :image1)'
-		);
-
 		$nowDatetime = date( 'Y-m-d H:i:s' );
-		$saveOk      = $prepareRecipeInsert->execute(
+
+		$saveOk = $this->db->table( 'recipes' )->insert(
 			array(
 				'title'       => $recipe->title,
 				'description' => $recipe->description,
@@ -363,6 +360,7 @@ class RecipeModel extends Model {
 				'image1'      => '' // Placeholder
 			)
 		);
+		//$this->logger;
 
 		if ( true === $saveOk ) {
 

@@ -31,7 +31,7 @@ class Auth {
 		if ( !isset( $_SESSION['user'] ) ) {
 			return null;
 		}
-		$user = new UserModel( $this->db );
+		$user = new UserModel( $this->container );
 
 		return $user->get( $_SESSION['user'] );
 	}
