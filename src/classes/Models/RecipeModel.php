@@ -7,12 +7,17 @@
 
 namespace App\Models;
 
+use App\Entities\IngredientEntity;
 use App\Entities\RecipeEntity;
 use App\Helpers\Utilities;
 use Interop\Container\ContainerInterface;
 use Pixie\QueryBuilder;
 use Pixie\QueryBuilder\QueryBuilderHandler;
 
+/**
+ * Class RecipeModel
+ * @package App\Models
+ */
 class RecipeModel extends Model {
 
 	/**
@@ -60,8 +65,7 @@ class RecipeModel extends Model {
 
 			if ( isset( $rawData['ingredients'] ) ) {
 
-				//TODO:: Save ingredients. Check if they already exists.
-
+				// Just remove old ingredients and create new connections?
 				foreach ( $rawData['ingredients'] as $ingredient ) {
 					// We have an id on the ingredient
 					// Check if it exists.
@@ -95,7 +99,8 @@ class RecipeModel extends Model {
 		$item = $this->db->table( 'recipes' )->find( $id );
 
 		if ( $item ) {
-			$recipeDel = $this->db->table( 'recipes' )->where( 'id', '=', $id );
+			$recipeDel = $this->db->table( 'recipes' );
+			$recipeDel->where( 'id', '=', $id );
 			$recipeDel->delete();
 
 			$ingredientRelDel = $this->db->table( 'ingredients_rel' );
@@ -348,69 +353,37 @@ class RecipeModel extends Model {
 	 */
 	public function create( $recipe ) {
 
-		// TODO:: Rewrite.
-
-		// Connect to db and prepare inserts.
-		/**/
-		$db = $this->pdo;
-
-		$nowDatetime = date( 'Y-m-d H:i:s' );
+		$now = date( 'Y-m-d H:i:s' );
 
 		$savedId = $this->db->table( 'recipes' )->insert(
 			array(
 				'title'       => $recipe->title,
 				'description' => $recipe->description,
-				'created'     => $nowDatetime,
-				'updated'     => $nowDatetime,
-				'image1'      => '' // Placeholder
+				'created'     => $now,
+				'updated'     => $now,
+				'image1'      => '',
+				'category_id' => $recipe->category_id
 			)
 		);
-		//$this->logger;
 
-		if ( true === $savedId ) {
+		if ( !empty( $savedId ) ) {
 
 			// Save OK
-			$recipeId = $db->lastInsertId();
-
-			$prepareIngredientInsert    = $db->prepare(
-				'INSERT INTO ingredients ( name, slug )
-				 VALUES (:name, :slug)'
-			);
-			$prepareIngredientRelInsert = $db->prepare(
-				'INSERT INTO ingredients_rel ( recipe_id, ingredient_id, value, unit )
-				 VALUES (:recipe_id, :ingredient_id, :value, :unit)'
-			);
-
 			$ingredients = $recipe->ingredients;
 
 			if ( !empty( $ingredients ) ) {
+				$ingredientModel = new IngredientModel( $this->container );
 				foreach ( $ingredients as $ingredient ) {
-					// TODO:: only create new if the slug doesn't exist.
-					// Run query
-					$prepareIngredientInsert->execute(
-						array(
-							'name' => $ingredient['name'],
-							'slug' => Utilities::sanitize_title_with_dashes( $ingredient['name'] )
-						)
-					);
-					$ingredientId = $db->lastInsertId();
-					// Run rel query
-					$prepareIngredientRelInsert->execute(
-						array(
-							'recipe_id'     => $recipeId,
-							'ingredient_id' => $ingredientId,
-							'value'         => $ingredient['value'],
-							'unit'          => $ingredient['unit']
-						)
-					);
+					$ingredient['slug'] = Utilities::sanitize_title_with_dashes( $ingredient['name'] );
+					$ingredientObj      = new IngredientEntity( $ingredient );
+					$ingredientModel->createRecipeIngredient( $savedId, $ingredientObj );
 				}
 			}
 
-			return $recipeId;
+			return $savedId;
 		} else {
 			return false;
 		}
-		/**/
 	}
 
 	private function findRecipeIngredients( $ingredients ) {

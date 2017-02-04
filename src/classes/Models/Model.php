@@ -11,6 +11,10 @@ use Interop\Container\ContainerInterface;
 use Monolog\Logger;
 use Pixie\QueryBuilder\QueryBuilderHandler;
 
+/**
+ * Class Model
+ * @package App\Models
+ */
 class Model {
 	/**
 	 * @var QueryBuilderHandler
@@ -23,9 +27,15 @@ class Model {
 	protected $logger;
 
 	/**
+	 * @var ContainerInterface
+	 */
+	protected $container;
+
+	/**
 	 * @param ContainerInterface $container
 	 */
 	function __construct( ContainerInterface $container ) {
+		$this->container = $container;
 		$this->db     = $container->get( 'db' );
 		$this->logger = $container->get( 'logger' );
 	}

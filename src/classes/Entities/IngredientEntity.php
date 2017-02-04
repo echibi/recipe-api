@@ -1,18 +1,17 @@
 <?php
 /**
- * Created by jonas.
- * Project: recipe-api
- * Date: 2016-11-29
+ * Created by Jonas Rensfeldt.
+ * Date: 04/02/17
  */
 
 namespace App\Entities;
 
 
 /**
- * Class RecipeEntity
+ * Class IngredientEntity
  * @package App\Entities
  */
-class RecipeEntity extends Entity {
+class IngredientEntity extends Entity {
 
 	/**
 	 * @var int
@@ -21,29 +20,25 @@ class RecipeEntity extends Entity {
 	/**
 	 * @var string
 	 */
-	public $title;
+	public $name;
 	/**
 	 * @var string
 	 */
-	public $description;
+	public $slug;
 	/**
-	 * @var array
+	 * @var string
 	 */
-	public $ingredients;
+	public $value;
 	/**
-	 * @var array
+	 * @var string
 	 */
-	public $images;
+	public $unit;
 	/**
-	 * @var int
-	 */
-	public $category_id;
-	/**
-	 * @var string Y-m-d H:i:s
+	 * @var string Date
 	 */
 	public $created;
 	/**
-	 * @var string Y-m-d H:i:s
+	 * @var string Date
 	 */
 	public $updated;
 
@@ -62,24 +57,17 @@ class RecipeEntity extends Entity {
 			$this->id = $data['id'];
 		}
 
-		$this->title = $data['title'];
+		$this->name = $data['name'];
 
-		if ( isset( $data['description'] ) ) {
-			$this->description = $data['description'];
+		if ( isset( $data['value'] ) ) {
+			$this->value = $data['value'];
 		}
-
-		if ( isset( $data['ingredients'] ) ) {
-			$this->ingredients = $data['ingredients'];
+		if ( isset( $data['unit'] ) ) {
+			$this->unit = $data['unit'];
 		}
-
-		if ( isset( $data['image1'] ) ) {
-			$this->images[] = $data['image1'];
+		if ( isset( $data['slug'] ) ) {
+			$this->slug = $data['slug'];
 		}
-
-		if ( isset( $data['category_id'] ) ) {
-			$this->category_id = $data['category_id'];
-		}
-
 		if ( isset( $data['created'] ) ) {
 			$this->created = $data['created'];
 		}
@@ -87,5 +75,4 @@ class RecipeEntity extends Entity {
 			$this->updated = $data['updated'];
 		}
 	}
-
 }
