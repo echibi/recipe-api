@@ -31,6 +31,7 @@ class IngredientModel extends Model {
 				)
 			);
 		} else {
+			// TODO:: Maybe update the existing one? If the name uses different uppercase etc.
 			$ingredientId = $existingIngredient->id;
 		}
 

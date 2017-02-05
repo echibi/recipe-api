@@ -326,18 +326,20 @@ class RecipeModel extends Model {
 			return null;
 		}
 
-		// TODO:: Rewrite
-		$prepareSelectIngredients = $this->pdo->prepare(
-			'SELECT i.id, i.name, i.slug, rel.value, rel.unit
-			 FROM ingredients_rel AS rel
-			 JOIN ingredients AS i ON ( i.id = rel.ingredient_id )
-			 WHERE rel.recipe_id = :id'
+		$ingredientsRel = $this->db->table( 'ingredients_rel' );
+		$ingredientsRel->select(
+			array(
+				'ingredients_rel.value',
+				'ingredients_rel.unit',
+				'i.id',
+				'i.name',
+				'i.slug'
+			)
 		);
+		$ingredientsRel->join( [ 'ingredients', 'i' ], 'i.id', '=', 'ingredients_rel.ingredient_id' );
+		$ingredientsRel->where( 'recipe_id', '=', $recipeData->id );
 
-		$prepareSelectIngredients->execute( array( 'id' => $id ) );
-
-
-		$ingredients = $prepareSelectIngredients->fetchAll();
+		$ingredients = $ingredientsRel->get();
 
 		if ( !empty( $ingredients ) ) {
 			$recipeData->ingredients = $ingredients;
