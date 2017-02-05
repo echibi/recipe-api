@@ -96,9 +96,7 @@ class AdminController extends Controller {
 		}
 
 		// Validation OK
-
-		// $this->logger->addDebug( 'postCreate', array( $request->getParams() ) );
-
+		
 		// Create RecipeEntity
 		$recipeEntity = new RecipeEntity(
 			array_merge(
@@ -107,9 +105,10 @@ class AdminController extends Controller {
 			)
 		);
 
-		$this->logger->addDebug( 'postCreate RecipeEntity', array( $recipeEntity ) );
-
 		// Save Entity
+		/**
+		 * @var RecipeModel $recipeModel
+		 */
 		$recipeModel = $this->ci->get( 'RecipeModel' );
 
 		$recipeModel->create( $recipeEntity );
@@ -163,7 +162,7 @@ class AdminController extends Controller {
 		// Get Categories
 		$viewData['categories'] = $categoryModel->getAll();
 		// Get Units
-		$viewData['units']      = $unitModel->getAll();
+		$viewData['units'] = $unitModel->getAll();
 
 		$this->logger->addDebug( 'recipeEdit', array(
 			'id'       => $id,
@@ -195,8 +194,24 @@ class AdminController extends Controller {
 		if ( $validation->failed() ) {
 			return $response->withRedirect( $this->router->pathFor( 'admin.edit-recipe', array( 'id' => $id ) ) );
 		}
-
 		// Validation OK
+
+		// Create RecipeEntity
+		$recipeEntity = new RecipeEntity(
+			array_merge(
+				$request->getParams(),
+				$request->getUploadedFiles()
+			)
+		);
+
+		/**
+		 * @var RecipeModel $recipeModel
+		 */
+		$recipeModel = $this->ci->get( 'RecipeModel' );
+		$recipeModel->update( $id, $recipeEntity );
+
+		return $response->withRedirect( $this->router->pathFor( 'admin.edit-recipe', array( 'id' => $id ) ) );
+
 	}
 
 	/**

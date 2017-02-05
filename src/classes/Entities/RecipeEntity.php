@@ -6,6 +6,7 @@
  */
 
 namespace App\Entities;
+use Slim\Http\UploadedFile;
 
 
 /**
@@ -85,6 +86,18 @@ class RecipeEntity extends Entity {
 		}
 		if ( isset( $data['updated'] ) ) {
 			$this->updated = $data['updated'];
+		}
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getMainImage() {
+		// Temporary..
+		if ( isset( $this->images[0] ) && $this->images[0] instanceof UploadedFile ) {
+			return $this->images[0]->file;
+		} else {
+			return '';
 		}
 	}
 

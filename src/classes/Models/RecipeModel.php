@@ -44,50 +44,6 @@ class RecipeModel extends Model {
 	}
 
 	/**
-	 * Updates recipe.
-	 *
-	 * @param $id
-	 * @param $data
-	 *
-	 * @return bool
-	 */
-	public function update( $id, $data ) {
-
-		$rawData = $data;
-
-		$item = $this->db->table( self::table )->find( $id );
-
-		if ( $item ) {
-
-			unset( $data['ingredients'] );
-
-			$this->db->table( self::table )->where( 'id', $id )->update( $data );
-
-			if ( isset( $rawData['ingredients'] ) ) {
-
-				// Just remove old ingredients and create new connections?
-				foreach ( $rawData['ingredients'] as $ingredient ) {
-					// We have an id on the ingredient
-					// Check if it exists.
-					if ( isset( $ingredient['id'] ) ) {
-						$ingredientRow = $this->db->table( 'ingredients_rel' )->find( $ingredient['id'] );
-						if ( $ingredientRow ) {
-							// Ingredient exists.
-
-						}
-					}
-				}
-				// $insertIds = QB::table('my_table')->insert( $data );
-
-			}
-
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	/**
 	 * Removes a recipe and its related rows.
 	 *
 	 * @param $id
@@ -114,6 +70,130 @@ class RecipeModel extends Model {
 			return false;
 		}
 
+	}
+
+	/**
+	 * Fetches one recipe with all related info
+	 *
+	 * @param $id
+	 *
+	 * @return RecipeEntity on success false on failure.
+	 */
+	public function get( $id ) {
+
+		$recipeData = $this->db->table( self::table )->find( $id );
+
+		if ( null === $recipeData ) {
+			return null;
+		}
+		/**
+		 * @var IngredientModel $ingredientModel
+		 */
+		$ingredientModel = $this->container->get( 'IngredientModel' );
+		$ingredients     = $ingredientModel->getRecipeIngredients( $id );
+
+		if ( !empty( $ingredients ) ) {
+			$recipeData->ingredients = $ingredients;
+		}
+
+		return new RecipeEntity( $recipeData );
+	}
+
+	/**
+	 * Update recipe.
+	 *
+	 * @param              $id
+	 * @param RecipeEntity $recipe
+	 *
+	 * @return bool
+	 */
+	public function update( $id, RecipeEntity $recipe ) {
+
+		$this->logger->addDebug( 'updateREcipe', array( 'mainImage', $recipe->getMainImage() ) );
+		$item = $this->db->table( self::table )->find( $id );
+
+		if ( $item ) {
+			$now = date( 'Y-m-d H:i:s' );
+			$this->db->table( self::table )->where( 'id', $id )->update(
+				array(
+					'title'       => $recipe->title,
+					'description' => $recipe->description,
+					'updated'     => $now,
+					'image1'      => $recipe->getMainImage(),
+					'category_id' => $recipe->category_id
+				)
+			);
+
+			if ( !empty( $recipe->ingredients ) ) {
+
+				// Just remove old recipeIngredients and create new connections
+
+				/**
+				 * @var IngredientModel $ingredientModel
+				 */
+				$ingredientModel = $this->container->get( 'IngredientModel' );
+				$ingredientModel->removeRecipeIngredients( $id );
+
+				foreach ( $recipe->ingredients as $ingredient ) {
+					// Create slug
+					$ingredient['slug'] = Utilities::sanitize_title_with_dashes( $ingredient['name'] );
+					// Create IngredientEntity
+					$ingredientObj = new IngredientEntity( $ingredient );
+					// Save Ingredient
+					$ingredientModel->createRecipeIngredient( $id, $ingredientObj );
+				}
+			}
+
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * @param  RecipeEntity $recipe
+	 *
+	 * @return bool|int Returns saved recipe ID on success and false on failure.
+	 */
+	public function create( $recipe ) {
+
+		$now = date( 'Y-m-d H:i:s' );
+
+		$savedId = $this->db->table( self::table )->insert(
+			array(
+				'title'       => $recipe->title,
+				'description' => $recipe->description,
+				'created'     => $now,
+				'updated'     => $now,
+				'image1'      => '',
+				'category_id' => $recipe->category_id
+			)
+		);
+
+		if ( !empty( $savedId ) ) {
+
+			// Save OK
+			$ingredients = $recipe->ingredients;
+
+			if ( !empty( $ingredients ) ) {
+				/**
+				 * @var IngredientModel $ingredientModel
+				 */
+				$ingredientModel = $this->container->get( 'IngredientModel' );
+				foreach ( $ingredients as $ingredient ) {
+					// Create slug
+					$ingredient['slug'] = Utilities::sanitize_title_with_dashes( $ingredient['name'] );
+					// Create IngredientEntity
+					$ingredientObj = new IngredientEntity( $ingredient );
+					// Save Ingredient
+					$ingredientModel->createRecipeIngredient( $savedId, $ingredientObj );
+				}
+			}
+
+			return $savedId;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -311,89 +391,6 @@ class RecipeModel extends Model {
 		}
 
 		return $result;
-	}
-
-	/**
-	 * Fetches one recipe with all related info
-	 *
-	 * @param $id
-	 *
-	 * @return RecipeEntity on success false on failure.
-	 */
-	public function get( $id ) {
-
-		$recipeData = $this->db->table( self::table )->find( $id );
-
-		if ( null === $recipeData ) {
-			return null;
-		}
-
-		$ingredientsRel = $this->db->table( 'ingredients_rel' );
-		$ingredientsRel->select(
-			array(
-				'ingredients_rel.value',
-				'ingredients_rel.unit',
-				'i.id',
-				'i.name',
-				'i.slug'
-			)
-		);
-		$ingredientsRel->join( [ 'ingredients', 'i' ], 'i.id', '=', 'ingredients_rel.ingredient_id' );
-		$ingredientsRel->where( 'recipe_id', '=', $recipeData->id );
-
-		$ingredients = $ingredientsRel->get();
-
-		if ( !empty( $ingredients ) ) {
-			$recipeData->ingredients = $ingredients;
-		}
-
-		return new RecipeEntity( $recipeData );
-	}
-
-	/**
-	 * @param  RecipeEntity $recipe
-	 *
-	 * @return bool|int Returns saved recipe ID on success and false on failure.
-	 */
-	public function create( $recipe ) {
-
-		$now = date( 'Y-m-d H:i:s' );
-
-		$savedId = $this->db->table( self::table )->insert(
-			array(
-				'title'       => $recipe->title,
-				'description' => $recipe->description,
-				'created'     => $now,
-				'updated'     => $now,
-				'image1'      => '',
-				'category_id' => $recipe->category_id
-			)
-		);
-
-		if ( !empty( $savedId ) ) {
-
-			// Save OK
-			$ingredients = $recipe->ingredients;
-
-			if ( !empty( $ingredients ) ) {
-				/**
-				 * @var IngredientModel $ingredientModel
-				 */
-				$ingredientModel = $this->container->get( 'IngredientModel' );
-				foreach ( $ingredients as $ingredient ) {
-					// Create slug
-					$ingredient['slug'] = Utilities::sanitize_title_with_dashes( $ingredient['name'] );
-					// Create IngredientEntity
-					$ingredientObj = new IngredientEntity( $ingredient );
-					// Save Ingredient
-					$ingredientModel->createRecipeIngredient( $savedId, $ingredientObj );
-				}
-			}
-
-			return $savedId;
-		} else {
-			return false;
-		}
 	}
 
 	/**

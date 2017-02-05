@@ -14,6 +14,28 @@ class IngredientModel extends Model {
 	const table_rel = 'ingredients_rel';
 
 	/**
+	 * @param $recipeId
+	 *
+	 * @return mixed
+	 */
+	public function getRecipeIngredients( $recipeId ){
+		$ingredientsRel = $this->db->table( 'ingredients_rel' );
+		$ingredientsRel->select(
+			array(
+				'ingredients_rel.value',
+				'ingredients_rel.unit',
+				'i.id',
+				'i.name',
+				'i.slug'
+			)
+		);
+		$ingredientsRel->join( [ 'ingredients', 'i' ], 'i.id', '=', 'ingredients_rel.ingredient_id' );
+		$ingredientsRel->where( 'recipe_id', '=', $recipeId );
+
+		return $ingredientsRel->get();
+	}
+
+	/**
 	 * Create an ingredient that's connected to a recipe.
 	 *
 	 * @param int              $recipeId

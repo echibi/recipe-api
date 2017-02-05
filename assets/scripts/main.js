@@ -68,6 +68,7 @@ $(function () {
 			if ((undefined === nameVal || '' === nameVal) && (undefined === valueVal || '' === valueVal)) {
 				$valueInput.attr('name', null);
 				$nameInput.attr('name', null);
+				$('select.unit', obj).attr('name', null);
 			}
 		});
 	});

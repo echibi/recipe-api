@@ -18,7 +18,6 @@ class IngredientsCheck extends AbstractRule {
 	 * @return bool
 	 */
 	public function validate( $input ) {
-		// TODO::
 		if ( !is_array( $input ) || empty( $input ) ) {
 			return false;
 		}

@@ -24,6 +24,11 @@
 		<li class="list-group-item list-group-item-info">
 			Ingredienser
 		</li>
+		{% if form_errors.ingredients %}
+			<li class="list-group-item list-group-item-danger">
+				<span class="form-text">{{ form_errors.ingredients | first }}</span>
+			</li>
+		{% endif %}
 		{% for ingredient in old.ingredients %}
 			{% if ingredient.name %}
 				<li class="repeatable list-group-item">
@@ -68,11 +73,6 @@
 				<i class="fa fa-plus-circle" aria-hidden="true"></i>
 			</button>
 		</li>
-		{% if form_errors.ingredients %}
-			<li class="list-group-item list-group-item-danger">
-				<span class="form-text">{{ form_errors.ingredients | first }}</span>
-			</li>
-		{% endif %}
 	</ul>
 	<div class="form-group">
 		<label for="category">Kategori</label>
