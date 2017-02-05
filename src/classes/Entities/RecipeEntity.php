@@ -6,6 +6,7 @@
  */
 
 namespace App\Entities;
+
 use Slim\Http\UploadedFile;
 
 
@@ -35,6 +36,10 @@ class RecipeEntity extends Entity {
 	 * @var array
 	 */
 	public $images;
+	/**
+	 * @var array
+	 */
+	public $image1;
 	/**
 	 * @var int
 	 */
@@ -75,6 +80,7 @@ class RecipeEntity extends Entity {
 
 		if ( isset( $data['image1'] ) ) {
 			$this->images[] = $data['image1'];
+			$this->image1   = $data['image1'];
 		}
 
 		if ( isset( $data['category_id'] ) ) {
@@ -94,8 +100,8 @@ class RecipeEntity extends Entity {
 	 */
 	public function getMainImage() {
 		// Temporary..
-		if ( isset( $this->images[0] ) && $this->images[0] instanceof UploadedFile ) {
-			return $this->images[0]->file;
+		if ( isset( $this->image1 ) ) {
+			return $this->image1;
 		} else {
 			return '';
 		}

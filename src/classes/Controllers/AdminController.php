@@ -9,6 +9,7 @@ namespace App\Controllers;
 
 use App\Entities\RecipeEntity;
 use App\Models\CategoryModel;
+use App\Models\ImageModel;
 use App\Models\RecipeModel;
 use App\Models\UnitModel;
 use App\Validation\RecipeValidator;
@@ -96,14 +97,28 @@ class AdminController extends Controller {
 		}
 
 		// Validation OK
-		
+		$recipeData = $request->getParams();
+
+		$files = $request->getUploadedFiles();
+
+		if ( isset( $files['image1'] ) ) {
+			/**
+			 * @var ImageModel $imageModel
+			 */
+			$imageModel = $this->ci->get( 'ImageModel' );
+			$imageId    = $imageModel->create( $files['image1'] );
+			if ( null !== $imageId ) {
+				$recipeData = array_merge(
+					$request->getParams(),
+					array(
+						'image1' => $imageId
+					)
+				);
+			}
+		}
+
 		// Create RecipeEntity
-		$recipeEntity = new RecipeEntity(
-			array_merge(
-				$request->getParams(),
-				$request->getUploadedFiles()
-			)
-		);
+		$recipeEntity = new RecipeEntity( $recipeData );
 
 		// Save Entity
 		/**
@@ -195,14 +210,27 @@ class AdminController extends Controller {
 			return $response->withRedirect( $this->router->pathFor( 'admin.edit-recipe', array( 'id' => $id ) ) );
 		}
 		// Validation OK
+		$recipeData = $request->getParams();
 
+		$files = $request->getUploadedFiles();
+
+		if ( isset( $files['image1'] ) ) {
+			/**
+			 * @var ImageModel $imageModel
+			 */
+			$imageModel = $this->ci->get( 'ImageModel' );
+			$imageId    = $imageModel->create( $files['image1'] );
+			if ( null !== $imageId ) {
+				$recipeData = array_merge(
+					$request->getParams(),
+					array(
+						'image1' => $imageId
+					)
+				);
+			}
+		}
 		// Create RecipeEntity
-		$recipeEntity = new RecipeEntity(
-			array_merge(
-				$request->getParams(),
-				$request->getUploadedFiles()
-			)
-		);
+		$recipeEntity = new RecipeEntity( $recipeData );
 
 		/**
 		 * @var RecipeModel $recipeModel

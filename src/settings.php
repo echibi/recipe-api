@@ -24,6 +24,9 @@ return [
 			'level' => \Monolog\Logger::DEBUG,
 			'max_files' => 60
 		],
+		'upload' => [
+			'dir' => __DIR__ . '/../public/uploads'
+		]
 	],
 ];
 

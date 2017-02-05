@@ -1,7 +1,7 @@
 {#
 {{ categories | json_encode }}
 #}
-{{ form_errors | json_encode }}
+{{ recipe | json_encode }}
 <form id="edit-recipe" method="post" action="{{ post_url }}" enctype="multipart/form-data">
 	<div class="form-group{{ form_errors.title ? ' has-danger' : '' }}">
 		<label for="title">Titel</label>
@@ -37,7 +37,7 @@
 						{% for option in units %}
 							<option value="{{ option.name }}"
 								{% if option.name in ingredient.unit %}
-									selected
+							selected
 								{% endif %}>
 								{{ option.name }}
 							</option>
@@ -58,7 +58,7 @@
 			<select class="form-control unit" name="ingredients[{{ old.ingredients | length }}][unit]">
 				{% for option in units %}
 					<option value="{{ option.name }}"
-						{% if loop.first  %}
+						{% if loop.first %}
 					selected
 						{% endif %}>
 						{{ option.name }}
@@ -88,6 +88,9 @@
 	</div>
 	<div class="form-group">
 		<label for="image1">Huvudbild</label>
+		{% if recipe.getMainImage() %}
+			<img src="{{ base_url() }}{{ recipe.image1.src }}" alt="" />
+		{% endif %}
 		<input type="file" class="form-control-file" id="image1" name="image1" aria-describedby="fileHelp">
 		<small id="fileHelp" class="form-text text-muted">Ladda gärna upp en bild på slutresultatet.</small>
 	</div>

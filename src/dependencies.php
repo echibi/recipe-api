@@ -136,4 +136,12 @@ $container['IngredientModel'] = function ( ContainerInterface $c ) {
 $container['UserModel'] = function ( ContainerInterface $c ) {
 	return new \App\Models\UserModel( $c );
 };
+$container['ImageModel'] = function ( ContainerInterface $c ) {
+	return new \App\Models\ImageModel( $c );
+};
+
+// Other classes
+$container['ImageUpload'] = function ( ContainerInterface $c ) {
+	return new \App\Upload\ImageUpload( $c );
+};
 

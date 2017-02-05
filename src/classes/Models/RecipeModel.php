@@ -96,6 +96,14 @@ class RecipeModel extends Model {
 			$recipeData->ingredients = $ingredients;
 		}
 
+		/**
+		 * @var ImageModel $imageModel
+		 */
+		$imageModel = $this->container->get( 'ImageModel' );
+		$image      = $imageModel->get( $recipeData->image1 );
+
+		$recipeData->image1 = $image;
+
 		return new RecipeEntity( $recipeData );
 	}
 
