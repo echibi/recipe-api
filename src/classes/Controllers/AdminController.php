@@ -8,6 +8,7 @@ namespace App\Controllers;
 
 
 use App\Entities\RecipeEntity;
+use App\Models\CategoryModel;
 use App\Models\RecipeModel;
 use App\Validation\RecipeValidator;
 use App\Validation\Validator;
@@ -71,30 +72,10 @@ class AdminController extends Controller {
 	 */
 	public function getCreateRecipe( Request $request, Response $response ) {
 
-		//TODO:: Move to DB...
-		$categories = array(
-			array(
-				'id'   => 0,
-				'name' => 'Huvudrätt',
-				'slug' => 'huvudrätt'
-			),
-			array(
-				'id'   => 1,
-				'name' => 'Bakverk',
-				'slug' => 'bakverk'
-			),
-			array(
-				'id'   => 2,
-				'name' => 'Sylt',
-				'slug' => 'sylt'
-			),
-			array(
-				'id'   => 3,
-				'name' => 'Sås',
-				'slug' => 'sas'
-			),
-		);
+		$categoryModel = new CategoryModel( $this->ci );
+		$categories = $categoryModel->getAll();
 
+		//TODO:: Move to DB...
 		$units = array(
 			array( 'name' => 'st' ),
 			array( 'name' => 'krm' ),
@@ -167,17 +148,8 @@ class AdminController extends Controller {
 		$id          = $request->getAttribute( 'id' );
 		$recipeModel = new RecipeModel( $this->ci );
 		$recipe      = $recipeModel->get( $id );
-
-
-		$array = array(
-			'id'          => $recipe->id,
-			'title'       => $recipe->title,
-			'description' => $recipe->description,
-			'ingredients' => $recipe->ingredients,
-			'category_id' => $recipe->category_id,
-			'created'     => $recipe->created,
-			'updated'     => $recipe->updated,
-		);
+		
+		$categoryModel = new CategoryModel( $this->ci );
 
 		$globals = $this->view->getEnvironment()->getGlobals();
 
@@ -186,6 +158,7 @@ class AdminController extends Controller {
 		if ( empty( $globals['old'] ) ) {
 			$viewData['old'] = $recipe;
 		}
+		$viewData['categories'] = $categoryModel->getAll();
 
 		$this->logger->addDebug( 'recipe Edit', array(
 			'id'       => $id,
