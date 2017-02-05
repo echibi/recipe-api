@@ -10,6 +10,9 @@ use App\Entities\IngredientEntity;
 
 class IngredientModel extends Model {
 
+	const table = 'ingredients';
+	const table_rel = 'ingredients_rel';
+
 	/**
 	 * Create an ingredient that's connected to a recipe.
 	 *
@@ -18,11 +21,11 @@ class IngredientModel extends Model {
 	 */
 	public function createRecipeIngredient( $recipeId, IngredientEntity $ingredient ) {
 
-		$existingIngredient = $this->db->table( 'ingredients' )->find( $ingredient->slug, 'slug' );
+		$existingIngredient = $this->db->table( self::table )->find( $ingredient->slug, 'slug' );
 		// Only create a new ingredient if the slug doesn't already exists.
 		if ( null === $existingIngredient ) {
 			$now          = date( 'Y-m-d H:i:s' );
-			$ingredientId = $this->db->table( 'ingredients' )->insert(
+			$ingredientId = $this->db->table( self::table )->insert(
 				array(
 					'name'    => $ingredient->name,
 					'slug'    => $ingredient->slug,
@@ -36,7 +39,7 @@ class IngredientModel extends Model {
 		}
 
 		// Create Recipe -> Ingredient Relation.
-		return $this->db->table( 'ingredients_rel' )->insert(
+		return $this->db->table( self::table_rel )->insert(
 			array(
 				'recipe_id'     => $recipeId,
 				'ingredient_id' => $ingredientId,
@@ -44,5 +47,17 @@ class IngredientModel extends Model {
 				'unit'          => $ingredient->unit,
 			)
 		);
+	}
+
+	/**
+	 * @param $recipeId
+	 *
+	 * @return mixed
+	 */
+	public function removeRecipeIngredients( $recipeId ) {
+		$ingredientRelDel = $this->db->table( self::table_rel );
+		$ingredientRelDel->where( 'recipe_id', '=', $recipeId );
+
+		return $ingredientRelDel->delete();
 	}
 }

@@ -11,14 +11,14 @@ use App\Entities\IngredientEntity;
 use App\Entities\RecipeEntity;
 use App\Helpers\Utilities;
 use Interop\Container\ContainerInterface;
-use Pixie\QueryBuilder;
-use Pixie\QueryBuilder\QueryBuilderHandler;
 
 /**
  * Class RecipeModel
  * @package App\Models
  */
 class RecipeModel extends Model {
+
+	const table = 'recipes';
 
 	/**
 	 * @var \PDO
@@ -55,13 +55,13 @@ class RecipeModel extends Model {
 
 		$rawData = $data;
 
-		$item = $this->db->table( 'recipes' )->find( $id );
+		$item = $this->db->table( self::table )->find( $id );
 
 		if ( $item ) {
 
 			unset( $data['ingredients'] );
 
-			$this->db->table( 'recipes' )->where( 'id', $id )->update( $data );
+			$this->db->table( self::table )->where( 'id', $id )->update( $data );
 
 			if ( isset( $rawData['ingredients'] ) ) {
 
@@ -96,16 +96,18 @@ class RecipeModel extends Model {
 	 */
 	public function remove( $id ) {
 
-		$item = $this->db->table( 'recipes' )->find( $id );
+		$item = $this->db->table( self::table )->find( $id );
 
 		if ( $item ) {
-			$recipeDel = $this->db->table( 'recipes' );
+			$recipeDel = $this->db->table( self::table );
 			$recipeDel->where( 'id', '=', $id );
 			$recipeDel->delete();
 
-			$ingredientRelDel = $this->db->table( 'ingredients_rel' );
-			$ingredientRelDel->where( 'recipe_id', '=', $id );
-			$ingredientRelDel->delete();
+			/**
+			 * @var IngredientModel $ingredientModel
+			 */
+			$ingredientModel = $this->container->get( 'IngredientModel' );
+			$ingredientModel->removeRecipeIngredients( $id );
 
 			return true;
 		} else {
@@ -320,7 +322,7 @@ class RecipeModel extends Model {
 	 */
 	public function get( $id ) {
 
-		$recipeData = $this->db->table( 'recipes' )->find( $id );
+		$recipeData = $this->db->table( self::table )->find( $id );
 
 		if ( null === $recipeData ) {
 			return null;
@@ -357,7 +359,7 @@ class RecipeModel extends Model {
 
 		$now = date( 'Y-m-d H:i:s' );
 
-		$savedId = $this->db->table( 'recipes' )->insert(
+		$savedId = $this->db->table( self::table )->insert(
 			array(
 				'title'       => $recipe->title,
 				'description' => $recipe->description,
@@ -377,10 +379,13 @@ class RecipeModel extends Model {
 				/**
 				 * @var IngredientModel $ingredientModel
 				 */
-				$ingredientModel = $this->container->get('IngredientModel');
+				$ingredientModel = $this->container->get( 'IngredientModel' );
 				foreach ( $ingredients as $ingredient ) {
+					// Create slug
 					$ingredient['slug'] = Utilities::sanitize_title_with_dashes( $ingredient['name'] );
-					$ingredientObj      = new IngredientEntity( $ingredient );
+					// Create IngredientEntity
+					$ingredientObj = new IngredientEntity( $ingredient );
+					// Save Ingredient
 					$ingredientModel->createRecipeIngredient( $savedId, $ingredientObj );
 				}
 			}
@@ -391,6 +396,11 @@ class RecipeModel extends Model {
 		}
 	}
 
+	/**
+	 * @param $ingredients
+	 *
+	 * @return array
+	 */
 	private function findRecipeIngredients( $ingredients ) {
 		$ingredients = explode( ',', $ingredients );
 		$ingredients = array_map(

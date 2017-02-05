@@ -11,12 +11,12 @@ class UnitModel extends Model {
 	/**
 	 * @var string
 	 */
-	const table = 'units';
+	const TABLE = 'units';
 
 	/**
 	 * @return array
 	 */
 	public function getAll() {
-		return $this->db->table( self::table )->get();
+		return $this->db->table( self::TABLE )->get();
 	}
 }
