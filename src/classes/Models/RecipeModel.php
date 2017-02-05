@@ -127,7 +127,7 @@ class RecipeModel extends Model {
 					'title'       => $recipe->title,
 					'description' => $recipe->description,
 					'updated'     => $now,
-					'image1'      => $recipe->getMainImage(),
+					'image1'      => $recipe->image1->id,
 					'category_id' => $recipe->category_id
 				)
 			);

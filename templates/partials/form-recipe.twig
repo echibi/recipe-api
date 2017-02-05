@@ -88,8 +88,8 @@
 	</div>
 	<div class="form-group">
 		<label for="image1">Huvudbild</label>
-		{% if recipe.getMainImage() %}
-			<img src="{{ base_url() }}{{ recipe.image1.src }}" alt="" />
+		{% if recipe.image1 %}
+			<img src="{{ base_url() }}{{ recipe.image1.path }}" alt="" />
 		{% endif %}
 		<input type="file" class="form-control-file" id="image1" name="image1" aria-describedby="fileHelp">
 		<small id="fileHelp" class="form-text text-muted">Ladda gärna upp en bild på slutresultatet.</small>

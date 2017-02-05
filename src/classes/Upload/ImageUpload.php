@@ -23,13 +23,6 @@ class ImageUpload extends Upload {
 	 */
 	public function upload( UploadedFile $file ) {
 		// TODO:: Generate thumbnails somewhere.
-
-		$filename = uniqid( 'img_', true ) . '.' . $this->getFileExtension( $file );
-		$path     = $this->path . '/' . $filename;
-
-		$this->createPath( $this->path );
-		$file->moveTo( $path );
-
-		return $this->current_path . '/' . $filename;
+		return parent::upload( $file, 'img_' );
 	}
 }

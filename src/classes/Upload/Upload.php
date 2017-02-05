@@ -33,28 +33,30 @@ class Upload {
 	 * @param ContainerInterface $container
 	 */
 	public function __construct( ContainerInterface $container ) {
-		$this->container = $container;
-		$this->base_path = $this->container['settings']['upload']['dir'];
+		$this->container    = $container;
+		$this->base_path    = $this->container['settings']['upload']['dir'];
 		$this->current_path = '/' . date( 'Y' ) . '/' . date( 'm' );
-		$this->path      = $this->base_path . $this->current_path;
+		$this->path         = $this->base_path . $this->current_path;
 	}
 
 	/**
 	 * Renames and moves file to correct location
 	 *
 	 * @param UploadedFile $file
+	 * @param string       $prefix
 	 *
-	 * @return string Full path to file
+	 * @return string path to file
 	 */
-	public function upload( UploadedFile $file ) {
+	public function upload( UploadedFile $file, $prefix = '' ) {
 
-		$filename = uniqid( '', true ) . '.' . $this->getFileExtension( $file );
+		$filename = uniqid( $prefix, true ) . '.' . $this->getFileExtension( $file );
 		$path     = $this->path . '/' . $filename;
 
 		$this->createPath( $this->path );
 		$file->moveTo( $path );
 
-		return $this->current_path . '/' . $filename;
+		// TODO:: This is not very good...
+		return '/' . basename( $this->base_path ) . $this->current_path . '/' . $filename;
 	}
 
 	/**

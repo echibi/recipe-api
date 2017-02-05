@@ -32,12 +32,9 @@ class RecipeEntity extends Entity {
 	 * @var array
 	 */
 	public $ingredients;
+
 	/**
-	 * @var array
-	 */
-	public $images;
-	/**
-	 * @var array
+	 * @var ImageEntity
 	 */
 	public $image1;
 	/**
@@ -78,8 +75,7 @@ class RecipeEntity extends Entity {
 			$this->ingredients = $data['ingredients'];
 		}
 
-		if ( isset( $data['image1'] ) ) {
-			$this->images[] = $data['image1'];
+		if ( $data['image1'] instanceof ImageEntity ) {
 			$this->image1   = $data['image1'];
 		}
 
@@ -94,17 +90,4 @@ class RecipeEntity extends Entity {
 			$this->updated = $data['updated'];
 		}
 	}
-
-	/**
-	 * @return string
-	 */
-	public function getMainImage() {
-		// Temporary..
-		if ( isset( $this->image1 ) ) {
-			return $this->image1;
-		} else {
-			return '';
-		}
-	}
-
 }

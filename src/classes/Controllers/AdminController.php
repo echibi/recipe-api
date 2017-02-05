@@ -111,7 +111,7 @@ class AdminController extends Controller {
 				$recipeData = array_merge(
 					$request->getParams(),
 					array(
-						'image1' => $imageId
+						'image1' => $imageModel->get( $imageId )
 					)
 				);
 			}
@@ -224,7 +224,7 @@ class AdminController extends Controller {
 				$recipeData = array_merge(
 					$request->getParams(),
 					array(
-						'image1' => $imageId
+						'image1' => $imageModel->get( $imageId )
 					)
 				);
 			}

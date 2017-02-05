@@ -7,6 +7,7 @@
 namespace App\Models;
 
 
+use App\Entities\ImageEntity;
 use App\Upload\ImageUpload;
 use Slim\Http\UploadedFile;
 
@@ -17,11 +18,16 @@ use Slim\Http\UploadedFile;
 class ImageModel extends Model {
 	const table = 'images';
 
+	/**
+	 * @param        $id
+	 * @param string $field
+	 *
+	 * @return ImageEntity
+	 */
 	public function get( $id, $field = 'id' ) {
 		$image = $this->db->table( self::table )->find( $id, $field );
 		if ( null !== $image ) {
-			// This might need to change...
-			$image->src = '/' . basename( $this->container['settings']['upload']['dir'] ) . $image->system_path;
+			$image = new ImageEntity( $image );
 		}
 
 		return $image;
