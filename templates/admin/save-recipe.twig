@@ -1,0 +1,7 @@
+{% extends "base.twig" %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+	{% include "partials/page-header.twig" with { 'title' : title } %}
+	{% include "partials/form-recipe.twig" with { 'post_url' : path_for('admin.post-save-recipe', {id:recipe.id}) } %}
+{% endblock %}

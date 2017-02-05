@@ -65,29 +65,13 @@ class RecipeEntity extends Entity {
 			$this->id = $data['id'];
 		}
 
-		$this->title = $data['title'];
+		$this->title       = $data['title'];
+		$this->description = $data['description'];
+		$this->ingredients = $data['ingredients'];
+		$this->image1      = $data['image1'];
+		$this->category_id = $data['category_id'];
+		$this->created     = $data['created'];
+		$this->updated     = $data['updated'];
 
-		if ( isset( $data['description'] ) ) {
-			$this->description = $data['description'];
-		}
-
-		if ( isset( $data['ingredients'] ) ) {
-			$this->ingredients = $data['ingredients'];
-		}
-
-		if ( $data['image1'] instanceof ImageEntity ) {
-			$this->image1   = $data['image1'];
-		}
-
-		if ( isset( $data['category_id'] ) ) {
-			$this->category_id = $data['category_id'];
-		}
-
-		if ( isset( $data['created'] ) ) {
-			$this->created = $data['created'];
-		}
-		if ( isset( $data['updated'] ) ) {
-			$this->updated = $data['updated'];
-		}
 	}
 }

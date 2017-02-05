@@ -1,7 +1,4 @@
 <?php
-use Slim\Http\Request;
-use Slim\Http\Response;
-
 // Routes
 
 $app->get( '/', function ( $request, $response, $args ) {
@@ -35,17 +32,11 @@ $app->group( '', function () {
 		$this->get( '', '\App\Controllers\AdminController:index' )->setName( 'admin.index' );
 
 		$this->get( '/recipes', '\App\Controllers\AdminController:index' )->setName( 'admin.list-recipes' );
-		$this->post( '/recipes', '\App\Controllers\AdminController:postCreateRecipe' )->setName( 'admin.post-add-recipe' );
-
-		$this->get( '/recipes/create', '\App\Controllers\AdminController:getCreateRecipe' )->setName( 'admin.add-recipe' );
-
-		$this->get( '/recipes/{id}', '\App\Controllers\AdminController:getEditRecipe' )->setName( 'admin.edit-recipe' );
-		$this->post( '/recipes/{id}', '\App\Controllers\AdminController:postEditRecipe' )->setName('admin.post-edit-recipe');
-
-		// $this->delete( '/recipes/{id}', '\App\Controllers\AdminController:deleteRecipe' )->setName('admin.delete-recipe');
+		$this->get( '/recipes/{id}', '\App\Controllers\AdminController:getSaveRecipe' )->setName( 'admin.edit-recipe' );
+		$this->post( '/recipes/{id}', '\App\Controllers\AdminController:postSaveRecipe' )->setName('admin.post-save-recipe');
 
 		// Delete recipe
-		// $this->delete( '/recipes/{id}', '\App\RecipeMapper:removeRecipe' );
+		// $this->delete( '/recipes/{id}', '\App\Controllers\AdminController:deleteRecipe' )->setName('admin.delete-recipe');
 
 	} );
 

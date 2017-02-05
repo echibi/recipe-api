@@ -102,6 +102,8 @@ class RecipeModel extends Model {
 		$imageModel = $this->container->get( 'ImageModel' );
 		$image      = $imageModel->get( $recipeData->image1 );
 
+		$this->logger->addDebug( 'getRecipe', array( 'image' => $image, 'recipe' => $recipeData ) );
+
 		$recipeData->image1 = $image;
 
 		return new RecipeEntity( $recipeData );
@@ -117,20 +119,21 @@ class RecipeModel extends Model {
 	 */
 	public function update( $id, RecipeEntity $recipe ) {
 
-		$this->logger->addDebug( 'updateREcipe', array( 'mainImage', $recipe->getMainImage() ) );
 		$item = $this->db->table( self::table )->find( $id );
 
 		if ( $item ) {
-			$now = date( 'Y-m-d H:i:s' );
-			$this->db->table( self::table )->where( 'id', $id )->update(
-				array(
-					'title'       => $recipe->title,
-					'description' => $recipe->description,
-					'updated'     => $now,
-					'image1'      => $recipe->image1->id,
-					'category_id' => $recipe->category_id
-				)
+			$now        = date( 'Y-m-d H:i:s' );
+			$updateData = array(
+				'title'       => $recipe->title,
+				'description' => $recipe->description,
+				'updated'     => $now,
+				'category_id' => $recipe->category_id
 			);
+			if ( null !== $recipe->image1->id ) {
+				$updateData['image1'] = $recipe->image1->id;
+
+			}
+			$this->db->table( self::table )->where( 'id', $id )->update( $updateData );
 
 			if ( !empty( $recipe->ingredients ) ) {
 

@@ -57,7 +57,7 @@ class ImageModel extends Model {
 				'alt'         => '', // Not implemented yet.
 				'mime_type'   => $image->getClientMediaType(),
 				'ext'         => $imageUpload->getFileExtension( $image ),
-				'system_path' => $file_path,
+				'path' => $file_path,
 				'size'        => $image->getSize(),
 				'created'     => $now,
 				'updated'     => $now

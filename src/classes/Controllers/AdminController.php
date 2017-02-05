@@ -59,147 +59,67 @@ class AdminController extends Controller {
 	 *
 	 * @return \Psr\Http\Message\ResponseInterface
 	 */
-	public function getCreateRecipe( Request $request, Response $response ) {
-
-		/**
-		 * @var CategoryModel $categoryModel
-		 */
-		$categoryModel = $this->ci->get( 'CategoryModel' );
-		$categories    = $categoryModel->getAll();
-
-		/**
-		 * @var UnitModel $unitModel
-		 */
-		$unitModel = $this->ci->get( 'UnitModel' );
-		$units     = $unitModel->getAll();
-
-		return $this->view->render( $response, 'admin/add-recipe.twig',
-			array(
-				'categories' => $categories,
-				'units'      => $units
-			)
-		);
-	}
-
-	/**
-	 * @param Request  $request
-	 * @param Response $response
-	 *
-	 * @return \Psr\Http\Message\ResponseInterface
-	 */
-	public function postCreateRecipe( Request $request, Response $response ) {
-
-		$this->recipeValidator = $this->ci->get( 'RecipeValidator' );
-		$validation            = $this->recipeValidator->validate( $request );
-
-		if ( $validation->failed() ) {
-			return $response->withRedirect( $this->router->pathFor( 'admin.add-recipe' ) );
-		}
-
-		// Validation OK
-		$recipeData = $request->getParams();
-
-		$files = $request->getUploadedFiles();
-
-		if ( isset( $files['image1'] ) ) {
-			/**
-			 * @var ImageModel $imageModel
-			 */
-			$imageModel = $this->ci->get( 'ImageModel' );
-			$imageId    = $imageModel->create( $files['image1'] );
-			if ( null !== $imageId ) {
-				$recipeData = array_merge(
-					$request->getParams(),
-					array(
-						'image1' => $imageModel->get( $imageId )
-					)
-				);
-			}
-		}
-
-		// Create RecipeEntity
-		$recipeEntity = new RecipeEntity( $recipeData );
-
-		// Save Entity
-		/**
-		 * @var RecipeModel $recipeModel
-		 */
-		$recipeModel = $this->ci->get( 'RecipeModel' );
-
-		$recipeModel->create( $recipeEntity );
-
-		return $this->view->render(
-			$response,
-			$this->router->pathFor(
-				'admin.edit-recipe',
-				array( 'id' => 12 ) // tmp
-			)
-		);
-	}
-
-	/**
-	 * @param Request  $request
-	 * @param Response $response
-	 *
-	 * @return \Psr\Http\Message\ResponseInterface
-	 */
-	public function getEditRecipe( Request $request, Response $response ) {
+	public function getSaveRecipe( Request $request, Response $response ) {
 
 		$id = $request->getAttribute( 'id' );
 
-		/**
-		 * @var RecipeModel $recipeModel
-		 */
-		$recipeModel = $this->ci->get( 'RecipeModel' );
-		$recipe      = $recipeModel->get( $id );
+		// Fill view with data
+		$viewData = array();
 
+		// Get Categories
 		/**
 		 * @var CategoryModel $categoryModel
 		 */
-		$categoryModel = $this->ci->get( 'CategoryModel' );
+		$categoryModel          = $this->ci->get( 'CategoryModel' );
+		$viewData['categories'] = $categoryModel->getAll();
 
+		// Get Units
 		/**
 		 * @var UnitModel $unitModel
 		 */
-		$unitModel = $this->ci->get( 'UnitModel' );
-
-
-		// Fill view with data
-		$viewData           = array();
-		$viewData['recipe'] = $recipe;
-
-		// Check if we have any posted form data
-		// If empty we fill it with the current items data.
-		$globals = $this->view->getEnvironment()->getGlobals();
-		if ( empty( $globals['old'] ) ) {
-			$viewData['old'] = $recipe;
-		}
-		// Get Categories
-		$viewData['categories'] = $categoryModel->getAll();
-		// Get Units
+		$unitModel         = $this->ci->get( 'UnitModel' );
 		$viewData['units'] = $unitModel->getAll();
 
-		$this->logger->addDebug( 'recipeEdit', array(
-			'id'       => $id,
-			'viewData' => $viewData,
-		) );
+		// Check if we are creating a new recipe
+		if ( 'create' === $id ) {
+			$viewData['title']        = 'Skapa Recept';
+			$viewData['recipe']['id'] = $id;
+		} else {
+
+			$viewData['title'] = 'Redigera Recept';
+			/**
+			 * @var RecipeModel $recipeModel
+			 */
+			$recipeModel = $this->ci->get( 'RecipeModel' );
+			$recipe      = $recipeModel->get( $id );
+
+			$viewData['recipe'] = $recipe;
+
+			// Check if we have any posted form data
+			// If empty we fill it with the current items data.
+			$globals = $this->view->getEnvironment()->getGlobals();
+			if ( empty( $globals['old'] ) ) {
+				$viewData['old'] = $recipe;
+			}
+		}
 
 		return $this->view->render(
 			$response,
-			'admin/edit-recipe.twig',
+			'admin/save-recipe.twig',
 			$viewData
 		);
+
 	}
 
 	/**
-	 * Update recipe
+	 * Update/ Insert recipe
 	 *
 	 * @param Request  $request
 	 * @param Response $response
 	 *
 	 * @return \Psr\Http\Message\ResponseInterface
 	 */
-	public function postEditRecipe( Request $request, Response $response ) {
+	public function postSaveRecipe( Request $request, Response $response ) {
 
 		$id = $request->getAttribute( 'id' );
 
@@ -212,9 +132,10 @@ class AdminController extends Controller {
 		// Validation OK
 		$recipeData = $request->getParams();
 
+		// Save new image.
 		$files = $request->getUploadedFiles();
 
-		if ( isset( $files['image1'] ) ) {
+		if ( isset( $files['image1'] ) && '' !== $files['image1']->file ) {
 			/**
 			 * @var ImageModel $imageModel
 			 */
@@ -229,6 +150,7 @@ class AdminController extends Controller {
 				);
 			}
 		}
+
 		// Create RecipeEntity
 		$recipeEntity = new RecipeEntity( $recipeData );
 
@@ -236,7 +158,12 @@ class AdminController extends Controller {
 		 * @var RecipeModel $recipeModel
 		 */
 		$recipeModel = $this->ci->get( 'RecipeModel' );
-		$recipeModel->update( $id, $recipeEntity );
+
+		if ( 'create' === $id ) {
+			$id = $recipeModel->create( $recipeEntity );
+		} else {
+			$recipeModel->update( $id, $recipeEntity );
+		}
 
 		return $response->withRedirect( $this->router->pathFor( 'admin.edit-recipe', array( 'id' => $id ) ) );
 
