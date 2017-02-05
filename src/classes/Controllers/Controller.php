@@ -62,7 +62,6 @@ class Controller {
 		$this->db     = $ci->get( 'db' );
 		$this->view   = $ci->get( 'view' );
 		$this->flash  = $ci->get( 'flash' );
-		$this->auth   = $ci->get( 'auth' );
 		$this->router = $ci->get( 'router' );
 	}
 }

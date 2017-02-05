@@ -10,12 +10,11 @@ namespace App\Controllers;
 use App\Entities\RecipeEntity;
 use App\Models\CategoryModel;
 use App\Models\RecipeModel;
+use App\Models\UnitModel;
 use App\Validation\RecipeValidator;
 use App\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Respect\Validation\Validator as v;
-use Slim\Router;
 
 class AdminController extends Controller {
 	/**
@@ -29,20 +28,6 @@ class AdminController extends Controller {
 	protected $recipeValidator;
 
 	/**
-	 * Logout user
-	 *
-	 * @param Request  $request
-	 * @param Response $response
-	 *
-	 * @return Response
-	 */
-	public function getSignOut( Request $request, Response $response ) {
-		$this->auth->logout();
-
-		return $response->withRedirect( $this->ci->get( 'router' )->pathFor( 'admin.login' ) );
-	}
-
-	/**
 	 * @param Request  $request
 	 * @param Response $response
 	 *
@@ -50,7 +35,10 @@ class AdminController extends Controller {
 	 */
 	public function index( Request $request, Response $response ) {
 
-		$recipeModel = new RecipeModel( $this->ci );
+		/**
+		 * @var RecipeModel $recipeModel
+		 */
+		$recipeModel = $this->ci->get( 'RecipeModel' );
 
 		$recipes = $recipeModel->getList( array(
 			'sort' => '-created',
@@ -72,19 +60,17 @@ class AdminController extends Controller {
 	 */
 	public function getCreateRecipe( Request $request, Response $response ) {
 
-		$categoryModel = new CategoryModel( $this->ci );
-		$categories = $categoryModel->getAll();
+		/**
+		 * @var CategoryModel $categoryModel
+		 */
+		$categoryModel = $this->ci->get( 'CategoryModel' );
+		$categories    = $categoryModel->getAll();
 
-		//TODO:: Move to DB...
-		$units = array(
-			array( 'name' => 'st' ),
-			array( 'name' => 'krm' ),
-			array( 'name' => 'tsk' ),
-			array( 'name' => 'msk' ),
-			array( 'name' => 'dl' ),
-			array( 'name' => 'l' ),
-			array( 'name' => 'g' ),
-		);
+		/**
+		 * @var UnitModel $unitModel
+		 */
+		$unitModel = $this->ci->get( 'UnitModel' );
+		$units     = $unitModel->getAll();
 
 		return $this->view->render( $response, 'admin/add-recipe.twig',
 			array(
@@ -102,7 +88,7 @@ class AdminController extends Controller {
 	 */
 	public function postCreateRecipe( Request $request, Response $response ) {
 
-		$this->recipeValidator = $this->ci->get( 'recipe-validator' );
+		$this->recipeValidator = $this->ci->get( 'RecipeValidator' );
 		$validation            = $this->recipeValidator->validate( $request );
 
 		if ( $validation->failed() ) {
@@ -124,7 +110,7 @@ class AdminController extends Controller {
 		$this->logger->addDebug( 'postCreate RecipeEntity', array( $recipeEntity ) );
 
 		// Save Entity
-		$recipeModel = new RecipeModel( $this->ci );
+		$recipeModel = $this->ci->get( 'RecipeModel' );
 
 		$recipeModel->create( $recipeEntity );
 
@@ -145,22 +131,41 @@ class AdminController extends Controller {
 	 */
 	public function getEditRecipe( Request $request, Response $response ) {
 
-		$id          = $request->getAttribute( 'id' );
-		$recipeModel = new RecipeModel( $this->ci );
+		$id = $request->getAttribute( 'id' );
+
+		/**
+		 * @var RecipeModel $recipeModel
+		 */
+		$recipeModel = $this->ci->get( 'RecipeModel' );
 		$recipe      = $recipeModel->get( $id );
-		
-		$categoryModel = new CategoryModel( $this->ci );
 
-		$globals = $this->view->getEnvironment()->getGlobals();
+		/**
+		 * @var CategoryModel $categoryModel
+		 */
+		$categoryModel = $this->ci->get( 'CategoryModel' );
 
+		/**
+		 * @var UnitModel $unitModel
+		 */
+		$unitModel = $this->ci->get( 'UnitModel' );
+
+
+		// Fill view with data
 		$viewData           = array();
 		$viewData['recipe'] = $recipe;
+
+		// Check if we have any posted form data
+		// If empty we fill it with the current items data.
+		$globals = $this->view->getEnvironment()->getGlobals();
 		if ( empty( $globals['old'] ) ) {
 			$viewData['old'] = $recipe;
 		}
+		// Get Categories
 		$viewData['categories'] = $categoryModel->getAll();
+		// Get Units
+		$viewData['units']      = $unitModel->getAll();
 
-		$this->logger->addDebug( 'recipe Edit', array(
+		$this->logger->addDebug( 'recipeEdit', array(
 			'id'       => $id,
 			'viewData' => $viewData,
 		) );
@@ -181,8 +186,10 @@ class AdminController extends Controller {
 	 * @return \Psr\Http\Message\ResponseInterface
 	 */
 	public function postEditRecipe( Request $request, Response $response ) {
-		$id                    = $request->getAttribute( 'id' );
-		$this->recipeValidator = $this->ci->get( 'recipe-validator' );
+
+		$id = $request->getAttribute( 'id' );
+
+		$this->recipeValidator = $this->ci->get( 'RecipeValidator' );
 		$validation            = $this->recipeValidator->validate( $request );
 
 		if ( $validation->failed() ) {
@@ -191,7 +198,6 @@ class AdminController extends Controller {
 
 		// Validation OK
 	}
-
 
 	/**
 	 * @param Request  $request
@@ -203,6 +209,7 @@ class AdminController extends Controller {
 		return $this->view->render( $response, 'admin/login.twig' );
 	}
 
+
 	/**
 	 * @param Request  $request
 	 * @param Response $response
@@ -210,6 +217,8 @@ class AdminController extends Controller {
 	 * @return Response
 	 */
 	public function loginAttempt( Request $request, Response $response ) {
+		$this->auth = $this->ci->get( 'auth' );
+
 		$auth = $this->auth->attempt(
 			$request->getParam( 'username' ),
 			$request->getParam( 'password' )
@@ -217,9 +226,25 @@ class AdminController extends Controller {
 
 		if ( !$auth ) {
 
-			return $response->withRedirect( $this->ci->get( 'router' )->pathFor( 'admin.login' ) );
+			return $response->withRedirect( $this->router->pathFor( 'admin.login' ) );
 		}
 
-		return $response->withRedirect( $this->ci->get( 'router' )->pathFor( 'admin.index' ) );
+		return $response->withRedirect( $this->router->pathFor( 'admin.index' ) );
+	}
+
+	/**
+	 * Logout user
+	 *
+	 * @param Request  $request
+	 * @param Response $response
+	 *
+	 * @return Response
+	 */
+	public function getSignOut( Request $request, Response $response ) {
+		$this->auth = $this->ci->get( 'auth' );
+
+		$this->auth->logout();
+
+		return $response->withRedirect( $this->router->pathFor( 'admin.login' ) );
 	}
 }

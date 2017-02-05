@@ -374,7 +374,10 @@ class RecipeModel extends Model {
 			$ingredients = $recipe->ingredients;
 
 			if ( !empty( $ingredients ) ) {
-				$ingredientModel = new IngredientModel( $this->container );
+				/**
+				 * @var IngredientModel $ingredientModel
+				 */
+				$ingredientModel = $this->container->get('IngredientModel');
 				foreach ( $ingredients as $ingredient ) {
 					$ingredient['slug'] = Utilities::sanitize_title_with_dashes( $ingredient['name'] );
 					$ingredientObj      = new IngredientEntity( $ingredient );

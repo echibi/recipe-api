@@ -38,7 +38,9 @@ $container['db'] = function ( ContainerInterface $c ) {
 			'host'     => $db['host'],
 			'database' => $db['dbname'],
 			'username' => $db['user'],
-			'password' => $db['pass']
+			'password' => $db['pass'],
+			'charset'   => 'utf8', // Optional
+			'collation' => 'utf8_swedish_ci', // Optional
 		);
 		// QB is the new alias for accessing the DB
 		$connection = new \Pixie\Connection( 'mysql', $config );
@@ -111,11 +113,27 @@ $container['validator'] = function () {
 /**
  * @return \App\Validation\RecipeValidator
  */
-$container['recipe-validator'] = function () {
+$container['RecipeValidator'] = function () {
 	return new \App\Validation\RecipeValidator();
 };
 
 // Include custom AbstractRules
 v::with('\\App\\Validation\\Rules\\');
 
+// Include models in our Container
+$container['RecipeModel'] = function ( ContainerInterface $c ) {
+	return new \App\Models\RecipeModel( $c );
+};
+$container['CategoryModel'] = function ( ContainerInterface $c ) {
+	return new \App\Models\CategoryModel( $c );
+};
+$container['UnitModel'] = function ( ContainerInterface $c ) {
+	return new \App\Models\UnitModel( $c );
+};
+$container['IngredientModel'] = function ( ContainerInterface $c ) {
+	return new \App\Models\IngredientModel( $c );
+};
+$container['UserModel'] = function ( ContainerInterface $c ) {
+	return new \App\Models\UserModel( $c );
+};
 

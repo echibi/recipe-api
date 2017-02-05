@@ -31,7 +31,10 @@ class Auth {
 		if ( !isset( $_SESSION['user'] ) ) {
 			return null;
 		}
-		$user = new UserModel( $this->container );
+		/**
+		 * @var UserModel $user
+		 */
+		$user = $this->container->get( 'UserModel' );
 
 		return $user->get( $_SESSION['user'] );
 	}
@@ -50,7 +53,11 @@ class Auth {
 	 * @return bool
 	 */
 	public function attempt( $username, $password ) {
-		$user = $this->db->table( 'api_users' )->where( 'username', '=', $username )->first();
+		/**
+		 * @var UserModel $userModel
+		 */
+		$userModel = $this->container->get( 'UserModel' );
+		$user      = $userModel->get( $username, 'username' );
 
 		if ( !$user ) {
 			return false;

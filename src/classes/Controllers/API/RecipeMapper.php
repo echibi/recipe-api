@@ -8,7 +8,6 @@
 namespace App\Controllers\API;
 
 use App\Controllers\Controller;
-use \Interop\Container\ContainerInterface as ContainerInterface;
 use App\Validation\RecipeValidator;
 use App\Models\RecipeModel;
 use App\Entities\RecipeEntity;
@@ -16,6 +15,10 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 class RecipeMapper extends Controller {
+	/**
+	 * @var RecipeModel
+	 */
+	protected $recipeModel;
 
 	/**
 	 * Return a list with recipes
@@ -32,9 +35,9 @@ class RecipeMapper extends Controller {
 
 		$queryParams = $request->getQueryParams();
 
-		$model = new RecipeModel( $this->ci );
+		$this->recipeModel = $this->ci->get( 'RecipeModel' );
 
-		$recipes = $model->getList( $queryParams );
+		$recipes = $this->recipeModel->getList( $queryParams );
 
 		$uri = $request->getUri();
 
@@ -57,9 +60,9 @@ class RecipeMapper extends Controller {
 
 		$this->logger->info( "getRecipe started" );
 
-		$model = new RecipeModel( $this->ci );
+		$this->recipeModel = $this->ci->get( 'RecipeModel' );
 
-		$recipe = $model->get( $args['id'] );
+		$recipe = $this->recipeModel->get( $args['id'] );
 
 		if ( false !== $recipe ) {
 			$returnData['data']   = array(
@@ -101,9 +104,8 @@ class RecipeMapper extends Controller {
 			// Everything is fine.
 
 			// Create our recipe entity
-			// $db      = $this->ci->get( 'db' );
-			$model   = new RecipeModel( $this->ci );
-			$savedId = $model->create( new RecipeEntity( $data ) );
+			$this->recipeModel = $this->ci->get( 'RecipeModel' );
+			$savedId = $this->recipeModel->create( new RecipeEntity( $data ) );
 
 			if ( false !== $savedId ) {
 
@@ -151,8 +153,8 @@ class RecipeMapper extends Controller {
 		$validator  = new RecipeValidator();
 		$status     = 200;
 
-		$model  = new RecipeModel( $this->ci );
-		$recipe = $model->get( $args['id'] );
+		$this->recipeModel = $this->ci->get( 'RecipeModel' );
+		$recipe = $this->recipeModel->get( $args['id'] );
 
 		if ( false !== $recipe ) {
 
@@ -160,7 +162,7 @@ class RecipeMapper extends Controller {
 				// Everything is fine.
 
 				// Create our recipe entity
-				$model->update( $args['id'], $data );
+				$this->recipeModel->update( $args['id'], $data );
 
 				$this->logger->info(
 					"updated recipe",
@@ -183,13 +185,20 @@ class RecipeMapper extends Controller {
 		return $response->withJson( $returnData, $status );
 	}
 
-	public
-	function removeRecipe( Request $request, $response, $args ) {
+	/**
+	 * @param Request $request
+	 * @param         $response
+	 * @param         $args
+	 *
+	 * @return mixed
+	 */
+	public function removeRecipe( Request $request, Response $response, $args ) {
 		$this->logger->info( "deleted recipe" );
 		$returnData = array();
 		$status     = 200;
-		$model      = new RecipeModel( $this->ci );
-		$success    = $model->remove( $args['id'] );
+
+		$this->recipeModel  = $this->ci->get( 'RecipeModel' );
+		$success = $this->recipeModel->remove( $args['id'] );
 		if ( true === $success ) {
 			$returnData['status'] = 'ok';
 
