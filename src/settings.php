@@ -26,6 +26,13 @@ return [
 		],
 		'upload' => [
 			'dir' => __DIR__ . '/../public/uploads'
+		],
+		'lang' => [
+			'default' => 'sv',
+			'languages' => [
+				'en',
+				'sv',
+			]
 		]
 	],
 ];

@@ -1,11 +1,18 @@
 <?php
+/**
+ * @var Slim\App $app
+ */
 // Routes
+$app->group( '/[{lang:sv|en}]', function () use ( $app ) {
 
-$app->get( '/', function ( $request, $response, $args ) {
-	// Sample log message
-	//$this->logger->info("Recept-API '/' route");
+	$app->get( '', function ( \Slim\Http\Request $request, \Slim\Http\Response $response, $args ) {
 
-	// Render index view
+		// echo "<xmp style=\"text-align:left;\">" . print_r( $request->getAttribute( 'lang' ), true ) . "</xmp>";
+		// Sample log message
+		//$this->logger->info("Recept-API '/' route");
+
+		// Render index view
+	} )->add( new \App\Middleware\LanguageMiddleware( $app->getContainer() ) );
 } );
 
 // API
@@ -33,7 +40,7 @@ $app->group( '', function () {
 
 		$this->get( '/recipes', '\App\Controllers\AdminController:index' )->setName( 'admin.list-recipes' );
 		$this->get( '/recipes/{id}', '\App\Controllers\AdminController:getSaveRecipe' )->setName( 'admin.edit-recipe' );
-		$this->post( '/recipes/{id}', '\App\Controllers\AdminController:postSaveRecipe' )->setName('admin.post-save-recipe');
+		$this->post( '/recipes/{id}', '\App\Controllers\AdminController:postSaveRecipe' )->setName( 'admin.post-save-recipe' );
 
 		// Delete recipe
 		// $this->delete( '/recipes/{id}', '\App\Controllers\AdminController:deleteRecipe' )->setName('admin.delete-recipe');

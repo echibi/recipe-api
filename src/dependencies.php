@@ -104,18 +104,20 @@ $container['csrf'] = function () {
 };
 
 /**
- * @return \App\Validation\Validator
+ * @return \App\Language\Language
  */
+$container['language'] = function () {
+	return new \App\Language\Language();
+};
+
 $container['validator'] = function () {
 	return new \App\Validation\Validator();
 };
 
-/**
- * @return \App\Validation\RecipeValidator
- */
 $container['RecipeValidator'] = function () {
 	return new \App\Validation\RecipeValidator();
 };
+
 
 // Include custom AbstractRules
 v::with('\\App\\Validation\\Rules\\');
