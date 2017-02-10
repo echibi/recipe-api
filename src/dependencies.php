@@ -34,11 +34,11 @@ $container['db'] = function ( ContainerInterface $c ) {
 
 	try {
 		$config = array(
-			'driver'   => 'mysql', // Db driver
-			'host'     => $db['host'],
-			'database' => $db['dbname'],
-			'username' => $db['user'],
-			'password' => $db['pass'],
+			'driver'    => 'mysql', // Db driver
+			'host'      => $db['host'],
+			'database'  => $db['dbname'],
+			'username'  => $db['user'],
+			'password'  => $db['pass'],
 			'charset'   => 'utf8', // Optional
 			'collation' => 'utf8_swedish_ci', // Optional
 		);
@@ -118,27 +118,37 @@ $container['RecipeValidator'] = function () {
 	return new \App\Validation\RecipeValidator();
 };
 
-
 // Include custom AbstractRules
-v::with('\\App\\Validation\\Rules\\');
+v::with( '\\App\\Validation\\Rules\\' );
+
+/**
+ * @param ContainerInterface $c
+ *
+ * @return \Intervention\Image\ImageManager
+ */
+$container['ImageManager'] = function ( ContainerInterface $c ) {
+	$settings = $c->get( 'settings' )['image_manager'];
+
+	return new \Intervention\Image\ImageManager( $settings );
+};
 
 // Include models in our Container
-$container['RecipeModel'] = function ( ContainerInterface $c ) {
+$container['RecipeModel']     = function ( ContainerInterface $c ) {
 	return new \App\Models\RecipeModel( $c );
 };
-$container['CategoryModel'] = function ( ContainerInterface $c ) {
+$container['CategoryModel']   = function ( ContainerInterface $c ) {
 	return new \App\Models\CategoryModel( $c );
 };
-$container['UnitModel'] = function ( ContainerInterface $c ) {
+$container['UnitModel']       = function ( ContainerInterface $c ) {
 	return new \App\Models\UnitModel( $c );
 };
 $container['IngredientModel'] = function ( ContainerInterface $c ) {
 	return new \App\Models\IngredientModel( $c );
 };
-$container['UserModel'] = function ( ContainerInterface $c ) {
+$container['UserModel']       = function ( ContainerInterface $c ) {
 	return new \App\Models\UserModel( $c );
 };
-$container['ImageModel'] = function ( ContainerInterface $c ) {
+$container['ImageModel']      = function ( ContainerInterface $c ) {
 	return new \App\Models\ImageModel( $c );
 };
 

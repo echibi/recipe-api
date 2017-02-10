@@ -33,6 +33,9 @@ return [
 				'en',
 				'sv',
 			]
+		],
+		'image_manager' => [
+			'driver' => 'gd'
 		]
 	],
 ];
