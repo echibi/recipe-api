@@ -39,7 +39,8 @@ class RecipeModel extends Model {
 			'description',
 			'updated',
 			'image1',
-			'created'
+			'created',
+			'slug'
 		);
 	}
 
@@ -125,6 +126,7 @@ class RecipeModel extends Model {
 			$now        = date( 'Y-m-d H:i:s' );
 			$updateData = array(
 				'title'       => $recipe->title,
+				'slug'        => Utilities::create_slug( $recipe->title ),
 				'description' => $recipe->description,
 				'updated'     => $now,
 				'category_id' => $recipe->category_id
@@ -147,7 +149,7 @@ class RecipeModel extends Model {
 
 				foreach ( $recipe->ingredients as $ingredient ) {
 					// Create slug
-					$ingredient['slug'] = Utilities::sanitize_title_with_dashes( $ingredient['name'] );
+					$ingredient['slug'] = Utilities::create_slug( $ingredient['name'] );
 					// Create IngredientEntity
 					$ingredientObj = new IngredientEntity( $ingredient );
 					// Save Ingredient
@@ -173,6 +175,7 @@ class RecipeModel extends Model {
 		$savedId = $this->db->table( self::table )->insert(
 			array(
 				'title'       => $recipe->title,
+				'slug'        => Utilities::create_slug( $recipe->title ),
 				'description' => $recipe->description,
 				'created'     => $now,
 				'updated'     => $now,
@@ -193,7 +196,7 @@ class RecipeModel extends Model {
 				$ingredientModel = $this->container->get( 'IngredientModel' );
 				foreach ( $ingredients as $ingredient ) {
 					// Create slug
-					$ingredient['slug'] = Utilities::sanitize_title_with_dashes( $ingredient['name'] );
+					$ingredient['slug'] = Utilities::create_slug( $ingredient['name'] );
 					// Create IngredientEntity
 					$ingredientObj = new IngredientEntity( $ingredient );
 					// Save Ingredient

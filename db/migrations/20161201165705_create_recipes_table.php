@@ -38,7 +38,13 @@ class CreateRecipesTable extends AbstractMigration {
 			->addColumn( 'slug', 'string' )
 			->create();
 
-		$ingredients_reltable = $this->table( 'ingredients_rel' );
+		$ingredients_reltable = $this->table( 'ingredients_rel', array(
+			'id'          => false,
+			'primary_key' => array(
+				'recipe_id',
+				'ingredient_id'
+			)
+		) );
 		$ingredients_reltable->addColumn( 'recipe_id', 'integer' )
 			->addColumn( 'ingredient_id', 'integer' )
 			->addColumn( 'value', 'string' )

@@ -18,7 +18,7 @@ class IngredientModel extends Model {
 	 *
 	 * @return mixed
 	 */
-	public function getRecipeIngredients( $recipeId ){
+	public function getRecipeIngredients( $recipeId ) {
 		$ingredientsRel = $this->db->table( 'ingredients_rel' );
 		$ingredientsRel->select(
 			array(
@@ -81,5 +81,32 @@ class IngredientModel extends Model {
 		$ingredientRelDel->where( 'recipe_id', '=', $recipeId );
 
 		return $ingredientRelDel->delete();
+	}
+
+	/**
+	 * @param        $id
+	 * @param string $field
+	 *
+	 * @return mixed
+	 */
+	public function get( $id, $field = 'id' ) {
+		$query = $this->db->table( self::table );
+		if ( is_array( $id ) ) {
+			$query->whereIn( $field, $id );
+		} else {
+			$query->where( $field, '=', $id );
+		}
+
+		return $query->get();
+	}
+
+	/**
+	 * @param        $id
+	 * @param string $field
+	 *
+	 * @return mixed
+	 */
+	public function delete( $id, $field = 'id' ) {
+		return $this->db->table( self::table )->where( $id, '=', $field )->delete();
 	}
 }

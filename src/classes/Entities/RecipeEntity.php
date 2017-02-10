@@ -27,6 +27,10 @@ class RecipeEntity extends Entity {
 	/**
 	 * @var string
 	 */
+	public $slug;
+	/**
+	 * @var string
+	 */
 	public $description;
 	/**
 	 * @var array
@@ -66,6 +70,7 @@ class RecipeEntity extends Entity {
 		}
 
 		$this->title       = $data['title'];
+		$this->slug       = $data['slug'];
 		$this->description = $data['description'];
 		$this->ingredients = $data['ingredients'];
 		$this->image1      = $data['image1'];
