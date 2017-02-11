@@ -40,26 +40,6 @@ class Upload {
 	}
 
 	/**
-	 * Renames and moves file to correct location
-	 *
-	 * @param UploadedFile $file
-	 * @param string       $prefix
-	 *
-	 * @return string path to file
-	 */
-	public function upload( UploadedFile $file, $prefix = '' ) {
-
-		$filename = uniqid( $prefix, true ) . '.' . $this->getFileExtension( $file );
-		$path     = $this->path . '/' . $filename;
-
-		$this->createPath( $this->path );
-		$file->moveTo( $path );
-
-		// TODO:: This is not very good...
-		return '/' . basename( $this->base_path ) . $this->current_path . '/' . $filename;
-	}
-
-	/**
 	 * @param $path
 	 */
 	public function createPath( $path ) {
