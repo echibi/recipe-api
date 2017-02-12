@@ -38,16 +38,16 @@ return [
 			'driver'          => 'gd',
 			'quality'         => 70,
 			'thumbnail_sizes' => [
-				'250x250' => [
+				'square' => [
 					'w'      => 250,
 					'h'      => 250,
 					'square' => true
 				],
-				'400'     => [
+				'medium'     => [
 					'w' => null,
 					'h' => 400
 				],
-				'1080'    => [
+				'large'    => [
 					'w' => null,
 					'h' => 1080
 				]

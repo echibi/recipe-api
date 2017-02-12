@@ -107,7 +107,7 @@ gulp.task('watch', ['build'], function () {
 
 	browserSync.init({
 		files: ['{src,public}/**/*.php', '{templates}/**/*.twig'],
-		proxy: 'localhost/recept-api/public',
+		proxy: 'localhost/recipes/public',
 	});
 	gulp.watch(SOURCE + STYLES + '**/*.scss', ['styles']);
 	gulp.watch(SOURCE + SCRIPTS + '**/*.js', ['scripts']);

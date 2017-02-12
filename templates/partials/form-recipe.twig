@@ -89,39 +89,12 @@
 	<div class="form-group">
 		<label for="image1">Huvudbild</label>
 		{% if recipe.image1 %}
-			<img src="{{ base_url() }}{{ recipe.image1.path }}" alt="" />
+			<div class="main-image">
+				<img src="{{ image_url(recipe.image1, 'large') }}" alt="" />
+			</div>
 		{% endif %}
 		<input type="file" class="form-control-file" id="image1" name="image1" aria-describedby="fileHelp">
 		<small id="fileHelp" class="form-text text-muted">Ladda gärna upp en bild på slutresultatet.</small>
 	</div>
-	{#
-	<fieldset class="form-group">
-		<legend>Radio buttons</legend>
-		<div class="form-check">
-			<label class="form-check-label">
-				<input type="radio" class="form-check-input" name="optionsRadios" id="optionsRadios1" value="option1" checked>
-				Option one is this and that&mdash;be sure to include why it's great
-			</label>
-		</div>
-		<div class="form-check">
-			<label class="form-check-label">
-				<input type="radio" class="form-check-input" name="optionsRadios" id="optionsRadios2" value="option2">
-				Option two can be something else and selecting it will deselect option one
-			</label>
-		</div>
-		<div class="form-check disabled">
-			<label class="form-check-label">
-				<input type="radio" class="form-check-input" name="optionsRadios" id="optionsRadios3" value="option3" disabled>
-				Option three is disabled
-			</label>
-		</div>
-	</fieldset>
-	<div class="form-check">
-		<label class="form-check-label">
-			<input type="checkbox" class="form-check-input">
-			Check me out
-		</label>
-	</div>
-	#}
 	<button type="submit" class="btn btn-primary">Spara</button>
 </form>

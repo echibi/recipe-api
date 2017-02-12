@@ -59,7 +59,7 @@ class AdminController extends Controller {
 	 *
 	 * @return \Psr\Http\Message\ResponseInterface
 	 */
-	public function getSaveRecipe( Request $request, Response $response ) {
+	public function getEditRecipe( Request $request, Response $response ) {
 
 		$id = $request->getAttribute( 'id' );
 
@@ -119,7 +119,7 @@ class AdminController extends Controller {
 	 *
 	 * @return \Psr\Http\Message\ResponseInterface
 	 */
-	public function postSaveRecipe( Request $request, Response $response ) {
+	public function postEditRecipe( Request $request, Response $response ) {
 
 		$id = $request->getAttribute( 'id' );
 

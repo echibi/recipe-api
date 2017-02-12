@@ -69,6 +69,9 @@ $container['view'] = function ( ContainerInterface $c ) {
 			$c['request']->getUri()
 		)
 	);
+	// Add image_url()
+	$view->addExtension( new \App\TwigExtensions\ImageUrlExtension( $c ) );
+
 	// Allow flash messages inside views.
 	$view->getEnvironment()->addGlobal( 'flash', $c['flash'] );
 
@@ -153,7 +156,7 @@ $container['ImageModel']      = function ( ContainerInterface $c ) {
 };
 
 // Other classes
-$container['ImageUpload'] = function ( ContainerInterface $c ) {
-	return new \App\Upload\ImageUpload( $c );
+$container['Upload'] = function ( ContainerInterface $c ) {
+	return new \App\Upload\Upload( $c );
 };
 

@@ -39,8 +39,8 @@ $app->group( '', function () {
 		$this->get( '', '\App\Controllers\AdminController:index' )->setName( 'admin.index' );
 
 		$this->get( '/recipes', '\App\Controllers\AdminController:index' )->setName( 'admin.list-recipes' );
-		$this->get( '/recipes/{id}', '\App\Controllers\AdminController:getSaveRecipe' )->setName( 'admin.edit-recipe' );
-		$this->post( '/recipes/{id}', '\App\Controllers\AdminController:postSaveRecipe' )->setName( 'admin.post-save-recipe' );
+		$this->get( '/recipes/{id}', '\App\Controllers\AdminController:getEditRecipe' )->setName( 'admin.edit-recipe' );
+		$this->post( '/recipes/{id}', '\App\Controllers\AdminController:postEditRecipe' )->setName( 'admin.post-save-recipe' );
 
 		// Delete recipe
 		// $this->delete( '/recipes/{id}', '\App\Controllers\AdminController:deleteRecipe' )->setName('admin.delete-recipe');

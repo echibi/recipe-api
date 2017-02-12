@@ -1,13 +1,13 @@
 .list-group {
 	&.ingredients-list {
-		margin:0 0 1em;
+		margin: 0 0 1em;
 		.list-group-item {
-			display:         flex;
-			flex-direction:  row;
+			display:        flex;
+			flex-direction: row;
 			&:nth-child(2) .repeater-remove {
 				display: none;
 			}
-			&:not(:last-child) .repeater-add{
+			&:not(:last-child) .repeater-add {
 				display: none;
 			}
 		}
@@ -26,9 +26,13 @@
 			}
 		}
 		.btn {
-			margin-left:5px;
-			padding: 0.5rem 0.75rem;
+			margin-left: 5px;
+			padding:     0.5rem 0.75rem;
 		}
 	}
+}
+
+.form-group .main-image {
+	margin: 0 0 1em;
 }
 
