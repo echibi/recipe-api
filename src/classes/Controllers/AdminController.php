@@ -173,6 +173,24 @@ class AdminController extends Controller {
 	 * @param Request  $request
 	 * @param Response $response
 	 *
+	 * @return bool
+	 */
+	public function deleteRecipe( Request $request, Response $response ) {
+		/**
+		 * @var RecipeModel $recipeModel
+		 */
+		$recipeModel = $this->ci->get( 'RecipeModel' );
+		$id          = $request->getAttribute( 'id' );
+
+		$this->logger->addInfo( 'Deleted Recipe', array( 'id' => $id ) );
+
+		return $recipeModel->remove( $id );
+	}
+
+	/**
+	 * @param Request  $request
+	 * @param Response $response
+	 *
 	 * @return mixed
 	 */
 	public function login( Request $request, Response $response ) {

@@ -43,7 +43,7 @@ $app->group( '', function () {
 		$this->post( '/recipes/{id}', '\App\Controllers\AdminController:postEditRecipe' )->setName( 'admin.post-save-recipe' );
 
 		// Delete recipe
-		// $this->delete( '/recipes/{id}', '\App\Controllers\AdminController:deleteRecipe' )->setName('admin.delete-recipe');
+		$this->delete( '/recipes/{id}', '\App\Controllers\AdminController:deleteRecipe' )->setName('admin.delete-recipe');
 
 	} );
 

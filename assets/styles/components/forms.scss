@@ -36,3 +36,15 @@
 	margin: 0 0 1em;
 }
 
+// Recipes List
+.admin.recipe-list {
+	.list-group-item {
+		display:         flex;
+		flex-direction:  row;
+		justify-content: space-between;
+	}
+	.delete-recipe {
+		cursor: pointer;
+	}
+}
+

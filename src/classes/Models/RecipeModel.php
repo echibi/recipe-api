@@ -56,15 +56,16 @@ class RecipeModel extends Model {
 		$item = $this->db->table( self::table )->find( $id );
 
 		if ( $item ) {
-			$recipeDel = $this->db->table( self::table );
-			$recipeDel->where( 'id', '=', $id );
-			$recipeDel->delete();
 
 			/**
 			 * @var IngredientModel $ingredientModel
 			 */
 			$ingredientModel = $this->container->get( 'IngredientModel' );
 			$ingredientModel->removeRecipeIngredients( $id );
+
+			$recipeDel = $this->db->table( self::table );
+			$recipeDel->where( 'id', '=', $id );
+			$recipeDel->delete();
 
 			return true;
 		} else {
