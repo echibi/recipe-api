@@ -191,6 +191,24 @@ class AdminController extends Controller {
 	 * @param Request  $request
 	 * @param Response $response
 	 *
+	 * @return \Psr\Http\Message\ResponseInterface
+	 */
+	public function listCategories( Request $request, Response $response ) {
+		/**
+		 * @var CategoryModel $categoryModel
+		 */
+		$categoryModel = $this->ci->get( 'CategoryModel' );
+		$categoryModel->getAll();
+
+		return $this->view->render( $response, 'admin/list-categories.twig', array(
+			'categories' => $categoryModel->getAll(),
+		) );
+	}
+
+	/**
+	 * @param Request  $request
+	 * @param Response $response
+	 *
 	 * @return mixed
 	 */
 	public function login( Request $request, Response $response ) {

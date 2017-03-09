@@ -154,7 +154,9 @@ $container['UserModel']       = function ( ContainerInterface $c ) {
 $container['ImageModel']      = function ( ContainerInterface $c ) {
 	return new \App\Models\ImageModel( $c );
 };
-
+$container['CategoryModel']     = function ( ContainerInterface $c ) {
+	return new \App\Models\CategoryModel( $c );
+};
 // Other classes
 $container['Upload'] = function ( ContainerInterface $c ) {
 	return new \App\Upload\Upload( $c );

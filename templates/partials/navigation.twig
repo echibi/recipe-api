@@ -8,15 +8,15 @@
 				<a class="nav-link" href="{{ path_for("admin.index") }}">Home</a>
 			</li>
 			{% if auth.check %}
-			<li class="nav-item{% if menu.active == "recipes" %} active{% endif %}">
-				<a class="nav-link" href="{{ path_for("admin.list-recipes") }}">Recipes</a>
-			</li>
-			<li class="nav-item{% if menu.active == "categories" %} active{% endif %}">
-				<a class="nav-link" href="#">Categories</a>
-			</li>
-			<li class="nav-item{% if menu.active == "ingredients" %} active{% endif %}">
-				<a class="nav-link" href="#">Ingredients</a>
-			</li>
+				<li class="nav-item{% if menu.active == "recipes" %} active{% endif %}">
+					<a class="nav-link" href="{{ path_for("admin.list-recipes") }}">Recipes</a>
+				</li>
+				<li class="nav-item{% if menu.active == "categories" %} active{% endif %}">
+					<a class="nav-link" href="{{ path_for("admin.list-categories") }}">Categories</a>
+				</li>
+				<li class="nav-item{% if menu.active == "ingredients" %} active{% endif %}">
+					<a class="nav-link" href="#">Ingredients</a>
+				</li>
 			{% endif %}
 		</ul>
 	</div>
