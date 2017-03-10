@@ -46,7 +46,7 @@ class Utilities {
 	 *
 	 * Borrowed from Wordpress
 	 *
-	 * @param string $title   The title to be sanitized.
+	 * @param string $title The title to be sanitized.
 	 *
 	 * @return string The sanitized title.
 	 */
@@ -68,7 +68,9 @@ class Utilities {
 		$title = preg_replace( '/&.+?;/', '', $title ); // kill entities
 		$title = str_replace( '.', '-', $title );
 
+		$title = preg_replace( array( '/å/', '/ä/', '/ö/' ), array( 'a', 'a', 'o' ), $title );
 		$title = preg_replace( '/[^%a-z0-9 _-]/', '', $title );
+
 		$title = preg_replace( '/\s+/', '-', $title );
 		$title = preg_replace( '|-+|', '-', $title );
 		$title = trim( $title, '-' );

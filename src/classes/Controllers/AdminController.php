@@ -7,6 +7,7 @@
 namespace App\Controllers;
 
 
+use App\Entities\CategoryEntity;
 use App\Entities\RecipeEntity;
 use App\Models\CategoryModel;
 use App\Models\ImageModel;
@@ -16,6 +17,8 @@ use App\Validation\RecipeValidator;
 use App\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Respect\Validation\Validator as v;
+
 
 class AdminController extends Controller {
 	/**
@@ -250,6 +253,38 @@ class AdminController extends Controller {
 			'admin/save-category.twig',
 			$viewData
 		);
+	}
+
+	public function postEditCategory( Request $request, Response $response ) {
+		$id = $request->getAttribute( 'id' );
+
+		$this->validator = $this->ci->get( 'validator' );
+		$validation      = $this->validator->validate( $request, array(
+			'name' => v::notEmpty()
+		) );
+
+		if ( $validation->failed() ) {
+			return $response->withRedirect( $this->router->pathFor( 'admin.edit-category', array( 'id' => $id ) ) );
+		}
+		// Validation OK
+		$categoryData = $request->getParams();
+
+		// Create CategoryEntity
+		$categoryEntity = new CategoryEntity( $categoryData );
+
+		/**
+		 * @var CategoryModel $categoryModel
+		 */
+		$categoryModel = $this->ci->get( 'CategoryModel' );
+
+		if ( 'create' === $id ) {
+			$id = $categoryModel->create( $categoryEntity );
+		} else {
+			$categoryModel->update( $id, $categoryEntity );
+		}
+
+		return $response->withRedirect( $this->router->pathFor( 'admin.edit-category', array( 'id' => $id ) ) );
+
 	}
 
 	/**
