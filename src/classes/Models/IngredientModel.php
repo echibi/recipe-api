@@ -7,6 +7,7 @@
 namespace App\Models;
 
 use App\Entities\IngredientEntity;
+use App\Helpers\Utilities;
 
 class IngredientModel extends Model {
 
@@ -93,11 +94,19 @@ class IngredientModel extends Model {
 		$query = $this->db->table( self::table );
 		if ( is_array( $id ) ) {
 			$query->whereIn( $field, $id );
+
+			return $query->get();
 		} else {
-			$query->where( $field, '=', $id );
+			return $query->find( $id, $field );
 		}
 
-		return $query->get();
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getList() {
+		return $this->db->table( self::table )->get();
 	}
 
 	/**
@@ -108,5 +117,48 @@ class IngredientModel extends Model {
 	 */
 	public function delete( $id, $field = 'id' ) {
 		return $this->db->table( self::table )->where( $id, '=', $field )->delete();
+	}
+
+	/**
+	 * @param IngredientEntity $object
+	 *
+	 * @return mixed
+	 */
+	public function create( IngredientEntity $object ) {
+
+		$now = date( 'Y-m-d H:i:s' );
+
+		return $this->db->table( self::table )->insert(
+			array(
+				'name'    => $object->name,
+				'slug'    => Utilities::create_slug( $object->name ),
+				'created' => $now,
+				'updated' => $now,
+				// 'image1'      => '',
+			)
+		);
+	}
+
+	/**
+	 * @param                  $id
+	 * @param IngredientEntity $object
+	 *
+	 * @return bool
+	 */
+	public function update( $id, IngredientEntity $object ) {
+
+		$item = $this->db->table( self::table )->find( $id );
+
+		if ( $item ) {
+			$updateData = array(
+				'name'    => $object->name,
+				'slug'    => Utilities::create_slug( $object->name ),
+				'updated' => date( 'Y-m-d H:i:s' ),
+			);
+
+			return $this->db->table( self::table )->where( 'id', $id )->update( $updateData );
+		}
+
+		return false;
 	}
 }

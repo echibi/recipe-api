@@ -1,7 +1,3 @@
-{#
-{{ categories | json_encode }}
-#}
-{{ recipe | json_encode }}
 <form id="edit-recipe" method="post" action="{{ post_url }}" enctype="multipart/form-data">
 	<div class="form-group{{ form_errors.title ? ' has-danger' : '' }}">
 		<label for="title">Titel</label>

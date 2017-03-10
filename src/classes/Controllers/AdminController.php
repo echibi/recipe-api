@@ -8,9 +8,11 @@ namespace App\Controllers;
 
 
 use App\Entities\CategoryEntity;
+use App\Entities\IngredientEntity;
 use App\Entities\RecipeEntity;
 use App\Models\CategoryModel;
 use App\Models\ImageModel;
+use App\Models\IngredientModel;
 use App\Models\RecipeModel;
 use App\Models\UnitModel;
 use App\Validation\RecipeValidator;
@@ -216,8 +218,6 @@ class AdminController extends Controller {
 	public function getEditCategory( Request $request, Response $response ) {
 
 		/**
-		 * @var UnitModel     $unitModel
-		 * @var RecipeModel   $recipeModel
 		 * @var CategoryModel $categoryModel
 		 */
 
@@ -255,6 +255,12 @@ class AdminController extends Controller {
 		);
 	}
 
+	/**
+	 * @param Request  $request
+	 * @param Response $response
+	 *
+	 * @return Response
+	 */
 	public function postEditCategory( Request $request, Response $response ) {
 		$id = $request->getAttribute( 'id' );
 
@@ -284,6 +290,100 @@ class AdminController extends Controller {
 		}
 
 		return $response->withRedirect( $this->router->pathFor( 'admin.edit-category', array( 'id' => $id ) ) );
+
+	}
+
+	/**
+	 * @param Request  $request
+	 * @param Response $response
+	 *
+	 * @return \Psr\Http\Message\ResponseInterface
+	 */
+	public function listIngredients( Request $request, Response $response ) {
+		/**
+		 * @var IngredientModel $ingredientModel
+		 */
+		$ingredientModel = $this->ci->get( 'IngredientModel' );
+
+		return $this->view->render( $response, 'admin/list-ingredients.twig', array(
+			'categories' => $ingredientModel->getList(),
+		) );
+	}
+
+	public function getEditIngredient( Request $request, Response $response ) {
+
+		/**
+		 * @var IngredientModel $ingredientModel
+		 */
+
+		$id = $request->getAttribute( 'id' );
+
+		// Fill view with data
+		$viewData = array();
+
+		// Get Ingredient
+		$ingredientModel = $this->ci->get( 'IngredientModel' );
+
+		// Check if we are creating a new recipe
+		if ( 'create' === $id ) {
+			$viewData['title']            = 'Skapa Ingredient';
+			$viewData['ingredient']['id'] = $id;
+		} else {
+
+			$viewData['title'] = 'Redigera Ingredient';
+			$ingredient        = $ingredientModel->get( $id );
+
+			$viewData['ingredient'] = $ingredient;
+
+			// Check if we have any posted form data
+			// If empty we fill it with the current items data.
+			$globals = $this->view->getEnvironment()->getGlobals();
+			if ( empty( $globals['old'] ) ) {
+				$viewData['old'] = $ingredient;
+			}
+		}
+
+		return $this->view->render(
+			$response,
+			'admin/save-ingredient.twig',
+			$viewData
+		);
+	}
+
+	/**
+	 * @param Request  $request
+	 * @param Response $response
+	 *
+	 * @return Response
+	 */
+	public function postEditIngredient( Request $request, Response $response ) {
+		$id = $request->getAttribute( 'id' );
+
+		$this->validator = $this->ci->get( 'validator' );
+		$validation      = $this->validator->validate( $request, array(
+			'name' => v::notEmpty()
+		) );
+
+		if ( $validation->failed() ) {
+			return $response->withRedirect( $this->router->pathFor( 'admin.edit-ingredient', array( 'id' => $id ) ) );
+		}
+		// Validation OK
+		$ingredientData = $request->getParams();
+
+		/**
+		 * @var IngredientModel $ingredientModel
+		 */
+		$ingredientEntity = new IngredientEntity( $ingredientData );
+
+		$ingredientModel = $this->ci->get( 'IngredientModel' );
+
+		if ( 'create' === $id ) {
+			$id = $ingredientModel->create( $ingredientEntity );
+		} else {
+			$ingredientModel->update( $id, $ingredientEntity );
+		}
+
+		return $response->withRedirect( $this->router->pathFor( 'admin.edit-ingredient', array( 'id' => $id ) ) );
 
 	}
 

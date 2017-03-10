@@ -15,7 +15,7 @@
 					<a class="nav-link" href="{{ path_for("admin.list-categories") }}">Categories</a>
 				</li>
 				<li class="nav-item{% if menu.active == "ingredients" %} active{% endif %}">
-					<a class="nav-link" href="#">Ingredients</a>
+					<a class="nav-link" href="{{ path_for("admin.list-ingredients") }}">Ingredients</a>
 				</li>
 			{% endif %}
 		</ul>

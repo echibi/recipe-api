@@ -53,6 +53,12 @@ $app->group( '', function () {
 
 		$this->delete( '/categories/{id}', '\App\Controllers\AdminController:deleteCategory' )->setName( 'admin.delete-category' );
 
+		// Admin Ingredients
+		$this->get( '/ingredients', '\App\Controllers\AdminController:listIngredients' )->setName( 'admin.list-ingredients' );
+		$this->get( '/ingredients/{id}', '\App\Controllers\AdminController:getEditIngredient' );
+		$this->post( '/ingredients/{id}', '\App\Controllers\AdminController:postEditIngredient' )->setName( 'admin.edit-ingredient' );
+
+
 	} );
 
 	$this->get( '/logout', '\App\Controllers\AdminController:getSignOut' )->setName( 'admin.logout' );

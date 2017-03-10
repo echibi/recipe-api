@@ -3,5 +3,100 @@
 {% block title %}{{ title }}{% endblock %}
 {% block content %}
 	{% include "partials/page-header.twig" with { 'title' : title } %}
-	{% include "partials/form-recipe.twig" with { 'post_url' : path_for('admin.post-save-recipe', {id:recipe.id}) } %}
+	<form id="edit-recipe" method="post" action="{{ path_for('admin.post-save-recipe', {id:recipe.id}) }}" enctype="multipart/form-data">
+		<div class="form-group{{ form_errors.title ? ' has-danger' : '' }}">
+			<label for="title">Titel</label>
+			<input name="title" type="text" class="form-control" id="title" value="{{ old.title }}">
+			{% if form_errors.title %}
+				<span class="form-text">{{ form_errors.title | first }}</span>
+			{% endif %}
+		</div>
+		<div class="form-group">
+			<label for="description">Beskrivning</label>
+		<textarea name="description" id="description" class="mce-tinymce form-control" rows="10">
+			{{ old.description }}
+		</textarea>
+		</div>
+		<div class="form-group">
+			<label for="portions">Portioner</label>
+			<input name="portions" type="number" class="form-control" value="{{ old.portions ? old.portions : 2 }}">
+		</div>
+		<ul class="list-group repeatable-wrap ingredients-list">
+			<li class="list-group-item list-group-item-info">
+				Ingredienser
+			</li>
+			{% if form_errors.ingredients %}
+				<li class="list-group-item list-group-item-danger">
+					<span class="form-text">{{ form_errors.ingredients | first }}</span>
+				</li>
+			{% endif %}
+			{% for ingredient in old.ingredients %}
+				{% if ingredient.name %}
+					<li class="repeatable list-group-item">
+						<input class="form-control value" type="text" name="ingredients[{{ loop.index0 }}][value]" placeholder="Antal" value="{{ ingredient.value }}" />
+						<select class="form-control unit" name="ingredients[{{ loop.index0 }}][unit]">
+							{% for option in units %}
+								<option value="{{ option.name }}"
+									{% if option.name in ingredient.unit %}
+								selected
+									{% endif %}>
+									{{ option.name }}
+								</option>
+							{% endfor %}
+						</select>
+						<input class="form-control name" type="text" name="ingredients[{{ loop.index0 }}][name]" placeholder="Ingrediens" value="{{ ingredient.name }}" />
+						<button class="btn btn-danger repeater-remove" type="button">
+							<i class="fa fa-minus-circle" aria-hidden="true"></i>
+						</button>
+						<button class="btn btn-success repeater-add" type="button">
+							<i class="fa fa-plus-circle" aria-hidden="true"></i>
+						</button>
+					</li>
+				{% endif %}
+			{% endfor %}
+			<li class="repeatable list-group-item{{ form_errors.ingredients ? ' has-danger' : '' }}">
+				<input class="form-control value" type="text" name="ingredients[{{ old.ingredients | length }}][value]" placeholder="Antal" />
+				<select class="form-control unit" name="ingredients[{{ old.ingredients | length }}][unit]">
+					{% for option in units %}
+						<option value="{{ option.name }}"
+							{% if loop.first %}
+						selected
+							{% endif %}>
+							{{ option.name }}
+						</option>
+					{% endfor %}
+				</select>
+				<input class="form-control name" type="text" name="ingredients[{{ old.ingredients | length }}][name]" placeholder="Ingrediens" />
+				<button class="btn btn-danger repeater-remove" type="button">
+					<i class="fa fa-minus-circle" aria-hidden="true"></i>
+				</button>
+				<button class="btn btn-success repeater-add" type="button">
+					<i class="fa fa-plus-circle" aria-hidden="true"></i>
+				</button>
+			</li>
+		</ul>
+		<div class="form-group">
+			<label for="category">Kategori</label>
+			<select name="category_id" class="form-control" id="category">
+				{% for option in categories %}
+					<option value="{{ option.id }}"
+						{% if option.id in old.category_id %}
+							selected
+						{% endif %}
+						>{{ option.name }}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="image1">Huvudbild</label>
+			{% if recipe.image1 %}
+				<div class="main-image">
+					<img src="{{ image_url(recipe.image1, 'large') }}" alt="" />
+				</div>
+			{% endif %}
+			<input type="file" class="form-control-file" id="image1" name="image1" aria-describedby="fileHelp">
+			<small id="fileHelp" class="form-text text-muted">Ladda gärna upp en bild på slutresultatet.</small>
+		</div>
+		<button type="submit" class="btn btn-primary">Spara</button>
+	</form>
 {% endblock %}
