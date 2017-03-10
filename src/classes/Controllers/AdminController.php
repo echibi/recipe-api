@@ -71,7 +71,7 @@ class AdminController extends Controller {
 		 * @var CategoryModel $categoryModel
 		 */
 		$categoryModel          = $this->ci->get( 'CategoryModel' );
-		$viewData['categories'] = $categoryModel->getAll();
+		$viewData['categories'] = $categoryModel->getList();
 
 		// Get Units
 		/**
@@ -198,11 +198,58 @@ class AdminController extends Controller {
 		 * @var CategoryModel $categoryModel
 		 */
 		$categoryModel = $this->ci->get( 'CategoryModel' );
-		$categoryModel->getAll();
 
 		return $this->view->render( $response, 'admin/list-categories.twig', array(
-			'categories' => $categoryModel->getAll(),
+			'categories' => $categoryModel->getList(),
 		) );
+	}
+
+	/**
+	 * @param Request  $request
+	 * @param Response $response
+	 *
+	 * @return \Psr\Http\Message\ResponseInterface
+	 */
+	public function getEditCategory( Request $request, Response $response ) {
+
+		/**
+		 * @var UnitModel     $unitModel
+		 * @var RecipeModel   $recipeModel
+		 * @var CategoryModel $categoryModel
+		 */
+
+		$id = $request->getAttribute( 'id' );
+
+		// Fill view with data
+		$viewData = array();
+
+		// Get Categories
+		$categoryModel = $this->ci->get( 'CategoryModel' );
+
+		// Check if we are creating a new recipe
+		if ( 'create' === $id ) {
+			$viewData['title']          = 'Skapa Kategori';
+			$viewData['category']['id'] = $id;
+		} else {
+
+			$viewData['title'] = 'Redigera Kategori';
+			$category          = $categoryModel->get( $id );
+
+			$viewData['category'] = $category;
+
+			// Check if we have any posted form data
+			// If empty we fill it with the current items data.
+			$globals = $this->view->getEnvironment()->getGlobals();
+			if ( empty( $globals['old'] ) ) {
+				$viewData['old'] = $category;
+			}
+		}
+
+		return $this->view->render(
+			$response,
+			'admin/save-category.twig',
+			$viewData
+		);
 	}
 
 	/**

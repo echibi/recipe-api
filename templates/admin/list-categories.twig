@@ -5,12 +5,14 @@
 		{% include "partials/page-header.twig" with { 'title' : 'Categories' } %}
 		<ul class="list-group">
 			<li class="list-group-item list-group-item-info">
-				<a href="{{ path_for("admin.edit-recipe", {id: 'create'}) }}" class="btn btn-success">Create new</a>
+				<a href="{{ path_for("admin.edit-category", {id: 'create'}) }}" class="btn btn-success">Create new</a>
 			</li>
 			{% for item in categories %}
 				<li class="list-group-item">
-					<a href="{{ path_for("admin.edit-recipe", {'id': item.id}) }}">{{ item.id }} - {{ item.title }}</a>
-					<button data-url="{{ path_for("admin.delete-recipe", {'id' : item.id}) }}" class="btn btn-danger delete-recipe">x</button>
+					<a href="{{ path_for("admin.edit-category", {'id': item.id}) }}">{{ item.id }} - {{ item.name }}</a>
+					{#
+					<button data-url="{{ path_for("admin.delete-category", {'id' : item.id}) }}" class="btn btn-danger delete-category">x</button>
+					#}
 				</li>
 			{% endfor %}
 		</ul>

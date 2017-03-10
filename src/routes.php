@@ -48,6 +48,8 @@ $app->group( '', function () {
 
 		// Admin Categories
 		$this->get( '/categories', '\App\Controllers\AdminController:listCategories' )->setName( 'admin.list-categories' );
+		$this->get( '/categories/{id}', '\App\Controllers\AdminController:getEditCategory' )->setName( 'admin.edit-category' );
+		$this->delete( '/categories/{id}', '\App\Controllers\AdminController:deleteCategory' )->setName( 'admin.delete-category' );
 
 	} );
 

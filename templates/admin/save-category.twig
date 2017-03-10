@@ -1,0 +1,30 @@
+{% extends "base.twig" %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+	{% include "partials/page-header.twig" with { 'title' : title } %}
+	<form id="edit-category" method="post" action="{{ post_url }}" enctype="multipart/form-data">
+		<div class="form-group{{ form_errors.name ? ' has-danger' : '' }}">
+			<label for="name">Namn</label>
+			<input name="name" type="text" class="form-control" id="name" value="{{ old.name }}">
+			{% if form_errors.name %}
+				<span class="form-text">{{ form_errors.name | first }}</span>
+			{% endif %}
+		</div>
+		<div class="form-group{{ form_errors.name ? ' has-danger' : '' }}">
+			<label for="slug">Slug</label>
+			<input name="slug" type="text" class="form-control" id="slug" value="{{ old.slug }}" disabled>
+		</div>
+		<div class="form-group">
+			<label for="image1">Huvudbild (TODO)</label>
+			{% if category.image1 %}
+				<div class="main-image">
+					<img src="{{ image_url(category.image1, 'large') }}" alt="" />
+				</div>
+			{% endif %}
+			<input type="file" class="form-control-file" id="image1" name="image1" aria-describedby="fileHelp">
+			<small id="fileHelp" class="form-text text-muted">Ladda gärna upp en bild för kategorin.</small>
+		</div>
+		<button type="submit" class="btn btn-primary">Spara</button>
+	</form>
+{% endblock %}
