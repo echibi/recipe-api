@@ -1,0 +1,19 @@
+{% extends "base-front.twig" %}
+
+{% block content %}
+	<div class="home">
+		<div class="form-group">
+			<label for="recipe-search">Sök</label>
+			<input type="text" id="recipe-search" name="recipe-search" class="form-control">
+		</div>
+		<div class="recipe-list-wrap">
+			<ul class="recipe-list">
+				{% for item in recipes %}
+					<li class="recipe-item">
+						<a href="{{ path_for("single-recipe", {'id': item.id, 'lang' : lang}) }}">{{ item.title }}</a>
+					</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+{% endblock %}

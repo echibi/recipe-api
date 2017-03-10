@@ -3,17 +3,23 @@
  * @var Slim\App $app
  */
 // Routes
-$app->group( '/[{lang:sv|en}]', function () use ( $app ) {
 
-	$app->get( '', function ( \Slim\Http\Request $request, \Slim\Http\Response $response, $args ) {
+// Redirect / to default language.
+$app->get( '/', function ( \Slim\Http\Request $request, \Slim\Http\Response $response ) {
+	/**
+	 * @var \Slim\Router $router
+	 */
+	$router = $this->get( 'router' );
 
-		// echo "<xmp style=\"text-align:left;\">" . print_r( $request->getAttribute( 'lang' ), true ) . "</xmp>";
-		// Sample log message
-		//$this->logger->info("Recept-API '/' route");
-
-		// Render index view
-	} )->add( new \App\Middleware\LanguageMiddleware( $app->getContainer() ) );
+	return $response->withRedirect( $router->pathFor( 'home', array( 'lang' => 'sv' ) ) );
 } );
+
+$app->group( '/{lang:sv|en}', function () use ( $app ) {
+
+	$app->get( '', '\App\Controllers\HomeController:index' )->setName( 'home' );
+	$app->get( '/recipe/{id}', '\App\Controllers\RecipeController:single' )->setName( 'single-recipe' );
+
+} )->add( new \App\Middleware\LanguageMiddleware( $app->getContainer() ) );
 
 // API
 $app->group( '/v1', function () {
