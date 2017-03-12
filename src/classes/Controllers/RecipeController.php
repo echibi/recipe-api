@@ -22,11 +22,12 @@ class RecipeController extends Controller {
 		/**
 		 * @var RecipeModel $recipeModel
 		 */
+		$id          = $request->getAttribute( 'id' );
 		$recipeModel = $this->ci->get( 'RecipeModel' );
 
 		return $this->view->render( $response, 'frontend/single-recipe.twig',
 			array(
-				'recipes' => $recipeModel->getList( array( 'limit' => 25 ) ),
+				'recipe' => $recipeModel->get( $id ),
 			)
 		);
 	}
