@@ -11,7 +11,7 @@
 				<button class="btn btn-outline-primary" data-id="{{ item.id }}">{{ item.name }}</button>
 			{% endfor %}
 		</div>
-		<ul class="recipe-list">
+		<ul class="list-group recipe-list">
 			{% for item in recipes %}
 				<li class="list-group-item recipe-item">
 					<a href="{{ path_for("single-recipe", {'id': item.id, 'lang' : lang}) }}">{{ item.title }}</a>

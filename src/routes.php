@@ -17,6 +17,7 @@ $app->get( '/', function ( \Slim\Http\Request $request, \Slim\Http\Response $res
 $app->group( '/{lang:sv|en}', function () use ( $app ) {
 
 	$app->get( '', '\App\Controllers\HomeController:index' )->setName( 'home' );
+	$app->get( '/search', '\App\Controllers\RecipeController:search' )->setName( 'recipe-search' );
 	$app->get( '/recipe/{id}', '\App\Controllers\RecipeController:single' )->setName( 'single-recipe' );
 
 } )->add( new \App\Middleware\LanguageMiddleware( $app->getContainer() ) );

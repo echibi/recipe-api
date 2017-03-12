@@ -103,10 +103,30 @@ class IngredientModel extends Model {
 	}
 
 	/**
+	 * @param array $opts
+	 *
 	 * @return mixed
 	 */
-	public function getList() {
-		return $this->db->table( self::table )->get();
+	public function getList( $opts = array() ) {
+		$mainQuery = $this->db->table( self::table );
+
+		// Set default limit
+		if ( isset( $opts['limit'] ) ) {
+			$limit = filter_var(
+				$opts['limit'],
+				FILTER_SANITIZE_NUMBER_INT
+			);
+			$mainQuery->limit( $limit );
+		} else {
+			$mainQuery->limit( 20 );
+		}
+
+		if ( isset( $opts['q'] ) ) {
+			$mainQuery->where( 'name', 'LIKE', '%' . $opts['q'] . '%' );
+		}
+
+		return $mainQuery->get();
+
 	}
 
 	/**

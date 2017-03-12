@@ -3,5 +3,14 @@
 {% block content %}
 	<div class="single-recipe">
 		<h1>{{ recipe.title }}</h1>
+		<ul class="ingredients-list">
+			{% for ingredient in recipe.ingredients %}
+				{% if ingredient.name %}
+					<li class="list-group-item">
+						{{ ingredient.value }} {{ ingredient.unit }} {{ ingredient.name }}
+					</li>
+				{% endif %}
+			{% endfor %}
+		</ul>
 	</div>
 {% endblock %}

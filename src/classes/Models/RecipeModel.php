@@ -350,9 +350,9 @@ class RecipeModel extends Model {
 
 		// Only fetch recipes with these ingredients.
 		if ( !empty( $opts['ingredients'] ) ) {
-			$excludedIngredientsRecipes = $this->findRecipeIngredients( $opts['ingredients'] );
-			if ( !empty( $excludedIngredientsRecipes ) ) {
-				$mainQuery->whereIn( 'recipes.id', $excludedIngredientsRecipes );
+			$includedIngredientsRecipes = $this->findRecipeIngredients( $opts['ingredients'] );
+			if ( !empty( $includedIngredientsRecipes ) ) {
+				$mainQuery->whereIn( 'recipes.id', $includedIngredientsRecipes );
 			} else {
 				// If no recipe was found with the queried ingredients we shall return nothing.
 				return array();
@@ -429,10 +429,11 @@ class RecipeModel extends Model {
 			'ingredients.slug',
 			'ingredients_rel.ingredient_id',
 			'ingredients_rel.recipe_id',
-			'ingredients_rel.id'
 		) );
 		$ingredientsQuery->leftJoin( 'ingredients', 'ingredients.id', '=', 'ingredients_rel.ingredient_id' );
-		$ingredientsQuery->whereIn( 'slug', $ingredients );
+		$ingredientsQuery->whereIn( 'name', $ingredients );
+		$ingredientsQuery->orWhereIn( 'id', $ingredients );
+
 
 		$result = $ingredientsQuery->get();
 		if ( empty( $result ) ) {
