@@ -30,9 +30,15 @@ var onError = function (err) {
 };
 
 gulp.task('scripts', function () {
-	return gulp.src(SOURCE + SCRIPTS + 'main.js')
+	// TODO:: Split admin js and frontend...
+	return gulp.src([
+		SOURCE + SCRIPTS + '/components/*.js',
+		SOURCE + SCRIPTS + 'main.js',
+		SOURCE + SCRIPTS + 'frontend.js'
+	])
+		.pipe($.concat('main.js'))
 		//.pipe($.rename('main.min.js'))
-		.pipe($.uglify())
+		//.pipe($.uglify())
 		.pipe(gulp.dest(BUILD_SCRIPTS));
 });
 
