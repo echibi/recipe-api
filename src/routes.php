@@ -4,28 +4,16 @@
  */
 // Routes
 
-// Redirect / to default language.
-$app->get( '/', function ( \Slim\Http\Request $request, \Slim\Http\Response $response ) {
-	/**
-	 * @var \Slim\Router $router
-	 */
-	$router = $this->get( 'router' );
+$app->get( '/', '\App\Controllers\HomeController:index' )->setName( 'home' );
+// TODO:: Change to post. Any for testing.
+$app->any( '/search', '\App\Controllers\RecipeController:search' )->setName( 'recipe-search' );
+$app->get( '/recipe/{id}', '\App\Controllers\RecipeController:single' )->setName( 'single-recipe' );
 
-	return $response->withRedirect( $router->pathFor( 'home', array( 'lang' => 'sv' ) ) );
-} );
-
-$app->group( '/{lang:sv|en}', function () use ( $app ) {
-
-	$app->get( '', '\App\Controllers\HomeController:index' )->setName( 'home' );
-	$app->get( '/search', '\App\Controllers\RecipeController:search' )->setName( 'recipe-search' );
-	$app->get( '/recipe/{id}', '\App\Controllers\RecipeController:single' )->setName( 'single-recipe' );
-
-} )->add( new \App\Middleware\LanguageMiddleware( $app->getContainer() ) );
 
 // API
-$app->group( '/v1', function () {
+$app->group( '/api/v1', function () {
 	// Get a list of recipes
-	// $this->get( '/recipes', '\App\RecipeMapper:getList' );
+	//$this->get( '/recipes', '\App\RecipeMapper:getList' );
 	// Get a single recipe by id
 	// $this->get( '/recipes/{id}', '\App\RecipeMapper:getRecipe' );
 	// Get all ingredients

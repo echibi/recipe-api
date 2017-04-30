@@ -30,8 +30,9 @@ var onError = function (err) {
 };
 
 gulp.task('scripts', function () {
-	// TODO:: Split admin js and frontend...
+	// TODO:: Split admin js and frontend?
 	return gulp.src([
+		SOURCE + SCRIPTS + '/components/global.js',
 		SOURCE + SCRIPTS + '/components/*.js',
 		SOURCE + SCRIPTS + 'main.js',
 		SOURCE + SCRIPTS + 'frontend.js'
