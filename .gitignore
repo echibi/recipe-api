@@ -5,6 +5,8 @@ bower_components
 !/logs/README.md
 .idea
 
+yarn-error.log
+
 # Compiled files
 /public/css
 /public/js

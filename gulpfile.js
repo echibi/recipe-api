@@ -14,7 +14,7 @@ var ROOT = './',
 	BUILD_CSS = ROOT + 'public/css/',
 	BUILD_SCRIPTS = ROOT + 'public/js/',
 	BUILD_FONTS = ROOT + 'public/fonts/',
-	BOWER = SOURCE + 'bower_components/';
+	BOWER = SOURCE + 'node_modules/';
 
 var FONTS = 'fonts/',
 	IMAGES = 'img/',
@@ -114,7 +114,7 @@ gulp.task('watch', ['build'], function () {
 
 	browserSync.init({
 		files: ['{src,public}/**/*.php', '{templates}/**/*.twig'],
-		proxy: 'localhost/recipes/public',
+		proxy: 'localhost/recipe-api/public',
 	});
 	gulp.watch(SOURCE + STYLES + '**/*.scss', ['styles']);
 	gulp.watch(SOURCE + SCRIPTS + '**/*.js', ['scripts']);
