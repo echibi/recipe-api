@@ -6,8 +6,8 @@
 	<link rel="stylesheet" href="{{ base_url() }}/css/main.css">
 </head>
 <body>
-<div class="wrap container-fluid">
-	{% include "partials/navigation.twig" %}
+{% include "partials/navigation.twig" %}
+<div class="wrap container">
 	{% include "partials/flash-messages.twig" %}
 	{% block content %}{% endblock %}
 </div>

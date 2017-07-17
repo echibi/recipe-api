@@ -5,14 +5,14 @@
 	{% include "partials/page-header.twig" with { 'title' : 'Login' } %}
 	<form method="post" action="{{ path_for("admin.login") }}">
 		{% include "partials/csrf-input.twig" %}
-		<div class="form-group">
-			<label for="username">Username</label>
-			<input type="text" class="form-control" name="username" id="username" placeholder="Username">
+		<div class="field">
+			<label class="label" for="username">Username</label>
+			<input type="text" class="input" name="username" id="username" placeholder="Username">
 		</div>
-		<div class="form-group">
-			<label for="password">Password</label>
-			<input type="password" class="form-control" id="password" name="password">
+		<div class="field">
+			<label class="label" for="password">Password</label>
+			<input type="password" class="input" id="password" name="password" placeholder="Password">
 		</div>
-		<button type="submit" class="btn btn-primary">Submit</button>
+		<button type="submit" class="button is-primary">Submit</button>
 	</form>
 {% endblock %}

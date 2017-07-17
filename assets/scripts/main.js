@@ -94,4 +94,19 @@ $(function () {
 
 	});
 
+	// Get all "navbar-burger" elements
+	var $navbar_burgers = $('.navbar-burger');
+	if (0 < $navbar_burgers.length) {
+		$navbar_burgers.on('click', function (event) {
+			// Get the target from the "data-target" attribute
+			var $el = $(this);
+			var target = $el.data('target');
+			var $target = $('#' + target);
+
+			console.log('target:',target);
+			// Toggle the class on both the "navbar-burger" and the "navbar-menu"
+			$el.toggleClass('is-active');
+			$target.toggleClass('is-active');
+		});
+	}
 });

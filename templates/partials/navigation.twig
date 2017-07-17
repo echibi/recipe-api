@@ -1,23 +1,23 @@
-<nav class="navbar navbar-toggleable-md navbar-light bg-faded">
-	<button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-		<span class="navbar-toggler-icon"></span>
-	</button>
-	<div class="collapse navbar-collapse" id="navbarSupportedContent">
-		<ul class="navbar-nav mr-auto">
-			<li class="nav-item{% if menu.active == "home" %} active{% endif %}">
-				<a class="nav-link" href="{{ path_for("admin.index") }}">Home</a>
-			</li>
+<nav class="navbar">
+	<div class="navbar-brand">
+		<div class="navbar-burger burger" data-target="navMenu">
+			<span></span>
+			<span></span>
+			<span></span>
+		</div>
+	</div>
+	<div id="navMenu" class="navbar-menu">
+		<div class="navbar-start">
+			<a class="navbar-item{% if menu.active == "home" %} is-active{% endif %}"
+			   href="{{ path_for("admin.index") }}">Home</a>
 			{% if auth.check %}
-				<li class="nav-item{% if menu.active == "recipes" %} active{% endif %}">
-					<a class="nav-link" href="{{ path_for("admin.list-recipes") }}">Recipes</a>
-				</li>
-				<li class="nav-item{% if menu.active == "categories" %} active{% endif %}">
-					<a class="nav-link" href="{{ path_for("admin.list-categories") }}">Categories</a>
-				</li>
-				<li class="nav-item{% if menu.active == "ingredients" %} active{% endif %}">
-					<a class="nav-link" href="{{ path_for("admin.list-ingredients") }}">Ingredients</a>
-				</li>
+				<a class="navbar-item{% if menu.active == "recipes" %} is-active{% endif %}"
+				   href="{{ path_for("admin.list-recipes") }}">Recipes</a>
+				<a class="navbar-item{% if menu.active == "categories" %} is-active{% endif %}"
+				   href="{{ path_for("admin.list-categories") }}">Categories</a>
+				<a class="navbar-item{% if menu.active == "ingredients" %} is-active{% endif %}"
+				   href="{{ path_for("admin.list-ingredients") }}">Ingredients</a>
 			{% endif %}
-		</ul>
+		</div>
 	</div>
 </nav>

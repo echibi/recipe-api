@@ -14,7 +14,7 @@ var ROOT = './',
 	BUILD_CSS = ROOT + 'public/css/',
 	BUILD_SCRIPTS = ROOT + 'public/js/',
 	BUILD_FONTS = ROOT + 'public/fonts/',
-	BOWER = SOURCE + 'node_modules/';
+	BOWER = ROOT + 'node_modules/';
 
 var FONTS = 'fonts/',
 	IMAGES = 'img/',
@@ -48,7 +48,7 @@ gulp.task('js-vendor', function () {
 		BOWER + 'jquery/dist/jquery.js',
 		BOWER + 'tether/dist/js/tether.js',
 		BOWER + 'bootstrap/dist/js/bootstrap.js',
-		BOWER + 'tinymce/tinymce.js',
+		BOWER + 'tinymce/tinymce.js'
 	])
 		.pipe($.concat('vendor.js'))
 		.pipe(gulp.dest(BUILD_SCRIPTS))
@@ -64,7 +64,7 @@ gulp.task('tinymce', function () {
 		BOWER + 'tinymce/skins/**/*',
 		BOWER + 'tinymce/plugins/**/*'
 	], {
-		base: './assets/bower_components/tinymce'
+		base: './node_modules/tinymce'
 	})
 		.pipe(gulp.dest(BUILD_SCRIPTS))
 });
