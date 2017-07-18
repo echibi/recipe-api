@@ -1,5 +1,5 @@
 {
-	"name": "recipe-api",
+	"name": "recipe-manager",
 	"version": "1.0.0",
 	"description": "A small API for managing recipes. Based on Slim Framework.",
 	"main": "gulpfile.js",
@@ -8,14 +8,14 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/echibi/recipe-api.git"
+		"url": "git+https://github.com/echibi/recipe-manager.git"
 	},
 	"author": "Jonas Rensfeldt",
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/echibi/recipe-api/issues"
+		"url": "https://github.com/echibi/recipe-manager/issues"
 	},
-	"homepage": "https://github.com/echibi/recipe-api#readme",
+	"homepage": "https://github.com/echibi/recipe-manager#readme",
 	"dependencies": {
 		"bootstrap": "v4.0.0-alpha.6",
 		"bulma": "^0.4.3",

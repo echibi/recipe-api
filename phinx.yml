@@ -17,11 +17,12 @@ environments:
     development:
         adapter: mysql
         host: 127.0.0.1
-        name: recept-api
+        name: recipe-manager
         user: root
         pass: ''
         port: 3306
         charset: utf8
+        table_prefix: rm_
 
     testing:
         adapter: mysql

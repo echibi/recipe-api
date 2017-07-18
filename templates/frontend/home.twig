@@ -1,12 +1,12 @@
 {% extends "base-front.twig" %}
 
 {% block content %}
-	<div class="search-wrap form-group">
-		<label for="recipe-search">Sök</label>
+	<div class="search-wrap field">
+		<label class="label" for="recipe-search">Sök</label>
 		<input type="text"
 			   id="recipe-search"
 			   name="recipe-search"
-			   class="form-control"
+			   class="input"
 			   data-url="{{ path_for("recipe-search") }}">
 	</div>
 	{% include 'frontend/search.twig' %}

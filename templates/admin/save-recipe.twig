@@ -8,7 +8,7 @@
 			<label class="label" for="title">Titel</label>
 			<input name="title" type="text" class="input{{ form_errors.title ? ' is-danger' : '' }}" id="title" value="{{ old.title }}">
 			{% if form_errors.title %}
-				<span class="form-text">{{ form_errors.title | first }}</span>
+				<span class="help is-danger">{{ form_errors.title | first }}</span>
 			{% endif %}
 		</div>
 		<div class="field">
@@ -27,7 +27,7 @@
 			</div>
 			{% if form_errors.ingredients %}
 				<div class="list-group-item list-group-item-danger">
-					<span class="form-text">{{ form_errors.ingredients | first }}</span>
+					<span class="help is-danger">{{ form_errors.ingredients | first }}</span>
 				</div>
 			{% endif %}
 			{% for ingredient in old.ingredients %}
@@ -93,17 +93,16 @@
 				</select>
 			</div>
 		</div>
-		<div class="field">
-			<label class="label" for="image1">Huvudbild</label>
-			{% if recipe.image1 %}
-				<div class="main-image">
-					<img src="{{ image_url(recipe.image1, 'large') }}" alt="" />
-				</div>
-			{% endif %}
-			<input type="file" class="input-file file" id="image1" name="image1" aria-describedby="fileHelp">
+		<label class="label" for="image1">Huvudbild</label>
+		<div class="box">
+			<div class="field">
+				{% if recipe.image1 %}
+					<div class="main-image">
+						<img src="{{ image_url(recipe.image1, 'large') }}" alt="" />
+					</div>
+				{% endif %}
+				<input type="file" class="input-file file" id="image1" name="image1" aria-describedby="fileHelp">
 
-			<div class="box">
-				<p id="fileHelp" class="help">Ladda gärna upp en bild på slutresultatet.</p>
 			</div>
 		</div>
 		<button type="submit" class="button is-primary">Spara</button>

@@ -41,12 +41,14 @@ $container['db'] = function ( ContainerInterface $c ) {
 			'password'  => $db['pass'],
 			'charset'   => 'utf8', // Optional
 			'collation' => 'utf8_swedish_ci', // Optional
+			'prefix'    => $db['prefix']
 		);
 		// QB is the new alias for accessing the DB
 		$connection = new \Pixie\Connection( 'mysql', $config );
 		$qb         = new \Pixie\QueryBuilder\QueryBuilderHandler( $connection );
 
-	} catch ( PDOException $e ) {
+	}
+	catch ( PDOException $e ) {
 		$c->get( 'logger' )->alert( 'Database connection failed: ' . $e->getMessage() );
 	}
 
@@ -60,11 +62,14 @@ $container['db'] = function ( ContainerInterface $c ) {
  */
 $container['view'] = function ( ContainerInterface $c ) {
 	$settings = $c->get( 'settings' )['renderer'];
-	$view     = new \Slim\Views\Twig( $settings['template_path'], [
+	$view     = new \Slim\Views\Twig(
+		$settings['template_path'], [
 		'cache' => false
-	] );
+	]
+	);
 
-	$view->addExtension( new Slim\Views\TwigExtension(
+	$view->addExtension(
+		new Slim\Views\TwigExtension(
 			$c['router'],
 			$c['request']->getUri()
 		)
@@ -75,10 +80,12 @@ $container['view'] = function ( ContainerInterface $c ) {
 	// Allow flash messages inside views.
 	$view->getEnvironment()->addGlobal( 'flash', $c['flash'] );
 
-	$view->getEnvironment()->addGlobal( 'auth', array(
+	$view->getEnvironment()->addGlobal(
+		'auth', array(
 		'check' => $c->get( 'auth' )->check(),
 		'user'  => $c->get( 'auth' )->currentUser()
-	) );
+	)
+	);
 
 	return $view;
 };
@@ -154,7 +161,7 @@ $container['UserModel']       = function ( ContainerInterface $c ) {
 $container['ImageModel']      = function ( ContainerInterface $c ) {
 	return new \App\Models\ImageModel( $c );
 };
-$container['CategoryModel']     = function ( ContainerInterface $c ) {
+$container['CategoryModel']   = function ( ContainerInterface $c ) {
 	return new \App\Models\CategoryModel( $c );
 };
 // Other classes

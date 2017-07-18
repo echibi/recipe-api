@@ -7,7 +7,7 @@
 
 namespace App\Validation;
 
-use Respect\Validation\Validator as V;
+use Respect\Validation\Validator as v;
 use Respect\Validation\Exceptions\NestedValidationException;
 use App\Helpers\Utilities as Util;
 use Slim\Http\Request;
@@ -35,8 +35,8 @@ class RecipeValidator extends Validator {
 	public function initRules() {
 
 		$this->rules['title']       = v::notEmpty();
-		$this->rules['ingredients'] = V::arrayType()->IngredientsCheck();
-		$this->rules['image1']      = V::optional( V::image() );
+		$this->rules['ingredients'] = v::IngredientsCheck();
+		$this->rules['image1']      = v::optional( v::image() );
 		$this->rules['category_id'] = v::intVal();
 		// $this->rules['description'] = '';
 		// $this->rules['videoUrl']    = V::optional( V::videoUrl() )->setName( 'video' );
