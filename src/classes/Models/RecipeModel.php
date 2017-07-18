@@ -21,18 +21,12 @@ class RecipeModel extends Model {
 	const table = 'recipes';
 
 	/**
-	 * @var \PDO
-	 */
-	protected $pdo;
-
-	/**
 	 * @var array Allowed fields to filter on.
 	 */
 	protected $fields;
 
 	public function __construct( ContainerInterface $container ) {
 		parent::__construct( $container );
-		$this->pdo = $this->db->pdo();
 
 		$this->fields = array(
 			'title',

@@ -74,7 +74,7 @@ $(function () {
 	});
 
 	// Delete recipe/ingredient-button
-	$('.delete-recipe', '.delete-ingredient').on('click', function (e) {
+	$('.delete-recipe, .delete-ingredient').on('click', function (e) {
 		e.preventDefault();
 
 		if (window.confirm("Are you sure?")) {
