@@ -96,14 +96,18 @@ class ImageModel extends Model {
 			$image = $manager->make( $file );
 
 			if ( true === $setting['square'] ) {
-				$image->fit( $setting['w'], $setting['h'], function ( Constraint $constraint ) {
+				$image->fit(
+					$setting['w'], $setting['h'], function ( Constraint $constraint ) {
 					$constraint->upsize();
-				} );
+				}
+				);
 			} else {
-				$image->resize( $setting['w'], $setting['h'], function ( Constraint $constraint ) {
+				$image->resize(
+					$setting['w'], $setting['h'], function ( Constraint $constraint ) {
 					$constraint->aspectRatio();
 					$constraint->upsize();
-				} );
+				}
+				);
 			}
 			$affix = $this->getThumbnailAffix( $setting );
 			$image->save( $saveName . '-' . $affix . $ext, $settings['quality'] );
@@ -118,7 +122,7 @@ class ImageModel extends Model {
 	 */
 	public function getImageUrl( ImageEntity $image, $size = '' ) {
 
-		$uploadFullPath = $this->container->get( 'settings' )['upload']['dir'];
+		$uploadFullPath = $this->container->get( 'settings' )['paths']['dir'];
 		$sizes          = $this->container->get( 'settings' )['image_manager']['thumbnail_sizes'];
 
 		$imageAffix = '';
@@ -138,10 +142,18 @@ class ImageModel extends Model {
 		 * @var Uri $uri
 		 */
 		$uri = $request->getUri();
-		$uri->getBaseUrl();
 
 		$uploadDir = substr( $uploadFullPath, strpos( $uploadFullPath, "public/" ) + 6 );
-		$this->logger->addDebug( 'path', array( $uri->getBaseUrl() . $uploadDir . $image->path . $imageAffix ) );
+		$this->logger->addDebug(
+			'getImageUrl',
+			array(
+				'base_url'    => $uri->getBaseUrl(),
+				'upload_dir'  => $uploadDir,
+				'image_path'  => $image->path,
+				'image_affix' => $imageAffix,
+				'full_url'    => $uri->getBaseUrl() . $uploadDir . $image->path . $imageAffix
+			)
+		);
 
 		return $uri->getBaseUrl() . $uploadDir . $image->path . $imageAffix;
 	}
