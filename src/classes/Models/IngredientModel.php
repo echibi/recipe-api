@@ -130,16 +130,6 @@ class IngredientModel extends Model {
 	}
 
 	/**
-	 * @param        $id
-	 * @param string $field
-	 *
-	 * @return mixed
-	 */
-	public function delete( $id, $field = 'id' ) {
-		return $this->db->table( self::table )->where( $id, '=', $field )->delete();
-	}
-
-	/**
 	 * @param IngredientEntity $object
 	 *
 	 * @return mixed
@@ -180,5 +170,25 @@ class IngredientModel extends Model {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Removes the ingredient from all recipes.
+	 *
+	 * @param $id
+	 *
+	 * @return bool
+	 */
+	public function delete( $id ) {
+		$item = $this->db->table( self::table )->find( $id );
+		if ( $item ) {
+			$relDelete = $this->db->table( self::table_rel );
+			$relDelete->where( 'ingredient_id', '=', $id );
+			$relDelete->delete();
+
+			return $this->db->table( self::table )->where( 'id', $id )->delete();
+		} else {
+			return false;
+		}
 	}
 }

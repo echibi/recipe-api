@@ -73,8 +73,8 @@ $(function () {
 		});
 	});
 
-
-	$('.delete-recipe').on('click', function (e) {
+	// Delete recipe/ingredient-button
+	$('.delete-recipe', '.delete-ingredient').on('click', function (e) {
 		e.preventDefault();
 
 		if (window.confirm("Are you sure?")) {
@@ -91,7 +91,6 @@ $(function () {
 				}
 			});
 		}
-
 	});
 
 	// Get all "navbar-burger" elements

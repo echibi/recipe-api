@@ -10,9 +10,8 @@
 			{% for item in categories %}
 				<li class="list-group-item">
 					<a href="{{ path_for("admin.edit-ingredient", {'id': item.id}) }}">{{ item.id }} - {{ item.name }}</a>
-					{#
-					<button data-url="{{ path_for("admin.delete-category", {'id' : item.id}) }}" class="btn btn-danger delete-category">x</button>
-					#}
+					<button data-url="{{ path_for("admin.delete-ingredient", {'id' : item.id}) }}"
+					        class="delete is-danger is-medium delete-recipe"></button>
 				</li>
 			{% endfor %}
 		</ul>

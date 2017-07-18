@@ -52,7 +52,8 @@ $app->group( '', function () {
 		$this->get( '/ingredients', '\App\Controllers\AdminController:listIngredients' )->setName( 'admin.list-ingredients' );
 		$this->get( '/ingredients/{id}', '\App\Controllers\AdminController:getEditIngredient' );
 		$this->post( '/ingredients/{id}', '\App\Controllers\AdminController:postEditIngredient' )->setName( 'admin.edit-ingredient' );
-
+		// Delete recipe
+		$this->delete( '/ingredients/{id}', '\App\Controllers\AdminController:deleteIngredient' )->setName( 'admin.delete-ingredient' );
 
 	} );
 
