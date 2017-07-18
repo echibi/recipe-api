@@ -12,7 +12,12 @@ return [
 			'dbname' => 'recipe-manager',
 			'prefix' => 'rm_'
 		],
-
+		'paths'                  => [
+			'web_root'            => __DIR__ . '/../public',
+			'template_path'       => __DIR__ . '/../templates/',
+			'upload_dir'          => __DIR__ . '/../public/uploads',
+			'upload_dir_relative' => 'uploads'
+		],
 		// Renderer settings
 		'renderer'               => [
 			'template_path' => __DIR__ . '/../templates/',
@@ -44,11 +49,11 @@ return [
 					'h'      => 250,
 					'square' => true
 				],
-				'medium'     => [
+				'medium' => [
 					'w' => null,
 					'h' => 400
 				],
-				'large'    => [
+				'large'  => [
 					'w' => null,
 					'h' => 1080
 				]
