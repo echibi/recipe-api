@@ -18,20 +18,12 @@ return [
 			'upload_dir'          => __DIR__ . '/../public/uploads',
 			'upload_dir_relative' => 'uploads'
 		],
-		// Renderer settings
-		'renderer'               => [
-			'template_path' => __DIR__ . '/../templates/',
-		],
-
 		// Monolog settings
 		'logger'                 => [
 			'name'      => 'recipe-manager',
 			'path'      => __DIR__ . '/../logs/recipe.log',
 			'level'     => \Monolog\Logger::DEBUG,
 			'max_files' => 60
-		],
-		'upload'                 => [
-			'dir' => __DIR__ . '/../public/uploads'
 		],
 		'lang'                   => [
 			'default'   => 'sv',

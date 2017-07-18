@@ -14,7 +14,7 @@ var ROOT = './',
 	BUILD_CSS = ROOT + 'public/css/',
 	BUILD_SCRIPTS = ROOT + 'public/js/',
 	BUILD_FONTS = ROOT + 'public/fonts/',
-	BOWER = ROOT + 'node_modules/';
+	LIBRARY = ROOT + 'node_modules/';
 
 var FONTS = 'fonts/',
 	IMAGES = 'img/',
@@ -45,10 +45,11 @@ gulp.task('scripts', function () {
 
 gulp.task('js-vendor', function () {
 	return gulp.src([
-		BOWER + 'jquery/dist/jquery.js',
-		BOWER + 'tether/dist/js/tether.js',
-		BOWER + 'bootstrap/dist/js/bootstrap.js',
-		BOWER + 'tinymce/tinymce.js'
+		LIBRARY + 'jquery/dist/jquery.js',
+		LIBRARY + 'tether/dist/js/tether.js',
+		//LIBRARY + 'bootstrap/dist/js/bootstrap.js',
+		LIBRARY + 'tinymce/tinymce.js',
+		LIBRARY + 'dropzone/dist/dropzone.js'
 	])
 		.pipe($.concat('vendor.js'))
 		.pipe(gulp.dest(BUILD_SCRIPTS))
@@ -60,9 +61,9 @@ gulp.task('js-vendor', function () {
 // Move TinyMCE themes etc
 gulp.task('tinymce', function () {
 	return gulp.src([
-		BOWER + 'tinymce/themes/**/*.js',
-		BOWER + 'tinymce/skins/**/*',
-		BOWER + 'tinymce/plugins/**/*'
+		LIBRARY + 'tinymce/themes/**/*.js',
+		LIBRARY + 'tinymce/skins/**/*',
+		LIBRARY + 'tinymce/plugins/**/*'
 	], {
 		base: './node_modules/tinymce'
 	})
@@ -93,7 +94,7 @@ gulp.task('styles', function () {
 
 // Move font-awesome fonts folder to css compiled folder
 gulp.task('icons', function () {
-	return gulp.src(BOWER + '/components-font-awesome/fonts/**.*')
+	return gulp.src(LIBRARY + '/components-font-awesome/fonts/**.*')
 		.pipe(gulp.dest(BUILD_FONTS));
 });
 

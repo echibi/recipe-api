@@ -3,7 +3,10 @@
 {% block title %}{{ title }}{% endblock %}
 {% block content %}
 	{% include "partials/page-header.twig" with { 'title' : title } %}
-	<form id="edit-recipe" method="post" action="{{ path_for('admin.post-save-recipe', {id:recipe.id}) }}" enctype="multipart/form-data">
+	<form id="edit-recipe"
+	      method="post"
+	      action="{{ path_for('admin.post-save-recipe', {id:recipe.id}) }}"
+	      enctype="multipart/form-data">
 		<div class="field">
 			<label class="label" for="title">Titel</label>
 			<input name="title" type="text" class="input{{ form_errors.title ? ' is-danger' : '' }}" id="title" value="{{ old.title }}">

@@ -61,9 +61,9 @@ $container['db'] = function ( ContainerInterface $c ) {
  * @return \Slim\Views\Twig
  */
 $container['view'] = function ( ContainerInterface $c ) {
-	$settings = $c->get( 'settings' )['renderer'];
+	$system_paths = $c->get( 'settings' )['paths'];
 	$view     = new \Slim\Views\Twig(
-		$settings['template_path'], [
+		$system_paths['template_path'], [
 		'cache' => false
 	]
 	);

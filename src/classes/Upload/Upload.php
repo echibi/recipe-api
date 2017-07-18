@@ -7,7 +7,9 @@
 namespace App\Upload;
 
 
+use App\Helpers\Utilities;
 use Interop\Container\ContainerInterface;
+use Monolog\Logger;
 use Slim\Http\UploadedFile;
 
 /**
@@ -34,13 +36,14 @@ class Upload {
 	 */
 	public function __construct( ContainerInterface $container ) {
 		$this->container    = $container;
-		$this->base_path    = $this->container['settings']['upload']['dir'];
+		$this->base_path    = $this->container['settings']['paths']['upload_dir'];
 		$this->current_path = '/' . date( 'Y' ) . '/' . date( 'm' );
 		$this->path         = $this->base_path . $this->current_path;
 	}
 
 	/**
 	 * Renames and moves file to correct location
+	 *
 	 * @param UploadedFile $file
 	 * @param string       $prefix
 	 *
@@ -54,14 +57,14 @@ class Upload {
 		$this->createPath( $this->path );
 		$file->moveTo( $path );
 
-		return $this->current_path . '/' . $filename;
+		return $path;
 	}
 
 	/**
 	 * @param $path
 	 */
 	public function createPath( $path ) {
-		if ( !is_dir( $path ) ) {
+		if ( ! is_dir( $path ) ) {
 			mkdir( $path, 0766, true );
 		}
 	}

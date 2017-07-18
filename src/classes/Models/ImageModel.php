@@ -8,6 +8,7 @@ namespace App\Models;
 
 
 use App\Entities\ImageEntity;
+use App\Helpers\Utilities;
 use App\Upload\Upload;
 use Intervention\Image\Constraint;
 use Intervention\Image\ImageManager;
@@ -50,8 +51,21 @@ class ImageModel extends Model {
 		/**
 		 * @var Upload $imageUpload
 		 */
-		$imageUpload = $this->container->get( 'Upload' );
-		$file_path   = $imageUpload->upload( $image );
+		$imageUpload  = $this->container->get( 'Upload' );
+		$file_path    = $imageUpload->upload( $image );
+		$system_paths = $this->container->get( 'settings' )['paths'];
+
+		// Only save the necessary info. ( Remove full path )
+		$save_path = str_replace( $system_paths['upload_dir'], '', $file_path );
+		/**
+		 * @var $logger Logger
+		 */
+		$logger = $this->container->get( 'logger' );
+		$logger->addDebug(
+			'ImageModel -> create', array(
+				'file_path' => $file_path, 'save_path' => $save_path
+			)
+		);
 
 		$this->createThumbnails( $file_path );
 
@@ -64,7 +78,7 @@ class ImageModel extends Model {
 				'alt'       => '', // Not implemented yet.
 				'mime_type' => $image->getClientMediaType(),
 				'ext'       => $imageUpload->getFileExtension( $image ),
-				'path'      => $file_path,
+				'path'      => $save_path,
 				'size'      => $image->getSize(),
 				'created'   => $now,
 				'updated'   => $now
@@ -122,7 +136,7 @@ class ImageModel extends Model {
 	 */
 	public function getImageUrl( ImageEntity $image, $size = '' ) {
 
-		$uploadFullPath = $this->container->get( 'settings' )['paths']['dir'];
+		$uploadFullPath = $this->container->get( 'settings' )['paths']['upload_dir'];
 		$sizes          = $this->container->get( 'settings' )['image_manager']['thumbnail_sizes'];
 
 		$imageAffix = '';
